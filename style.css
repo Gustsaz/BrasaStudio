@@ -4,7 +4,7 @@ body {
     background-color: #fff;
 }
 
-/* ===== HEADER ===== */
+/*header*/
 .header {
     display: flex;
     justify-content: space-between;
@@ -48,19 +48,16 @@ body {
     height: auto;
 }
 
-
-/* ===== SEÇÃO JOGO ===== */
+/*JOGO*/
 .jogo {
     width: 100%;
-    min-height: 100vh; /* pega a altura inteira da tela */
+    min-height: 100vh; 
     display: flex;
     align-items: center;
     justify-content: center;
     background: url("img/image3.png") center center / cover no-repeat;
 }
 
-
-/* Conteúdo do jogo sobre o fundo */
 .jogo-conteudo {
     position: relative;
     display: flex;
@@ -69,54 +66,63 @@ body {
     gap: 20px;
 }
 
-/* img perfeito: grande na esquerda */
 .jogo-conteudo .perfeito {
     max-width: 50%;
     height: auto;
     z-index: 2;
 }
 
-/* tela: fundo para o nome-jogo */
 .jogo-conteudo .tela {
     position: absolute;
-    right: 0;
-    top: 50%;
+    right: 200px;
+    top: 30%;
     transform: translateY(-50%);
     max-width: 40%;
     z-index: 1;
 }
 
-/* nome-jogo: centralizado sobre tela */
 .jogo-conteudo .nome-jogo {
     position: absolute;
-    right: 50px;
-    top: 50%;
+    right: 200px;
+    top: 33%;
     transform: translateY(-50%);
     max-width: 30%;
     z-index: 2;
 }
 
-/* botão: abaixo do nome-jogo/tela */
 .jogo-conteudo .botao {
     position: absolute;
-    right: 50px;
-    top: calc(50% + 120px);
+    right: 280px;
+    top: calc(29% + 120px);
     background: none;
     border: none;
     z-index: 3;
 }
 
-/* logo-jogo: menor, abaixo do botão */
 .jogo-conteudo .logo-jogo {
     position: absolute;
-    right: 50px;
-    top: calc(50% + 200px);
+    right: 380px;
+    top: calc(40% + 200px);
     max-width: 15%;
     z-index: 3;
 }
 
 
-/* ===== SEÇÃO EMPRESA ===== */
+/* ===== SEÇÃO JOGO ===== */
+.jogo-section {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.jogo {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+
+/*empresa*/
 .empresa {
     padding: 40px 20px;
     background: #fff;
@@ -174,15 +180,215 @@ body {
     color: #000;
 }
 
-/* ===== SEÇÃO JOGO ===== */
-.jogo-section {
-    text-align: center;
-    padding: 40px 0;
+/* videos*/
+.box {
+  position: relative;
+  width: 1197px;
+  height: 673px;
 }
 
-.jogo {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
+.box .videos-e-noticias {
+  position: fixed;
+  width: 1197px;
+  height: 673px;
+  top: 0;
+  left: 0;
+}
+
+.box .rectangle {
+  width: 279px;
+  top: 350px;
+  left: 0;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .div {
+  width: 279px;
+  top: 350px;
+  left: 309px;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .rectangle-2 {
+  width: 279px;
+  top: 350px;
+  left: 606px;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .overlap {
+  left: 1px;
+  position: absolute;
+  width: 594px;
+  height: 323px;
+  top: 0;
+}
+
+.box .rectangle-3 {
+  width: 587px;
+  top: 0;
+  left: 0;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .image {
+  position: absolute;
+  width: 594px;
+  height: 323px;
+  top: 0;
+  left: 0;
+  aspect-ratio: 1.84;
+  object-fit: cover;
+}
+
+.box .overlap-group {
+  left: 603px;
+  position: absolute;
+  width: 594px;
+  height: 323px;
+  top: 0;
+}
+
+.box .rectangle-4 {
+  width: 585px;
+  top: 0;
+  left: 4px;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .rectangle-5 {
+  width: 279px;
+  top: 350px;
+  left: 912px;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+/* Original CSS code should be injected here */
+
+/* Enhanced semantic styles */
+.content-card {
+  display: block;
+}
+
+.card-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+}
+
+.featured-content {
+  display: block;
+}
+
+.background-placeholder {
+  background-color: inherit;
+}
+
+.featured-image {
+  display: block;
+}
+
+.box {
+  position: relative;
+  width: 1197px;
+  height: 673px;
+}
+
+.box .videos-e-noticias {
+  position: fixed;
+  width: 1197px;
+  height: 673px;
+  top: 0;
+  left: 0;
+}
+
+.box .rectangle {
+  width: 279px;
+  top: 350px;
+  left: 0;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .div {
+  width: 279px;
+  top: 350px;
+  left: 309px;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .rectangle-2 {
+  width: 279px;
+  top: 350px;
+  left: 606px;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .overlap {
+  left: 1px;
+  position: absolute;
+  width: 594px;
+  height: 323px;
+  top: 0;
+}
+
+.box .rectangle-3 {
+  width: 587px;
+  top: 0;
+  left: 0;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .image {
+  position: absolute;
+  width: 594px;
+  height: 323px;
+  top: 0;
+  left: 0;
+  aspect-ratio: 1.84;
+  object-fit: cover;
+}
+
+.box .overlap-group {
+  left: 603px;
+  position: absolute;
+  width: 594px;
+  height: 323px;
+  top: 0;
+}
+
+.box .rectangle-4 {
+  width: 585px;
+  top: 0;
+  left: 4px;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
+}
+
+.box .rectangle-5 {
+  width: 279px;
+  top: 350px;
+  left: 912px;
+  position: absolute;
+  height: 323px;
+  background-color: #d9d9d9;
 }
