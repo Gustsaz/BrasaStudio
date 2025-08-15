@@ -51,7 +51,7 @@ body {
 /*JOGO*/
 .jogo {
     width: 100%;
-    min-height: 100vh; 
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -146,14 +146,6 @@ body {
     align-items: start;
 }
 
-.rectangle {
-    grid-area: rect;
-    width: 100%;
-    background-color: #fff;
-    min-height: 200px;
-    border: 1px solid transparent;
-}
-
 .div {
     grid-area: div;
     width: 100%;
@@ -180,215 +172,205 @@ body {
     color: #000;
 }
 
-/* videos*/
+/*videos*/
+
+
+.videos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto auto;
+    gap: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background-color: #d9d9d9;
+    min-height: 200px;
+}
+
+.card.grande {
+    grid-column: span 2;
+    min-height: 320px;
+}
+
+.card.pequeno {
+    min-height: 200px;
+}
+
+/*jogos*/
 .box {
-  position: relative;
-  width: 1197px;
-  height: 673px;
+    position: relative;
+    width: 1201px;
+    height: 456px;
 }
 
-.box .videos-e-noticias {
-  position: fixed;
-  width: 1197px;
-  height: 673px;
-  top: 0;
-  left: 0;
+.box .jogos {
+    position: fixed;
+    width: 1207px;
+    height: 456px;
+    top: 0;
+    left: 0;
 }
 
-.box .rectangle {
-  width: 279px;
-  top: 350px;
-  left: 0;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
+.box .ultimo-comentario {
+    position: absolute;
+    width: 516px;
+    height: 73px;
+    top: 359px;
+    left: 644px;
+}
+
+.box .text-wrapper {
+    position: absolute;
+    width: 115px;
+    top: 4px;
+    left: 49px;
+    font-family: "Nunito-Regular", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 20px;
+    letter-spacing: 0;
+    line-height: normal;
+    white-space: nowrap;
 }
 
 .box .div {
-  width: 279px;
-  top: 350px;
-  left: 309px;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
+    position: absolute;
+    width: 463px;
+    top: 41px;
+    left: 49px;
+    font-family: "Nunito-Regular", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 13px;
+    letter-spacing: 0;
+    line-height: normal;
 }
 
-.box .rectangle-2 {
-  width: 279px;
-  top: 350px;
-  left: 606px;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
+.box .ellipse {
+    position: absolute;
+    width: 41px;
+    height: 41px;
+    top: 0;
+    left: 0;
+    background-color: #d9d9d9;
+    border-radius: 20.32px;
 }
 
-.box .overlap {
-  left: 1px;
-  position: absolute;
-  width: 594px;
-  height: 323px;
-  top: 0;
-}
-
-.box .rectangle-3 {
-  width: 587px;
-  top: 0;
-  left: 0;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
-}
-
-.box .image {
-  position: absolute;
-  width: 594px;
-  height: 323px;
-  top: 0;
-  left: 0;
-  aspect-ratio: 1.84;
-  object-fit: cover;
+.box .text-wrapper-2 {
+    position: absolute;
+    top: 0;
+    left: 487px;
+    font-family: "Nunito-Regular", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 36px;
+    letter-spacing: 0;
+    line-height: normal;
 }
 
 .box .overlap-group {
-  left: 603px;
-  position: absolute;
-  width: 594px;
-  height: 323px;
-  top: 0;
+    position: absolute;
+    width: 616px;
+    height: 380px;
+    top: 76px;
+    left: 0;
 }
 
-.box .rectangle-4 {
-  width: 585px;
-  top: 0;
-  left: 4px;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
+.box .rectangle {
+    width: 606px;
+    height: 366px;
+    top: 14px;
+    left: 10px;
+    background-color: #d2c4b7;
+    position: absolute;
+    border: 1px solid;
+    border-color: #000000;
 }
 
-.box .rectangle-5 {
-  width: 279px;
-  top: 350px;
-  left: 912px;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
+.box .rectangle-2 {
+    width: 597px;
+    height: 367px;
+    top: 0;
+    left: 0;
+    background-color: #f0eee8;
+    position: absolute;
+    border: 1px solid;
+    border-color: #000000;
 }
+
+.box .text-wrapper-3 {
+    position: absolute;
+    top: 90px;
+    left: 644px;
+    font-family: "Nunito-Regular", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 36px;
+    letter-spacing: 0;
+    line-height: normal;
+}
+
+.box .p {
+    position: absolute;
+    width: 557px;
+    top: 158px;
+    left: 644px;
+    font-family: "Nunito-Regular", Helvetica;
+    font-weight: 400;
+    color: #000000;
+    font-size: 20px;
+    letter-spacing: 0;
+    line-height: normal;
+}
+
+.box .rectangle-3 {
+    width: 148px;
+    height: 56px;
+    top: 262px;
+    left: 662px;
+    background-color: #d9d9d9;
+    border-radius: 20px;
+    position: absolute;
+    border: 1px solid;
+    border-color: #000000;
+}
+
 /* Original CSS code should be injected here */
-
-/* Enhanced semantic styles */
-.content-card {
-  display: block;
+/* Accessibility improvements */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-.card-placeholder {
-  width: 100%;
-  height: 100%;
-  background-color: inherit;
-}
-
-.featured-content {
-  display: block;
-}
-
-.background-placeholder {
-  background-color: inherit;
-}
-
-.featured-image {
-  display: block;
-}
-
-.box {
-  position: relative;
-  width: 1197px;
-  height: 673px;
-}
-
-.box .videos-e-noticias {
-  position: fixed;
-  width: 1197px;
-  height: 673px;
-  top: 0;
-  left: 0;
-}
-
-.box .rectangle {
-  width: 279px;
-  top: 350px;
-  left: 0;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
-}
-
-.box .div {
-  width: 279px;
-  top: 350px;
-  left: 309px;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
-}
-
-.box .rectangle-2 {
-  width: 279px;
-  top: 350px;
-  left: 606px;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
-}
-
-.box .overlap {
-  left: 1px;
-  position: absolute;
-  width: 594px;
-  height: 323px;
-  top: 0;
-}
-
+/* Button interaction styles */
 .box .rectangle-3 {
-  width: 587px;
-  top: 0;
-  left: 0;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.box .image {
-  position: absolute;
-  width: 594px;
-  height: 323px;
-  top: 0;
-  left: 0;
-  aspect-ratio: 1.84;
-  object-fit: cover;
+.box .rectangle-3:hover {
+    background-color: #c9c9c9;
+    transform: translateY(-1px);
 }
 
-.box .overlap-group {
-  left: 603px;
-  position: absolute;
-  width: 594px;
-  height: 323px;
-  top: 0;
+.box .rectangle-3:active {
+    transform: translateY(0);
+    background-color: #b9b9b9;
 }
 
-.box .rectangle-4 {
-  width: 585px;
-  top: 0;
-  left: 4px;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
-}
-
-.box .rectangle-5 {
-  width: 279px;
-  top: 350px;
-  left: 912px;
-  position: absolute;
-  height: 323px;
-  background-color: #d9d9d9;
+.box .rectangle-3:focus-visible {
+    outline: 2px solid #4a90e2;
+    outline-offset: 2px;
 }
