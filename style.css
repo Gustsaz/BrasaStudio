@@ -1,0 +1,188 @@
+body {
+    margin: 0;
+    font-family: "Nunito", Arial, sans-serif;
+    background-color: #fff;
+}
+
+/* ===== HEADER ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background: none;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-left img {
+    height: 60px;
+    object-fit: contain;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.generic-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #599ac6;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.generic-avatar img {
+    width: 100%;
+    height: auto;
+}
+
+
+/* ===== SEÇÃO JOGO ===== */
+.jogo {
+    width: 100%;
+    min-height: 100vh; /* pega a altura inteira da tela */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url("img/image3.png") center center / cover no-repeat;
+}
+
+
+/* Conteúdo do jogo sobre o fundo */
+.jogo-conteudo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+/* img perfeito: grande na esquerda */
+.jogo-conteudo .perfeito {
+    max-width: 50%;
+    height: auto;
+    z-index: 2;
+}
+
+/* tela: fundo para o nome-jogo */
+.jogo-conteudo .tela {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 40%;
+    z-index: 1;
+}
+
+/* nome-jogo: centralizado sobre tela */
+.jogo-conteudo .nome-jogo {
+    position: absolute;
+    right: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 30%;
+    z-index: 2;
+}
+
+/* botão: abaixo do nome-jogo/tela */
+.jogo-conteudo .botao {
+    position: absolute;
+    right: 50px;
+    top: calc(50% + 120px);
+    background: none;
+    border: none;
+    z-index: 3;
+}
+
+/* logo-jogo: menor, abaixo do botão */
+.jogo-conteudo .logo-jogo {
+    position: absolute;
+    right: 50px;
+    top: calc(50% + 200px);
+    max-width: 15%;
+    z-index: 3;
+}
+
+
+/* ===== SEÇÃO EMPRESA ===== */
+.empresa {
+    padding: 40px 20px;
+    background: #fff;
+}
+
+.empresa-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.empresa-imgs {
+    display: grid;
+    grid-template-areas:
+        "rect frente"
+        "div frente";
+    gap: 10px;
+    align-items: start;
+}
+
+.rectangle {
+    grid-area: rect;
+    width: 100%;
+    background-color: #fff;
+    min-height: 200px;
+    border: 1px solid transparent;
+}
+
+.div {
+    grid-area: div;
+    width: 100%;
+    background-color: #fff;
+    min-height: 200px;
+    border: 1px solid transparent;
+}
+
+.frente {
+    grid-area: frente;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.empresa-text h2 {
+    font-size: 32px;
+    color: #cf2433;
+    margin-bottom: 15px;
+}
+
+.empresa-text p {
+    font-size: 20px;
+    color: #000;
+}
+
+/* ===== SEÇÃO JOGO ===== */
+.jogo-section {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.jogo {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
