@@ -199,178 +199,170 @@ body {
 }
 
 /*jogos*/
-.box {
-    position: relative;
-    width: 1201px;
-    height: 456px;
+.jogos {
+    padding: 40px;
+    background-color: #fdfaf3;
+    font-family: "Nunito", Arial, sans-serif;
 }
 
-.box .jogos {
-    position: fixed;
-    width: 1207px;
-    height: 456px;
+.titulo-principal {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.jogos-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.imagem-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+}
+
+.imagem-fundo {
+    background-color: #d2c4b7;
+    border: 1px solid #000;
+    width: 100%;
+    height: 100%;
+    transform: translate(10px, 10px);
+}
+
+.imagem-frente {
+    background-color: #f0eee8;
+    border: 1px solid #000;
+    width: 100%;
+    height: 100%;
+    position: absolute;
     top: 0;
     left: 0;
 }
 
-.box .ultimo-comentario {
-    position: absolute;
-    width: 516px;
-    height: 73px;
-    top: 359px;
-    left: 644px;
+.info-jogo {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.box .text-wrapper {
-    position: absolute;
-    width: 115px;
-    top: 4px;
-    left: 49px;
-    font-family: "Nunito-Regular", Helvetica;
-    font-weight: 400;
-    color: #000000;
-    font-size: 20px;
-    letter-spacing: 0;
-    line-height: normal;
-    white-space: nowrap;
+.titulo-jogo {
+    font-size: 24px;
+    font-weight: bold;
 }
 
-.box .div {
-    position: absolute;
-    width: 463px;
-    top: 41px;
-    left: 49px;
-    font-family: "Nunito-Regular", Helvetica;
-    font-weight: 400;
-    color: #000000;
-    font-size: 13px;
-    letter-spacing: 0;
-    line-height: normal;
+.descricao-jogo {
+    font-size: 16px;
+    color: #333;
 }
 
-.box .ellipse {
-    position: absolute;
+.botao-jogo {
+    width: 150px;
+    height: 50px;
+    border-radius: 20px;
+    border: 1px solid #000;
+    background-color: #d9d9d9;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.botao-jogo:hover {
+    background-color: #c9c9c9;
+}
+
+.ultimo-comentario {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.avatar {
     width: 41px;
     height: 41px;
-    top: 0;
-    left: 0;
     background-color: #d9d9d9;
-    border-radius: 20.32px;
+    border-radius: 50%;
 }
 
-.box .text-wrapper-2 {
-    position: absolute;
-    top: 0;
-    left: 487px;
-    font-family: "Nunito-Regular", Helvetica;
-    font-weight: 400;
-    color: #000000;
-    font-size: 36px;
-    letter-spacing: 0;
-    line-height: normal;
+.nome-usuario {
+    font-size: 18px;
+    margin-bottom: 5px;
 }
 
-.box .overlap-group {
-    position: absolute;
-    width: 616px;
-    height: 380px;
-    top: 76px;
-    left: 0;
+.texto-comentario {
+    font-size: 13px;
+    color: #333;
 }
 
-.box .rectangle {
-    width: 606px;
-    height: 366px;
-    top: 14px;
-    left: 10px;
-    background-color: #d2c4b7;
-    position: absolute;
-    border: 1px solid;
-    border-color: #000000;
-}
-
-.box .rectangle-2 {
-    width: 597px;
-    height: 367px;
-    top: 0;
-    left: 0;
-    background-color: #f0eee8;
-    position: absolute;
-    border: 1px solid;
-    border-color: #000000;
-}
-
-.box .text-wrapper-3 {
-    position: absolute;
-    top: 90px;
-    left: 644px;
-    font-family: "Nunito-Regular", Helvetica;
-    font-weight: 400;
-    color: #000000;
-    font-size: 36px;
-    letter-spacing: 0;
-    line-height: normal;
-}
-
-.box .p {
-    position: absolute;
-    width: 557px;
-    top: 158px;
-    left: 644px;
-    font-family: "Nunito-Regular", Helvetica;
-    font-weight: 400;
-    color: #000000;
-    font-size: 20px;
-    letter-spacing: 0;
-    line-height: normal;
-}
-
-.box .rectangle-3 {
-    width: 148px;
-    height: 56px;
-    top: 262px;
-    left: 662px;
-    background-color: #d9d9d9;
-    border-radius: 20px;
-    position: absolute;
-    border: 1px solid;
-    border-color: #000000;
-}
-
-/* Original CSS code should be injected here */
-/* Accessibility improvements */
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-/* Button interaction styles */
-.box .rectangle-3 {
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+/*craidores*/
+.criadores {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 20px;
+    background-color: #fdfaf3;
+    flex-wrap: wrap;
+    /* permite quebrar linha em telas menores */
 }
 
-.box .rectangle-3:hover {
-    background-color: #c9c9c9;
-    transform: translateY(-1px);
+.criadores img {
+    width: 186px;
+    height: 186px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #ddd;
+    /* placeholder cinza */
 }
 
-.box .rectangle-3:active {
-    transform: translateY(0);
-    background-color: #b9b9b9;
+/*footer*/
+.footer {
+    background-color: #d2c4b7;
+    /* cor da sombra */
+    padding: 13px 0 0 32px;
+    /* deslocamento igual ao da imagem */
 }
 
-.box .rectangle-3:focus-visible {
-    outline: 2px solid #4a90e2;
-    outline-offset: 2px;
+.footer-content {
+    background-color: #f0eee8;
+    padding: 20px 40px;
+    max-width: 1232px;
+    box-sizing: border-box;
+}
+
+.footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-inner h3 {
+    font-family: "Nunito", Arial, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0;
+}
+
+.footer-inner p {
+    font-family: "Nunito", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 0;
+}
+
+.footer-inner hr {
+    border: none;
+    border-top: 1px solid #999;
+    margin: 10px 0;
+}
+
+.footer-inner span {
+    font-family: "Nunito", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.32);
+    text-align: center;
 }
