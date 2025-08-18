@@ -4,25 +4,30 @@ body {
     background-color: #fff;
 }
 
-/*header*/
 .header {
+    position: fixed;     
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 30px;
-    background: none;
-    max-width: 1400px;
-    margin: 0 auto;
+    padding: 10px 20px;   /* reduz a margem interna */
+    background: none;      
+    width: 100%;          /* ocupa toda a largura */
+    margin: 0;            /* remove centralização */
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 .header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
 .header-left img {
-    height: 60px;
+    height: 80px;
     object-fit: contain;
 }
 
@@ -48,6 +53,28 @@ body {
     height: auto;
 }
 
+.dark-mode-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dark-mode-btn img {
+    height: auto;
+    width: auto;
+    max-width: 40px; 
+}
+
+.header:hover {
+    opacity: 1 !important;
+}
+
+
+
 /*JOGO*/
 .jogo {
     width: 100%;
@@ -56,6 +83,7 @@ body {
     align-items: center;
     justify-content: center;
     background: url("img/image3.png") center center / cover no-repeat;
+    background-size: cover;
 }
 
 .jogo-conteudo {
@@ -108,7 +136,7 @@ body {
 }
 
 
-/* ===== SEÇÃO JOGO ===== */
+/*jogos*/
 .jogo-section {
     text-align: center;
     padding: 40px 0;
@@ -306,7 +334,6 @@ body {
     padding: 40px 20px;
     background-color: #fdfaf3;
     flex-wrap: wrap;
-    /* permite quebrar linha em telas menores */
 }
 
 .criadores img {
@@ -314,16 +341,12 @@ body {
     height: 186px;
     border-radius: 50%;
     object-fit: cover;
-    background-color: #ddd;
-    /* placeholder cinza */
 }
 
 /*footer*/
 .footer {
     background-color: #d2c4b7;
-    /* cor da sombra */
-    padding: 13px 0 0 32px;
-    /* deslocamento igual ao da imagem */
+    padding: 13px 0 0 32px;/
 }
 
 .footer-content {
@@ -365,4 +388,54 @@ body {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.32);
     text-align: center;
+}
+
+/*modo escyro*/
+
+body.dark-mode {
+    background-color: #121212;  
+    color: #ffffff;            
+}
+
+body.dark-mode .header {
+    color: #ffffff;            
+}
+
+body.dark-mode .empresa,
+body.dark-mode .jogos,
+body.dark-mode .criadores,
+body.dark-mode .footer-content {
+    background-color: #1e1e1e; 
+    color: #f5f5f5;
+}
+
+body.dark-mode .card {
+    background-color: #333;
+}
+
+body.dark-mode .logo {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.8))
+            drop-shadow(0 0 20px rgba(255, 60, 0, 0.6))
+            drop-shadow(0 0 30px rgba(255, 0, 0, 0.4));
+    animation: fogoBrilho 3s infinite ease-in-out;
+}
+
+@keyframes fogoBrilho {
+    0% {
+        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7))
+                drop-shadow(0 0 15px rgba(255, 60, 0, 0.5))
+                drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
+    }
+    50% {
+        filter: drop-shadow(0 0 15px rgba(255, 200, 0, 1))
+                drop-shadow(0 0 30px rgba(255, 80, 0, 0.8))
+                drop-shadow(0 0 45px rgba(255, 0, 0, 0.6));
+    }
+    100% {
+        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7))
+                drop-shadow(0 0 15px rgba(255, 60, 0, 0.5))
+                drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
+    }
 }
