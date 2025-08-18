@@ -13,10 +13,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;   /* reduz a margem interna */
+    padding: 10px 20px;   
     background: none;      
-    width: 100%;          /* ocupa toda a largura */
-    margin: 0;            /* remove centralização */
+    width: 100%;         
+    margin: 0;           
     opacity: 1;
     transition: opacity 0.3s ease;
 }
