@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <section class="jogo" aria-label="Game interface">
+    <section class="jogo" aria-label="jogo">
         <header class="header">
             <div class="header-left">
                 <img class="logo" src="img/logo.png" alt="Logo" />
@@ -18,7 +18,10 @@
             </div>
 
             <div class="header-right">
-                <img class="dark-mode" src="img/dark-mode.png" alt="Modo escuro" />
+                <button class="dark-mode-btn" aria-label="Alternar modo escuro">
+    			<img src="img/dark-mode.png" alt="Ícone modo escuro">
+		</button>
+
                 <div class="notifications">
                     <img src="img/notifications.png" alt="Notificações" />
                 </div>
@@ -119,13 +122,13 @@
         </section>
 
         <section class="criadores" aria-label="criadores">
-            <img src="img/marcelo.png" alt="Marcelo">
-            <img src="img/raniroca.png" alt="Raniroca">
-            <img src="img/isaque.png" alt="Isaque">
-            <img src="img/arthur.png" alt="Arthur">
-            <img src="img/davi.png" alt="Davi">
-            <img src="img/yasmin.png" alt="Yasmin">
-        </section>
+    <div class="criador"><img src="img/marcelo.png" alt="Marcelo"></div>
+    <div class="criador"><img src="img/raniroca.png" alt="Raniroca"></div>
+    <div class="criador"><img src="img/isaque.png" alt="Isaque"></div>
+    <div class="criador"><img src="img/arthur.png" alt="Arthur"></div>
+    <div class="criador"><img src="img/davi.png" alt="Davi"></div>
+    <div class="criador"><img src="img/yasmin.png" alt="Yasmin"></div>
+</section>
 
         <section class="footer">
             <div class="footer-content">
@@ -138,6 +141,7 @@
             </div>
         </section>
 
+<script src="script.js"></script>
 
 </body>
 
