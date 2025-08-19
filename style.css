@@ -1,0 +1,647 @@
+
+html, body {
+  overflow-x: hidden; /* elimina o espaço em branco lateral */
+}
+
+body {
+    margin: 0;
+    font-family: "Nunito", Arial, sans-serif;
+    background-color: #fff;  
+    width: 100%;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: none;
+    width: 100%;
+    margin: 0;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.header-left img {
+    height: 80px;
+    object-fit: contain;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.generic-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #599ac6;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.generic-avatar img {
+    width: 100%;
+    height: auto;
+}
+
+.dark-mode-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dark-mode-btn img {
+    height: auto;
+    width: auto;
+    max-width: 40px;
+}
+
+.header:hover {
+    opacity: 1 !important;
+}
+
+/*JOGO*/
+.jogo {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url("img/image3.png") center center / cover no-repeat;
+    background-size: cover;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.jogo .water {
+    position: absolute;
+    inset: 0; 
+    background: url("img/image3_trans.png") center center / cover no-repeat;
+    background-size: cover;
+    filter: url("#turbulence");
+    z-index: 1; 
+    pointer-events: none;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+}
+
+
+.jogo-conteudo {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.jogo-conteudo .perfeito {
+    max-width: 50%;
+    height: auto;
+    z-index: 2;
+}
+
+.jogo-conteudo .tela {
+    position: absolute;
+    right: 200px;
+    top: 30%;
+    transform: translateY(-50%);
+    max-width: 40%;
+    z-index: 1;
+}
+
+.jogo-conteudo .nome-jogo {
+    position: absolute;
+    right: 200px;
+    top: 33%;
+    transform: translateY(-50%);
+    max-width: 30%;
+    z-index: 2;
+}
+
+.jogo-conteudo .botao {
+    position: absolute;
+    right: 280px;
+    top: calc(29% + 120px);
+    background: none;
+    border: none;
+    z-index: 3;
+}
+
+.jogo-conteudo .logo-jogo {
+    position: absolute;
+    right: 380px;
+    top: calc(40% + 200px);
+    max-width: 15%;
+    z-index: 3;
+}
+
+
+/*jogos*/
+.jogo-section {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.jogo {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+
+/*empresa*/
+.empresa {
+    padding: 40px 20px;
+    background: #fff;
+}
+
+.empresa-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.empresa-imgs {
+    display: grid;
+    grid-template-areas:
+        "rect frente"
+        "div frente";
+    gap: 10px;
+    align-items: start;
+}
+
+.div {
+    grid-area: div;
+    width: 100%;
+    background-color: #fff;
+    min-height: 200px;
+    border: 1px solid transparent;
+}
+
+.frente {
+    grid-area: frente;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.empresa-text h2 {
+    font-size: 32px;
+    color: #cf2433;
+    margin-bottom: 15px;
+}
+
+.empresa-text p {
+    font-size: 20px;
+    color: #000;
+}
+
+/*videos*/
+
+
+.videos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto auto;
+    gap: 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background-color: #d9d9d9;
+    min-height: 200px;
+}
+
+.card.grande {
+    grid-column: span 2;
+    min-height: 320px;
+}
+
+.card.pequeno {
+    min-height: 200px;
+}
+
+/*jogos*/
+.jogos {
+    padding: 40px;
+    background-color: #fdfaf3;
+    font-family: "Nunito", Arial, sans-serif;
+}
+
+.titulo-principal {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.jogos-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.imagem-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+}
+
+.imagem-fundo {
+    background-color: #d2c4b7;
+    border: 1px solid #000;
+    width: 100%;
+    height: 100%;
+    transform: translate(10px, 10px);
+}
+
+.imagem-frente {
+    background-color: #f0eee8;
+    border: 1px solid #000;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.info-jogo {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.titulo-jogo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.descricao-jogo {
+    font-size: 16px;
+    color: #333;
+}
+
+.botao-jogo {
+    width: 150px;
+    height: 50px;
+    border-radius: 20px;
+    border: 1px solid #000;
+    background-color: #d9d9d9;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.botao-jogo:hover {
+    background-color: #c9c9c9;
+}
+
+.ultimo-comentario {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.avatar {
+    width: 41px;
+    height: 41px;
+    background-color: #d9d9d9;
+    border-radius: 50%;
+}
+
+.nome-usuario {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.texto-comentario {
+    font-size: 13px;
+    color: #333;
+}
+
+/*craidores*/
+.criadores {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 20px;
+    background-color: #fdfaf3;
+    flex-wrap: wrap;
+}
+
+.criadores img {
+    width: 186px;
+    height: 186px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/*footer*/
+.footer {
+    background-color: #d2c4b7;
+    padding: 13px 0 0 32px;/
+}
+
+.footer-content {
+    background-color: #f0eee8;
+    padding: 20px 40px;
+    max-width: 1232px;
+    box-sizing: border-box;
+}
+
+.footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-inner h3 {
+    font-family: "Nunito", Arial, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 0;
+}
+
+.footer-inner p {
+    font-family: "Nunito", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    margin: 0;
+}
+
+.footer-inner hr {
+    border: none;
+    border-top: 1px solid #999;
+    margin: 10px 0;
+}
+
+.footer-inner span {
+    font-family: "Nunito", Arial, sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.32);
+    text-align: center;
+}
+
+/*modo escyro*/
+
+body.dark-mode {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode .header {
+    color: #ffffff;
+}
+
+body.dark-mode .empresa,
+body.dark-mode .jogos,
+body.dark-mode .criadores,
+body.dark-mode .footer-content {
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+}
+
+body.dark-mode .footer{
+    background-color: #000000;
+}
+
+body.dark-mode .card {
+    background-color: #333;
+}
+
+body.dark-mode .logo {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 60, 0, 0.6)) drop-shadow(0 0 30px rgba(255, 0, 0, 0.4));
+    animation: fogoBrilho 3s infinite ease-in-out;
+}
+
+body.dark-mode p.descricao-jogo{
+color: #ffffff;
+}
+
+body.dark-mode p.texto-comentario{
+color: #ffffff;
+}
+
+body.dark-mode p.text-wrapper{
+color: #ffffff;
+}
+
+/*animacoes*/
+@keyframes fogoBrilho {
+    0% {
+        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7)) drop-shadow(0 0 15px rgba(255, 60, 0, 0.5)) drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 15px rgba(255, 200, 0, 1)) drop-shadow(0 0 30px rgba(255, 80, 0, 0.8)) drop-shadow(0 0 45px rgba(255, 0, 0, 0.6));
+    }
+
+    100% {
+        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7)) drop-shadow(0 0 15px rgba(255, 60, 0, 0.5)) drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
+    }
+}
+
+@keyframes float {
+  0%   { transform: translateY(-50%) translateY(0); }
+  50%  { transform: translateY(-50%) translateY(-8px); }
+  100% { transform: translateY(-50%) translateY(0); }
+}
+
+.jogo-conteudo .tela,
+.jogo-conteudo .nome-jogo {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float-simple {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
+}
+
+.jogo-conteudo .perfeito,
+.jogo-conteudo .botao,
+.jogo-conteudo .logo-jogo {
+  animation: float-simple 6s ease-in-out infinite;
+}
+
+.jogo-conteudo .perfeito {
+  animation-duration: 8s;
+  animation-delay: 0.8s;
+}
+
+.jogo-conteudo .tela {
+  animation-duration: 7s;
+  animation-delay: 0.3s;
+}
+
+.jogo-conteudo .nome-jogo {
+  animation-duration: 6.5s;
+  animation-delay: 1s;
+}
+
+.jogo-conteudo .botao {
+  animation-duration: 7.5s;
+  animation-delay: 0.5s;
+}
+
+.jogo-conteudo .logo-jogo {
+  animation-duration: 9s;
+  animation-delay: 1.2s;
+}
+
+@media (max-width: 1024px) {
+  .jogos-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .imagem-wrapper {
+    max-width: 90%;
+    margin: 0 auto 20px;
+    transform: none; 
+  }
+
+  .info-jogo {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Jogo */
+  .jogo-conteudo .perfeito {
+    max-width: 60%;
+  }
+
+  .jogo-conteudo .tela {
+    right: 10%;
+    max-width: 50%;
+    top: 35%;
+  }
+
+  .jogo-conteudo .nome-jogo {
+    right: 16%;
+    max-width: 40%;
+    top: 38%;
+  }
+
+  .jogo-conteudo .botao {
+    right: 12%;
+    top: 50%;
+  }
+
+  .jogo-conteudo .logo-jogo {
+    display: none;
+  }
+
+  .jogo-conteudo .placa {
+    width: 200px;
+    height: auto;
+  }
+
+  /* Empresa */
+  .empresa-content {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .empresa-imgs {
+    justify-content: center;
+  }
+
+  /* Vídeos */
+  .videos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Jogos */
+  .jogos-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .imagem-wrapper {
+    max-width: 100%;
+    margin: 0 auto 20px;
+    transform: none; /* garante que não estoure */
+  }
+
+  .info-jogo {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .jogo-conteudo .tela {
+    right: 5%;
+    max-width: 60%;
+    top: 32%;
+  }
+
+  .jogo-conteudo .nome-jogo {
+    right: 8%;
+    max-width: 50%;
+    top: 36%;
+  }
+
+  .jogo-conteudo .logo-jogo {
+    right: 15%;
+    max-width: 30%;
+  }
+
+  .jogo-conteudo .botao {
+    right: 10%;
+    top: calc(40% + 80px);
+  }
+
+  .titulo-principal {
+    font-size: 22px;
+  }
+
+  .titulo-jogo {
+    font-size: 20px;
+  }
+
+  .descricao-jogo {
+    font-size: 14px;
+  }
+}
