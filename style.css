@@ -455,3 +455,51 @@ body.dark-mode .logo {
         filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7)) drop-shadow(0 0 15px rgba(255, 60, 0, 0.5)) drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
     }
 }
+
+@keyframes float {
+  0%   { transform: translateY(-50%) translateY(0); }
+  50%  { transform: translateY(-50%) translateY(-8px); }
+  100% { transform: translateY(-50%) translateY(0); }
+}
+
+.jogo-conteudo .tela,
+.jogo-conteudo .nome-jogo {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float-simple {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+.jogo-conteudo .perfeito,
+.jogo-conteudo .botao,
+.jogo-conteudo .logo-jogo {
+  animation: float-simple 6s ease-in-out infinite;
+}
+
+.jogo-conteudo .perfeito {
+  animation-duration: 8s;
+  animation-delay: 0.8s;
+}
+
+.jogo-conteudo .tela {
+  animation-duration: 7s;
+  animation-delay: 0.3s;
+}
+
+.jogo-conteudo .nome-jogo {
+  animation-duration: 6.5s;
+  animation-delay: 1s;
+}
+
+.jogo-conteudo .botao {
+  animation-duration: 7.5s;
+  animation-delay: 0.5s;
+}
+
+.jogo-conteudo .logo-jogo {
+  animation-duration: 9s;
+  animation-delay: 1.2s;
+}
