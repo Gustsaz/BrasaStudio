@@ -5,7 +5,7 @@ body {
 }
 
 .header {
-    position: fixed;     
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -13,12 +13,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;   
-    background: none;      
-    width: 100%;         
-    margin: 0;           
+    padding: 10px 20px;
+    background: none;
+    width: 100%;
+    margin: 0;
     opacity: 1;
     transition: opacity 0.3s ease;
+    z-index: 1000;
+
 }
 
 .header-left {
@@ -66,25 +68,45 @@ body {
 .dark-mode-btn img {
     height: auto;
     width: auto;
-    max-width: 40px; 
+    max-width: 40px;
 }
 
 .header:hover {
     opacity: 1 !important;
 }
 
-
-
 /*JOGO*/
 .jogo {
-    width: 100%;
-    min-height: 100vh;
+    position: relative;
+    height: 100vh;
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;
     background: url("img/image3.png") center center / cover no-repeat;
     background-size: cover;
+    z-index: 10;
+    overflow: hidden;
 }
+
+.jogo .water {
+    position: absolute;
+    inset: 0; 
+    background: url("img/image3_trans.png") center center / cover no-repeat;
+    background-size: cover;
+    filter: url("#turbulence");
+    z-index: 1; 
+    pointer-events: none;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+}
+
 
 .jogo-conteudo {
     position: relative;
@@ -393,19 +415,19 @@ body {
 /*modo escyro*/
 
 body.dark-mode {
-    background-color: #121212;  
-    color: #ffffff;            
+    background-color: #121212;
+    color: #ffffff;
 }
 
 body.dark-mode .header {
-    color: #ffffff;            
+    color: #ffffff;
 }
 
 body.dark-mode .empresa,
 body.dark-mode .jogos,
 body.dark-mode .criadores,
 body.dark-mode .footer-content {
-    background-color: #1e1e1e; 
+    background-color: #1e1e1e;
     color: #f5f5f5;
 }
 
@@ -416,26 +438,20 @@ body.dark-mode .card {
 body.dark-mode .logo {
     position: relative;
     z-index: 2;
-    filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.8))
-            drop-shadow(0 0 20px rgba(255, 60, 0, 0.6))
-            drop-shadow(0 0 30px rgba(255, 0, 0, 0.4));
+    filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 60, 0, 0.6)) drop-shadow(0 0 30px rgba(255, 0, 0, 0.4));
     animation: fogoBrilho 3s infinite ease-in-out;
 }
 
 @keyframes fogoBrilho {
     0% {
-        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7))
-                drop-shadow(0 0 15px rgba(255, 60, 0, 0.5))
-                drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
+        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7)) drop-shadow(0 0 15px rgba(255, 60, 0, 0.5)) drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
     }
+
     50% {
-        filter: drop-shadow(0 0 15px rgba(255, 200, 0, 1))
-                drop-shadow(0 0 30px rgba(255, 80, 0, 0.8))
-                drop-shadow(0 0 45px rgba(255, 0, 0, 0.6));
+        filter: drop-shadow(0 0 15px rgba(255, 200, 0, 1)) drop-shadow(0 0 30px rgba(255, 80, 0, 0.8)) drop-shadow(0 0 45px rgba(255, 0, 0, 0.6));
     }
+
     100% {
-        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7))
-                drop-shadow(0 0 15px rgba(255, 60, 0, 0.5))
-                drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
+        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7)) drop-shadow(0 0 15px rgba(255, 60, 0, 0.5)) drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
     }
 }
