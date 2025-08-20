@@ -1,12 +1,12 @@
-
-html, body {
-  overflow-x: hidden; /* elimina o espa�o em branco lateral */
+html,
+body {
+    overflow-x: hidden;
 }
 
 body {
     margin: 0;
     font-family: "Nunito", Arial, sans-serif;
-    background-color: #fff;  
+    background-color: #fff;
     width: 100%;
 }
 
@@ -81,7 +81,6 @@ body {
     opacity: 1 !important;
 }
 
-/*JOGO*/
 .jogo {
     position: relative;
     height: 100vh;
@@ -97,11 +96,11 @@ body {
 
 .jogo .water {
     position: absolute;
-    inset: 0; 
+    inset: 0;
     background: url("img/image3_trans.png") center center / cover no-repeat;
     background-size: cover;
     filter: url("#turbulence");
-    z-index: 1; 
+    z-index: 1;
     pointer-events: none;
 }
 
@@ -220,7 +219,6 @@ body {
 }
 
 /*videos*/
-
 
 .videos {
     display: grid;
@@ -428,7 +426,7 @@ body.dark-mode .footer-content {
     color: #f5f5f5;
 }
 
-body.dark-mode .footer{
+body.dark-mode .footer {
     background-color: #000000;
 }
 
@@ -443,16 +441,16 @@ body.dark-mode .logo {
     animation: fogoBrilho 3s infinite ease-in-out;
 }
 
-body.dark-mode p.descricao-jogo{
-color: #ffffff;
+body.dark-mode p.descricao-jogo {
+    color: #ffffff;
 }
 
-body.dark-mode p.texto-comentario{
-color: #ffffff;
+body.dark-mode p.texto-comentario {
+    color: #ffffff;
 }
 
-body.dark-mode p.text-wrapper{
-color: #ffffff;
+body.dark-mode p.text-wrapper {
+    color: #ffffff;
 }
 
 /*animacoes*/
@@ -471,153 +469,165 @@ color: #ffffff;
 }
 
 @keyframes float {
-  0%   { transform: translateY(-50%) translateY(0); }
-  50%  { transform: translateY(-50%) translateY(-8px); }
-  100% { transform: translateY(-50%) translateY(0); }
+    0% {
+        transform: translateY(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateY(-50%) translateY(-8px);
+    }
+
+    100% {
+        transform: translateY(-50%) translateY(0);
+    }
 }
 
 .jogo-conteudo .tela,
 .jogo-conteudo .nome-jogo {
-  animation: float 6s ease-in-out infinite;
+    animation: float 6s ease-in-out infinite;
 }
 
 @keyframes float-simple {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(-15px); }
-  100% { transform: translateY(0); }
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
 }
 
 .jogo-conteudo .perfeito,
 .jogo-conteudo .botao {
-  animation: float-simple 6s ease-in-out infinite;
+    animation: float-simple 6s ease-in-out infinite;
 }
 
 .jogo-conteudo .perfeito {
-  animation-duration: 8s;
-  animation-delay: 0.8s;
+    animation-duration: 8s;
+    animation-delay: 0.8s;
 }
 
 .jogo-conteudo .tela {
-  animation-duration: 7s;
-  animation-delay: 0.3s;
+    animation-duration: 7s;
+    animation-delay: 0.3s;
 }
 
 .jogo-conteudo .nome-jogo {
-  animation-duration: 6.5s;
-  animation-delay: 1s;
+    animation-duration: 6.5s;
+    animation-delay: 1s;
 }
 
 .jogo-conteudo .botao {
-  animation-duration: 7.5s;
-  animation-delay: 0.5s;
+    animation-duration: 7.5s;
+    animation-delay: 0.5s;
 }
 
 @media (max-width: 1024px) {
-  .jogos-container {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
+    .jogos-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
 
-  .imagem-wrapper {
-    max-width: 90%;
-    margin: 0 auto 20px;
-    transform: none; 
-  }
+    .imagem-wrapper {
+        max-width: 90%;
+        margin: 0 auto 20px;
+        transform: none;
+    }
 
-  .info-jogo {
-    align-items: center;
-    text-align: center;
-  }
+    .info-jogo {
+        align-items: center;
+        text-align: center;
+    }
 }
 
 @media (max-width: 768px) {
-  /* Jogo */
-  .jogo-conteudo .perfeito {
-    max-width: 60%;
-  }
+    .jogo-conteudo .perfeito {
+        max-width: 60%;
+    }
 
-  .jogo-conteudo .tela {
-    right: 10%;
-    max-width: 50%;
-    top: 35%;
-  }
+    .jogo-conteudo .tela {
+        right: 10%;
+        max-width: 50%;
+        top: 35%;
+    }
 
-  .jogo-conteudo .nome-jogo {
-    right: 16%;
-    max-width: 40%;
-    top: 38%;
-  }
+    .jogo-conteudo .nome-jogo {
+        right: 16%;
+        max-width: 40%;
+        top: 38%;
+    }
 
-  .jogo-conteudo .botao {
-    right: 12%;
-    top: 50%;
-  }
+    .jogo-conteudo .botao {
+        right: 12%;
+        top: 50%;
+    }
 
-  .jogo-conteudo .placa {
-    width: 200px;
-    height: auto;
-  }
+    .jogo-conteudo .placa {
+        width: 200px;
+        height: auto;
+    }
 
-  /* Empresa */
-  .empresa-content {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
+    .empresa-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
 
-  .empresa-imgs {
-    justify-content: center;
-  }
+    .empresa-imgs {
+        justify-content: center;
+    }
 
-  /* V�deos */
-  .videos {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .videos {
+        grid-template-columns: repeat(2, 1fr);
+    }
 
-  /* Jogos */
-  .jogos-container {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
+    .jogos-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
 
-  .imagem-wrapper {
-    max-width: 100%;
-    margin: 0 auto 20px;
-    transform: none; /* garante que n�o estoure */
-  }
+    .imagem-wrapper {
+        max-width: 100%;
+        margin: 0 auto 20px;
+        transform: none;
+    }
 
-  .info-jogo {
-    align-items: center;
-    text-align: center;
-  }
+    .info-jogo {
+        align-items: center;
+        text-align: center;
+    }
 }
 
 @media (max-width: 480px) {
-  .jogo-conteudo .tela {
-    right: 5%;
-    max-width: 60%;
-    top: 32%;
-  }
+    .jogo-conteudo .tela {
+        right: 5%;
+        max-width: 60%;
+        top: 32%;
+    }
 
-  .jogo-conteudo .nome-jogo {
-    right: 8%;
-    max-width: 50%;
-    top: 36%;
-  }
+    .jogo-conteudo .nome-jogo {
+        right: 8%;
+        max-width: 50%;
+        top: 36%;
+    }
 
-  .jogo-conteudo .botao {
-    right: 10%;
-    top: calc(40% + 80px);
-  }
+    .jogo-conteudo .botao {
+        right: 10%;
+        top: calc(40% + 80px);
+    }
 
-  .titulo-principal {
-    font-size: 22px;
-  }
+    .titulo-principal {
+        font-size: 22px;
+    }
 
-  .titulo-jogo {
-    font-size: 20px;
-  }
+    .titulo-jogo {
+        font-size: 20px;
+    }
 
-  .descricao-jogo {
-    font-size: 14px;
-  }
+    .descricao-jogo {
+        font-size: 14px;
+    }
 }
