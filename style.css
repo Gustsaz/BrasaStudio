@@ -1,6 +1,6 @@
 
 html, body {
-  overflow-x: hidden; /* elimina o espaço em branco lateral */
+  overflow-x: hidden; /* elimina o espaï¿½o em branco lateral */
 }
 
 body {
@@ -154,15 +154,6 @@ body {
     border: none;
     z-index: 3;
 }
-
-.jogo-conteudo .logo-jogo {
-    position: absolute;
-    right: 380px;
-    top: calc(40% + 200px);
-    max-width: 15%;
-    z-index: 3;
-}
-
 
 /*jogos*/
 .jogo-section {
@@ -497,8 +488,7 @@ color: #ffffff;
 }
 
 .jogo-conteudo .perfeito,
-.jogo-conteudo .botao,
-.jogo-conteudo .logo-jogo {
+.jogo-conteudo .botao {
   animation: float-simple 6s ease-in-out infinite;
 }
 
@@ -520,11 +510,6 @@ color: #ffffff;
 .jogo-conteudo .botao {
   animation-duration: 7.5s;
   animation-delay: 0.5s;
-}
-
-.jogo-conteudo .logo-jogo {
-  animation-duration: 9s;
-  animation-delay: 1.2s;
 }
 
 @media (max-width: 1024px) {
@@ -568,10 +553,6 @@ color: #ffffff;
     top: 50%;
   }
 
-  .jogo-conteudo .logo-jogo {
-    display: none;
-  }
-
   .jogo-conteudo .placa {
     width: 200px;
     height: auto;
@@ -587,7 +568,7 @@ color: #ffffff;
     justify-content: center;
   }
 
-  /* Vídeos */
+  /* Vï¿½deos */
   .videos {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -601,7 +582,7 @@ color: #ffffff;
   .imagem-wrapper {
     max-width: 100%;
     margin: 0 auto 20px;
-    transform: none; /* garante que não estoure */
+    transform: none; /* garante que nï¿½o estoure */
   }
 
   .info-jogo {
@@ -621,11 +602,6 @@ color: #ffffff;
     right: 8%;
     max-width: 50%;
     top: 36%;
-  }
-
-  .jogo-conteudo .logo-jogo {
-    right: 15%;
-    max-width: 30%;
   }
 
   .jogo-conteudo .botao {
