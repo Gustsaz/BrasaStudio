@@ -206,7 +206,7 @@
         const avatar = document.querySelector(".generic-avatar img");
         if (user) {
           avatar.src = user.photoURL || "img/Generic_avatar.png";
-          loginBtn.innerHTML = '<img src="img/logout.png" alt="Sair" class="logout-icon">';
+          loginBtn.innerHTML = '<img src="img/logout.png" alt="Sair" style="max-width: 40px;display: block;border: none;background-color: none;>';
           loginBtn.onclick = () => signOut(auth);
         } else {
           avatar.src = "img/Generic_avatar.png";

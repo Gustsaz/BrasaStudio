@@ -180,13 +180,6 @@ body {
     z-index: 3;
 }
 
-.logout-icon {
-    max-width: 40px;
-    display: block;
-    border: none;
-    background-color: none;
-}
-
 .botao {
     display: inline-block;
     overflow: hidden;
