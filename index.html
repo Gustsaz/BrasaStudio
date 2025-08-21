@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -148,6 +148,76 @@
                 </div>
             </div>
         </section>
+
+<!-- Firebase Authentication -->
+
+<script type="module">
+  // Import Firebase SDK
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+  // config da autenticacao
+  const firebaseConfig = {
+
+  apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+
+  authDomain: "brasastudio-bd.firebaseapp.com",
+
+  projectId: "brasastudio-bd",
+
+  storageBucket: "brasastudio-bd.firebasestorage.app",
+
+  messagingSenderId: "622309371157",
+
+  appId: "1:622309371157:web:449025a3906b2674208d1c",
+
+  measurementId: "G-SY8N6JTN63"
+
+};
+
+
+ 
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // login
+  const loginBtn = document.createElement("button");
+  loginBtn.textContent = "Entrar com Google";
+  document.querySelector(".header-right").appendChild(loginBtn);
+
+  loginBtn.addEventListener("click", async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("Usuário logado:", user.displayName, user.email);
+    } catch (error) {
+      console.error("Erro no login:", error);
+    }
+  });
+
+  // muda
+  onAuthStateChanged(auth, (user) => {
+    const avatar = document.querySelector(".generic-avatar img");
+    if (user) {
+      avatar.src = user.photoURL || "img/Generic_avatar.png";
+      loginBtn.textContent = "Sair";
+      loginBtn.onclick = () => signOut(auth);
+    } else {
+      avatar.src = "img/Generic_avatar.png";
+      loginBtn.textContent = "Entrar com Google";
+      loginBtn.onclick = async () => {
+        try {
+          const result = await signInWithPopup(auth, provider);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+    }
+  });
+        </script>
+
 
         <script src="script.js"></script>
 
