@@ -93,93 +93,118 @@
     <script src="script.js"></script>
 
     <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } 
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  // config do firebase
-   const firebaseConfig = {
-
+// config do firebase
+const firebaseConfig = {
   apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
-
   authDomain: "brasastudio-bd.firebaseapp.com",
-
   projectId: "brasastudio-bd",
-
   storageBucket: "brasastudio-bd.firebasestorage.app",
-
   messagingSenderId: "622309371157",
-
   appId: "1:622309371157:web:449025a3906b2674208d1c",
-
   measurementId: "G-SY8N6JTN63"
-
 };
 
-  // incia o firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+const db = getFirestore(app);
 
-  const comentariosSection = document.querySelector(".comentarios");
-  const commentInput = document.getElementById("commentInput");
-  const sendCommentBtn = document.getElementById("sendComment");
+// Cria botão de login
+const loginBtn = document.createElement("button");
+loginBtn.textContent = "Entrar com Google";
+document.querySelector(".header-right").appendChild(loginBtn);
 
-  // desativa se o user n ta logado
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      commentInput.disabled = true;
-      sendCommentBtn.disabled = true;
-      commentInput.placeholder = "Faça login para comentar...";
-    } else {
-      commentInput.disabled = false;
-      sendCommentBtn.disabled = false;
-      commentInput.placeholder = "Escreva seu comentário...";
-    }
-  });
+loginBtn.addEventListener("click", async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log("Usuário logado:", user.displayName, user.email);
+  } catch (error) {
+    console.error("Erro no login:", error);
+  }
+});
 
-  // envia coment
-  sendCommentBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if (!user || !commentInput.value.trim()) return;
+// Atualiza avatar e estado de login
+onAuthStateChanged(auth, (user) => {
+  const avatar = document.querySelector(".generic-avatar img");
+  if (user) {
+    avatar.src = user.photoURL || "img/Generic_avatar.png";
+    loginBtn.textContent = "Sair";
+    loginBtn.onclick = () => signOut(auth);
+    commentInput.disabled = false;
+    sendCommentBtn.disabled = false;
+    commentInput.placeholder = "Escreva seu comentário...";
+  } else {
+    avatar.src = "img/Generic_avatar.png";
+    loginBtn.textContent = "Entrar com Google";
+    loginBtn.onclick = async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    commentInput.disabled = true;
+    sendCommentBtn.disabled = true;
+    commentInput.placeholder = "Faça login para comentar...";
+  }
+});
 
-    try {
-      await addDoc(collection(db, "comentarios"), {
-        nome: user.displayName,
-        foto: user.photoURL,
-        texto: commentInput.value,
-        data: new Date()
-      });
-      commentInput.value = "";
-    } catch (e) {
-      console.error("Erro ao salvar comentário:", e);
-    }
-  });
+// Comentários (Firestore)
+const comentariosSection = document.querySelector(".comentarios");
+const commentInput = document.getElementById("commentInput");
+const sendCommentBtn = document.getElementById("sendComment");
 
-  // carrega coment nigga
-  const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
-  onSnapshot(q, (snapshot) => {
-    comentariosSection.innerHTML = ""; // limpa
-    snapshot.forEach((doc) => {
-      const c = doc.data();
-      const artigo = document.createElement("article");
-      artigo.classList.add("comentario");
-      artigo.innerHTML = `
-        <div class="avatar">
-          <img src="${c.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;" />
-        </div>
-        <div class="conteudo">
-          <header>
-            <h3 class="nome">${c.nome || "Anônimo"}</h3>
-            <span class="data">${new Date(c.data.seconds * 1000).toLocaleString("pt-BR")}</span>
-          </header>
-          <p>${c.texto}</p>
-        </div>
-      `;
-      comentariosSection.appendChild(artigo);
+sendCommentBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user || !commentInput.value.trim()) return;
+
+  try {
+    await addDoc(collection(db, "comentarios"), {
+      nome: user.displayName,
+      foto: user.photoURL,
+      texto: commentInput.value,
+      data: new Date()
     });
+    commentInput.value = "";
+  } catch (e) {
+    console.error("Erro ao salvar comentário:", e);
+  }
+});
+
+// Carrega comentários
+const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
+onSnapshot(q, (snapshot) => {
+  comentariosSection.innerHTML = "";
+  snapshot.forEach((doc) => {
+    const c = doc.data();
+    const artigo = document.createElement("article");
+    artigo.classList.add("comentario");
+    artigo.innerHTML = `
+      <div class="avatar">
+        <img src="${c.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;" />
+      </div>
+      <div class="conteudo">
+        <header>
+          <h3 class="nome">${c.nome || "Anônimo"}</h3>
+          <span class="data">${new Date(c.data.seconds * 1000).toLocaleString("pt-BR")}</span>
+        </header>
+        <p>${c.texto}</p>
+      </div>
+    `;
+    comentariosSection.appendChild(artigo);
   });
+});
 </script>
+
+
+
 
 
 </body>
