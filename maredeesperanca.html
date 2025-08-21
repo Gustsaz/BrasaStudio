@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="maredeesperanca.css">
     <link rel="stylesheet" href="globals.css">
     <link rel="stylesheet" href="style.css" />
-
 </head>
 
 <body>
@@ -37,8 +36,6 @@
         </div>
     </header>
 
-    
-
     <main class="mare-wrapper">
         <section class="banner">
             <div class="botao-container">
@@ -52,16 +49,13 @@
           <button id="sendComment">Enviar</button>
         </div>
 
-
         <section class="comentarios">
-            <article class="comentario">
-                
-            </article>
+            <article class="comentario"></article>
         </section>
     </main>
 
     <a href="index.html">
-  <button>principal pagina</button>
+        <button>principal pagina</button>
     </a>
 
     <script src="script.js"></script>
@@ -138,7 +132,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Enviar comentário
 sendCommentBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user || !commentInput.value.trim()) return;
@@ -157,7 +150,6 @@ sendCommentBtn.addEventListener("click", async () => {
   }
 });
 
-// Carregar comentários
 const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
 onSnapshot(q, (snapshot) => {
   comentariosSection.innerHTML = "";
@@ -181,10 +173,6 @@ onSnapshot(q, (snapshot) => {
   });
 });
 </script>
-
-
-
-
 
 </body>
 
