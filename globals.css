@@ -16,3 +16,9 @@ button:focus-visible {
 a {
   text-decoration: none;
 }
+
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
