@@ -94,12 +94,11 @@
 
     <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } 
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } 
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// config do firebase
 const firebaseConfig = {
   apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
   authDomain: "brasastudio-bd.firebaseapp.com",
@@ -115,22 +114,37 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// Cria botão de login
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 const loginBtn = document.createElement("button");
 loginBtn.textContent = "Entrar com Google";
 document.querySelector(".header-right").appendChild(loginBtn);
 
-loginBtn.addEventListener("click", async () => {
+const login = async () => {
   try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    console.log("Usuário logado:", user.displayName, user.email);
+    if (isMobile) {
+      await signInWithRedirect(auth, provider);
+    } else {
+      const result = await signInWithPopup(auth, provider);
+      console.log("Usuário logado:", result.user.displayName, result.user.email);
+    }
   } catch (error) {
     console.error("Erro no login:", error);
   }
-});
+};
 
-// Atualiza avatar e estado de login
+loginBtn.addEventListener("click", login);
+
+getRedirectResult(auth)
+  .then((result) => {
+    if (result) console.log("Usuário logado via redirect:", result.user.displayName);
+  })
+  .catch((error) => console.error(error));
+
+const comentariosSection = document.querySelector(".comentarios");
+const commentInput = document.getElementById("commentInput");
+const sendCommentBtn = document.getElementById("sendComment");
+
 onAuthStateChanged(auth, (user) => {
   const avatar = document.querySelector(".generic-avatar img");
   if (user) {
@@ -143,24 +157,14 @@ onAuthStateChanged(auth, (user) => {
   } else {
     avatar.src = "img/Generic_avatar.png";
     loginBtn.textContent = "Entrar com Google";
-    loginBtn.onclick = async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    loginBtn.onclick = login;
     commentInput.disabled = true;
     sendCommentBtn.disabled = true;
     commentInput.placeholder = "Faça login para comentar...";
   }
 });
 
-// Comentários (Firestore)
-const comentariosSection = document.querySelector(".comentarios");
-const commentInput = document.getElementById("commentInput");
-const sendCommentBtn = document.getElementById("sendComment");
-
+// Enviar comentário
 sendCommentBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user || !commentInput.value.trim()) return;
@@ -178,7 +182,7 @@ sendCommentBtn.addEventListener("click", async () => {
   }
 });
 
-// Carrega comentários
+// Carregar comentários
 const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
 onSnapshot(q, (snapshot) => {
   comentariosSection.innerHTML = "";
