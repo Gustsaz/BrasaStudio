@@ -7,7 +7,6 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="globals.css" />
     <link rel="stylesheet" href="style.css" />
-
     <title>Brasa Studio</title>
 </head>
 
@@ -20,13 +19,13 @@
                 <feDisplacementMap scale="20" in="SourceGraphic"></feDisplacementMap>
                 <animate xlink:href="#sea-filter" attributeName="baseFrequency" dur="60s" keyTimes="0; 0.5; 1"
                     values="0.02 0.06; 0.04 0.08; 0.02 0.06" repeatCount="indefinite"></animate>
-            </filter>"
+            </filter>
         </svg>
 
-<a href="maredeesperanca.html">
-  <button>comentarios pagina</button>
-</a>
-        
+        <a href="maredeesperanca.html">
+            <button>comentarios pagina</button>
+        </a>
+
         <header class="header">
             <div class="header-left">
                 <img class="logo" src="img/logo.png" alt="Logo" />
@@ -51,8 +50,6 @@
             </div>
         </header>
 
-         
-
         <div class="jogo-container">
             <div class="jogo-conteudo">
                 <img class="tela" src="img/tela-1.png" alt="placa" />
@@ -63,9 +60,6 @@
                 </button>
             </div>
         </div>
-
-        </div>
-
     </section>
 
     <main>
@@ -77,17 +71,12 @@
                 <div class="empresa-text">
                     <h2 class="text-wrapper-2">A empresa</h2>
                     <p class="text-wrapper">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus
-                        hendrerit.
-                        Etiam eget mauris tincidunt, ultrices odio a, commodo tellus. Mauris dapibus dui est. Curabitur
-                        cursus
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
+                        Etiam eget mauris tincidunt, ultrices odio a, commodo tellus. Mauris dapibus dui est. Curabitur cursus
                         ligula ut tellus semper, sit amet hendrerit purus ornare. Donec et porttitor libero. Suspendisse
-                        convallis, diam et sollicitudin varius, sapien felis luctus dui, id tincidunt est libero nec
-                        ante. Sed
-                        non feugiat lacus. Mauris tincidunt erat eu nibh finibus, nec tristique tellus tempor. Sed ut
-                        dignissim
-                        nunc. Nullam fringilla at dui quis feugiat. Nulla facilisi. Nam velit arcu, bibendum id
-                        vestibulum vel,
+                        convallis, diam et sollicitudin varius, sapien felis luctus dui, id tincidunt est libero nec ante. Sed
+                        non feugiat lacus. Mauris tincidunt erat eu nibh finibus, nec tristique tellus tempor. Sed ut dignissim
+                        nunc. Nullam fringilla at dui quis feugiat. Nulla facilisi. Nam velit arcu, bibendum id vestibulum vel,
                         bibendum eget velit. Duis eget ligula laoreet, scelerisque enim nec, feugiat elit.
                     </p>
                 </div>
@@ -115,17 +104,22 @@
                 <div class="info-jogo">
                     <h2 class="titulo-jogo">MARÉ DE ESPERANÇA</h2>
                     <p class="descricao-jogo">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus
-                        hendrerit.
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
                     </p>
                     <button class="botao-jogo" type="button">
                         Saiba Mais
                     </button>
 
                     <div class="ultimo-comentario">
-  
+                        <div class="avatar"></div>
+                        <div>
+                            <h3 class="nome-usuario">Knapicko</h3>
+                            <p class="texto-comentario">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
+                                Etiam eget mauris tincidunt, ultrices odio a, commodo tellus.
+                            </p>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -150,8 +144,6 @@
             </div>
         </section>
 
-<!-- Firebase Authentication -->
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } 
@@ -159,7 +151,6 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRe
 import { getFirestore, collection, query, where, orderBy, limit, getDocs } 
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// Config do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
   authDomain: "brasastudio-bd.firebaseapp.com",
@@ -175,15 +166,12 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// Detecta mobile
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-// Botão de login
 const loginBtn = document.createElement("button");
 loginBtn.textContent = "Entrar com Google";
 document.querySelector(".header-right").appendChild(loginBtn);
 
-// Função de login
 const login = async () => {
   try {
     if (isMobile) {
@@ -199,7 +187,6 @@ const login = async () => {
 
 loginBtn.addEventListener("click", login);
 
-// Captura resultado do redirect (mobile)
 getRedirectResult(auth)
   .then((result) => {
     if (result) {
@@ -208,7 +195,6 @@ getRedirectResult(auth)
   })
   .catch((error) => console.error(error));
 
-// Atualiza avatar e botão
 onAuthStateChanged(auth, (user) => {
   const avatar = document.querySelector(".generic-avatar img");
   if (user) {
@@ -222,7 +208,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Função para mostrar o último comentário do jogo
 async function mostrarUltimoComentario() {
   try {
     const comentariosRef = collection(db, "comentarios");
@@ -255,21 +240,10 @@ async function mostrarUltimoComentario() {
   }
 }
 
-// Chama a função para carregar o último comentário
 mostrarUltimoComentario();
 </script>
 
-
-
-
-
-        <script src="script.js"></script>
+<script src="script.js"></script>
 
 </body>
-
 </html>
-
-
-
-
-
