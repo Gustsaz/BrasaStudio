@@ -148,7 +148,8 @@ sendCommentBtn.addEventListener("click", async () => {
       nome: user.displayName,
       foto: user.photoURL,
       texto: commentInput.value,
-      data: new Date()
+      data: new Date(),
+      jogo: "Maré de Esperança"   
     });
     commentInput.value = "";
   } catch (e) {
