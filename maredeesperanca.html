@@ -37,6 +37,8 @@
         </div>
     </header>
 
+    
+
     <main class="mare-wrapper">
         <section class="banner">
             <div class="botao-container">
@@ -44,6 +46,12 @@
                 <img src="img/Botao.png" alt="Botão" class="botao">
             </div>
         </section>
+
+        <div id="comment-box" style="margin-top:20px;">
+          <textarea id="commentInput" placeholder="Escreva seu comentário..." rows="3" style="width:100%;"></textarea>
+          <button id="sendComment">Enviar</button>
+        </div>
+
 
         <section class="comentarios">
             <article class="comentario">
@@ -78,7 +86,101 @@
         </section>
     </main>
 
+    <a href="index.html">
+  <button>principal pagina</button>
+    </a>
+
     <script src="script.js"></script>
+
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  // config do firebase
+   const firebaseConfig = {
+
+  apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+
+  authDomain: "brasastudio-bd.firebaseapp.com",
+
+  projectId: "brasastudio-bd",
+
+  storageBucket: "brasastudio-bd.firebasestorage.app",
+
+  messagingSenderId: "622309371157",
+
+  appId: "1:622309371157:web:449025a3906b2674208d1c",
+
+  measurementId: "G-SY8N6JTN63"
+
+};
+
+  // incia o firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const comentariosSection = document.querySelector(".comentarios");
+  const commentInput = document.getElementById("commentInput");
+  const sendCommentBtn = document.getElementById("sendComment");
+
+  // desativa se o user n ta logado
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      commentInput.disabled = true;
+      sendCommentBtn.disabled = true;
+      commentInput.placeholder = "Faça login para comentar...";
+    } else {
+      commentInput.disabled = false;
+      sendCommentBtn.disabled = false;
+      commentInput.placeholder = "Escreva seu comentário...";
+    }
+  });
+
+  // envia coment
+  sendCommentBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if (!user || !commentInput.value.trim()) return;
+
+    try {
+      await addDoc(collection(db, "comentarios"), {
+        nome: user.displayName,
+        foto: user.photoURL,
+        texto: commentInput.value,
+        data: new Date()
+      });
+      commentInput.value = "";
+    } catch (e) {
+      console.error("Erro ao salvar comentário:", e);
+    }
+  });
+
+  // carrega coment nigga
+  const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
+  onSnapshot(q, (snapshot) => {
+    comentariosSection.innerHTML = ""; // limpa
+    snapshot.forEach((doc) => {
+      const c = doc.data();
+      const artigo = document.createElement("article");
+      artigo.classList.add("comentario");
+      artigo.innerHTML = `
+        <div class="avatar">
+          <img src="${c.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;" />
+        </div>
+        <div class="conteudo">
+          <header>
+            <h3 class="nome">${c.nome || "Anônimo"}</h3>
+            <span class="data">${new Date(c.data.seconds * 1000).toLocaleString("pt-BR")}</span>
+          </header>
+          <p>${c.texto}</p>
+        </div>
+      `;
+      comentariosSection.appendChild(artigo);
+    });
+  });
+</script>
+
 
 </body>
 
