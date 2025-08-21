@@ -162,8 +162,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } 
   from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { getFirestore, collection, query, where, orderBy, limit, getDocs } 
+  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-// Firebase config
+// Config do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
   authDomain: "brasastudio-bd.firebaseapp.com",
@@ -177,6 +179,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+const db = getFirestore(app);
 
 // Detecta mobile
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -224,7 +227,44 @@ onAuthStateChanged(auth, (user) => {
     loginBtn.onclick = login;
   }
 });
+
+// Função para mostrar o último comentário do jogo
+async function mostrarUltimoComentario() {
+  try {
+    const comentariosRef = collection(db, "comentarios");
+    const q = query(
+      comentariosRef,
+      where("jogo", "==", "Maré de Esperança"),
+      orderBy("data", "desc"),
+      limit(1)
+    );
+
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0].data();
+      const divUltimo = document.querySelector(".ultimo-comentario");
+
+      divUltimo.innerHTML = `
+        <div class="avatar">
+          <img src="${doc.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;">
+        </div>
+        <div>
+          <h3 class="nome-usuario">${doc.nome || "Anônimo"}</h3>
+          <p class="texto-comentario">${doc.texto}</p>
+        </div>
+      `;
+    } else {
+      document.querySelector(".ultimo-comentario").innerHTML = "<p>Nenhum comentário ainda.</p>";
+    }
+  } catch (error) {
+    console.error("Erro ao carregar último comentário:", error);
+  }
+}
+
+// Chama a função para carregar o último comentário
+mostrarUltimoComentario();
 </script>
+
 
 
 
@@ -234,7 +274,6 @@ onAuthStateChanged(auth, (user) => {
 </body>
 
 </html>
-
 
 
 
