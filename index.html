@@ -31,6 +31,7 @@
 
             <div class="header-right">
                 <button class="dark-mode-btn" aria-label="Alternar modo escuro">
+                    <button id="logoutBtn" style="display:none;">Sair</button>
                     <img src="img/dark-mode.png" alt="Ícone modo escuro">
                 </button>
 
@@ -152,12 +153,11 @@
 <!-- Firebase Authentication -->
 
 <script type="module">
-  // Import Firebase SDK
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
     from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-  // config da autenticacao
+  // config do firebase
   const firebaseConfig = {
 
   apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
@@ -176,47 +176,48 @@
 
 };
 
-
- 
+  // inicializar
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // login
-  const loginBtn = document.createElement("button");
-  loginBtn.textContent = "Entrar com Google";
-  document.querySelector(".header-right").appendChild(loginBtn);
+ 
+  const avatar = document.querySelector(".generic-avatar img");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-  loginBtn.addEventListener("click", async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      console.log("Usuário logado:", user.displayName, user.email);
-    } catch (error) {
-      console.error("Erro no login:", error);
+  avatar.addEventListener("click", async () => {
+    if (!auth.currentUser) {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error("Erro ao logar:", error);
+      }
     }
   });
 
-  // muda
+  
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Erro ao sair:", error);
+    }
+  });
+
+  
   onAuthStateChanged(auth, (user) => {
-    const avatar = document.querySelector(".generic-avatar img");
     if (user) {
       avatar.src = user.photoURL || "img/Generic_avatar.png";
-      loginBtn.textContent = "Sair";
-      loginBtn.onclick = () => signOut(auth);
+      avatar.title = user.displayName;
+      logoutBtn.style.display = "inline-block"; // mostra 
     } else {
       avatar.src = "img/Generic_avatar.png";
-      loginBtn.textContent = "Entrar com Google";
-      loginBtn.onclick = async () => {
-        try {
-          const result = await signInWithPopup(auth, provider);
-        } catch (error) {
-          console.error(error);
-        }
-      };
+      avatar.title = "Não logado";
+      logoutBtn.style.display = "none"; // esconde
     }
   });
-        </script>
+</script>
+
 
 
         <script src="script.js"></script>
@@ -224,3 +225,4 @@
 </body>
 
 </html>
+
