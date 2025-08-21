@@ -2,162 +2,165 @@
 <html lang="pt-BR">
 
 <head>
-    <link rel="icon" type="image/png" href="img/logo.png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maré de Esperança</title>
-    <link rel="stylesheet" href="maredeesperanca.css">
-    <link rel="stylesheet" href="globals.css">
-    <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maré de Esperança</title>
+  <link rel="stylesheet" href="maredeesperanca.css">
+  <link rel="stylesheet" href="globals.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-    <header class="header">
-        <div class="header-left">
-            <img class="logo" src="img/logo.png" alt="Logo" />
-            <img class="brasa" src="img/brasa.png" alt="Brasa Studio" />
-        </div>
+  <header class="header">
+    <div class="header-left">
+      <a href="index.html">
+        <img class="logo" src="img/logo.png" alt="Logo" />
+      </a>
+      <img class="brasa" src="img/brasa.png" alt="Brasa Studio" />
+    </div>
 
-        <div class="header-right">
-            <button class="dark-mode-btn" aria-label="Alternar modo escuro">
-                <img src="img/dark-mode.png" alt="Ícone modo escuro">
-            </button>
+    <div class="header-right">
+      <button class="dark-mode-btn" aria-label="Alternar modo escuro">
+        <img src="img/dark-mode.png" alt="Ícone modo escuro">
+      </button>
 
-            <div class="notifications">
-                <img src="img/notifications.png" alt="Notificações" />
-            </div>
-            <div class="settings">
-                <img src="img/settings.png" alt="Configurações" />
-            </div>
-            <div class="generic-avatar">
-                <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
-            </div>
-        </div>
-    </header>
+      <button id="logoutBtn" style="display:none;">
+        <img src="img/logout.png" alt="Sair da conta">
+      </button>
 
-    <main class="mare-wrapper">
-        <section class="banner">
-            <div class="botao-container">
-                <img src="img/Botao.png" alt="Botão" class="botao">
-                <img src="img/Botao.png" alt="Botão" class="botao">
-            </div>
-        </section>
+      <div class="notifications">
+        <img src="img/notifications.png" alt="Notificações" />
+      </div>
+      <div class="settings">
+        <img src="img/settings.png" alt="Configurações" />
+      </div>
+      <div class="generic-avatar">
+        <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
+      </div>
+    </div>
+  </header>
 
-        <div id="comment-box" style="margin-top:20px;">
-          <textarea id="commentInput" placeholder="Escreva seu comentário..." rows="3" style="width:100%;"></textarea>
-          <button id="sendComment">Enviar</button>
-        </div>
+  <main class="mare-wrapper">
+    <section class="banner">
+      <div class="botao-container">
+        <img src="img/Botao.png" alt="Botão" class="botao">
+        <img src="img/Botao.png" alt="Botão" class="botao">
+      </div>
+    </section>
 
-        <section class="comentarios">
-            <article class="comentario"></article>
-        </section>
-    </main>
+    <div id="comment-box" style="margin-top:20px;">
+      <textarea id="commentInput" placeholder="Escreva seu comentário..." rows="3" style="width:100%;resize: none;"></textarea>
+      <button id="sendComment">Enviar</button>
+    </div>
+    <br>
 
-    <a href="index.html">
-        <button>principal pagina</button>
-    </a>
+    <section class="comentarios">
+      <article class="comentario"></article>
+    </section>
+  </main>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 
-    <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } 
-  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } 
-  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot }
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
-  authDomain: "brasastudio-bd.firebaseapp.com",
-  projectId: "brasastudio-bd",
-  storageBucket: "brasastudio-bd.firebasestorage.app",
-  messagingSenderId: "622309371157",
-  appId: "1:622309371157:web:449025a3906b2674208d1c",
-  measurementId: "G-SY8N6JTN63"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+      authDomain: "brasastudio-bd.firebaseapp.com",
+      projectId: "brasastudio-bd",
+      storageBucket: "brasastudio-bd.firebasestorage.app",
+      messagingSenderId: "622309371157",
+      appId: "1:622309371157:web:449025a3906b2674208d1c",
+      measurementId: "G-SY8N6JTN63"
+    };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const db = getFirestore(app);
 
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-const loginBtn = document.createElement("button");
-loginBtn.textContent = "Entrar com Google";
-document.querySelector(".header-right").appendChild(loginBtn);
-
-const login = async () => {
-  try {
-    if (isMobile) {
-      await signInWithRedirect(auth, provider);
-    } else {
-      const result = await signInWithPopup(auth, provider);
-      console.log("Usuário logado:", result.user.displayName, result.user.email);
-    }
-  } catch (error) {
-    console.error("Erro no login:", error);
-  }
-};
-
-loginBtn.addEventListener("click", login);
-
-getRedirectResult(auth)
-  .then((result) => {
-    if (result) console.log("Usuário logado via redirect:", result.user.displayName);
-  })
-  .catch((error) => console.error(error));
-
-const comentariosSection = document.querySelector(".comentarios");
-const commentInput = document.getElementById("commentInput");
-const sendCommentBtn = document.getElementById("sendComment");
-
-onAuthStateChanged(auth, (user) => {
-  const avatar = document.querySelector(".generic-avatar img");
-  if (user) {
-    avatar.src = user.photoURL || "img/Generic_avatar.png";
-    loginBtn.textContent = "Sair";
-    loginBtn.onclick = () => signOut(auth);
-    commentInput.disabled = false;
-    sendCommentBtn.disabled = false;
-    commentInput.placeholder = "Escreva seu comentário...";
-  } else {
-    avatar.src = "img/Generic_avatar.png";
+    const loginBtn = document.createElement("button");
     loginBtn.textContent = "Entrar com Google";
-    loginBtn.onclick = login;
-    commentInput.disabled = true;
-    sendCommentBtn.disabled = true;
-    commentInput.placeholder = "Faça login para comentar...";
-  }
-});
+    document.querySelector(".header-right").appendChild(loginBtn);
 
-sendCommentBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user || !commentInput.value.trim()) return;
+    const login = async () => {
+      try {
+        if (isMobile) {
+          await signInWithRedirect(auth, provider);
+        } else {
+          const result = await signInWithPopup(auth, provider);
+          console.log("Usuário logado:", result.user.displayName, result.user.email);
+        }
+      } catch (error) {
+        console.error("Erro no login:", error);
+      }
+    };
 
-  try {
-    await addDoc(collection(db, "comentarios"), {
-      nome: user.displayName,
-      foto: user.photoURL,
-      texto: commentInput.value,
-      data: new Date(),
-      jogo: "Maré de Esperança"   
+    loginBtn.addEventListener("click", login);
+
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) console.log("Usuário logado via redirect:", result.user.displayName);
+      })
+      .catch((error) => console.error(error));
+
+    const comentariosSection = document.querySelector(".comentarios");
+    const commentInput = document.getElementById("commentInput");
+    const sendCommentBtn = document.getElementById("sendComment");
+
+    onAuthStateChanged(auth, (user) => {
+      const avatar = document.querySelector(".generic-avatar img");
+      if (user) {
+        avatar.src = user.photoURL || "img/Generic_avatar.png";
+        loginBtn.textContent = "Sair";
+        loginBtn.onclick = () => signOut(auth);
+        commentInput.disabled = false;
+        sendCommentBtn.disabled = false;
+        commentInput.placeholder = "Escreva seu comentário...";
+      } else {
+        avatar.src = "img/Generic_avatar.png";
+        loginBtn.textContent = "Entrar com Google";
+        loginBtn.onclick = login;
+        commentInput.disabled = true;
+        sendCommentBtn.disabled = true;
+        commentInput.placeholder = "Faça login para comentar...";
+      }
     });
-    commentInput.value = "";
-  } catch (e) {
-    console.error("Erro ao salvar comentário:", e);
-  }
-});
 
-const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
-onSnapshot(q, (snapshot) => {
-  comentariosSection.innerHTML = "";
-  snapshot.forEach((doc) => {
-    const c = doc.data();
-    const artigo = document.createElement("article");
-    artigo.classList.add("comentario");
-    artigo.innerHTML = `
+    sendCommentBtn.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user || !commentInput.value.trim()) return;
+
+      try {
+        await addDoc(collection(db, "comentarios"), {
+          nome: user.displayName,
+          foto: user.photoURL,
+          texto: commentInput.value,
+          data: new Date(),
+          jogo: "Maré de Esperança"
+        });
+        commentInput.value = "";
+      } catch (e) {
+        console.error("Erro ao salvar comentário:", e);
+      }
+    });
+
+    const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
+    onSnapshot(q, (snapshot) => {
+      comentariosSection.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const c = doc.data();
+        const artigo = document.createElement("article");
+        artigo.classList.add("comentario");
+        artigo.innerHTML = `
       <div class="avatar">
         <img src="${c.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;" />
       </div>
@@ -169,10 +172,10 @@ onSnapshot(q, (snapshot) => {
         <p>${c.texto}</p>
       </div>
     `;
-    comentariosSection.appendChild(artigo);
-  });
-});
-</script>
+        comentariosSection.appendChild(artigo);
+      });
+    });
+  </script>
 
 </body>
 

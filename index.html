@@ -2,228 +2,235 @@
 <html lang="pt-BR">
 
 <head>
-    <link rel="icon" type="image/png" href="img/logo.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="globals.css" />
-    <link rel="stylesheet" href="style.css" />
-    <title>Brasa Studio</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="globals.css" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Brasa Studio</title>
 </head>
 
 <body>
-    <section class="jogo" aria-label="jogo">
-        <div class="water"></div>
-        <svg>
-            <filter id="turbulence" x="0" y="0" width="100%" height="100%">
-                <feTurbulence id="sea-filter" numOctaves="3" seed="2" baseFrequency="0.02 0.05"></feTurbulence>
-                <feDisplacementMap scale="20" in="SourceGraphic"></feDisplacementMap>
-                <animate xlink:href="#sea-filter" attributeName="baseFrequency" dur="60s" keyTimes="0; 0.5; 1"
-                    values="0.02 0.06; 0.04 0.08; 0.02 0.06" repeatCount="indefinite"></animate>
-            </filter>
-        </svg>
+  <section class="jogo" aria-label="jogo">
+    <div class="water"></div>
+    <svg>
+      <filter id="turbulence" x="0" y="0" width="100%" height="100%">
+        <feTurbulence id="sea-filter" numOctaves="3" seed="2" baseFrequency="0.02 0.05"></feTurbulence>
+        <feDisplacementMap scale="20" in="SourceGraphic"></feDisplacementMap>
+        <animate xlink:href="#sea-filter" attributeName="baseFrequency" dur="60s" keyTimes="0; 0.5; 1"
+          values="0.02 0.06; 0.04 0.08; 0.02 0.06" repeatCount="indefinite"></animate>
+      </filter>
+    </svg>
 
-        <a href="maredeesperanca.html">
-            <button>comentarios pagina</button>
+    <header class="header">
+      <div class="header-left">
+        <a href="index.html">
+          <img class="logo" src="img/logo.png" alt="Logo" />
         </a>
+        <img class="brasa" src="img/brasa.png" alt="Brasa Studio" />
+      </div>
 
-        <header class="header">
-            <div class="header-left">
-                <img class="logo" src="img/logo.png" alt="Logo" />
-                <img class="brasa" src="img/brasa.png" alt="Brasa Studio" />
-            </div>
+      <div class="header-right">
+        <button class="dark-mode-btn" aria-label="Alternar modo escuro">
+          <img src="img/dark-mode.png" alt="Ícone modo escuro">
+        </button>
 
-            <div class="header-right">
-                <button class="dark-mode-btn" aria-label="Alternar modo escuro">
-                    <button id="logoutBtn" style="display:none;">Sair</button>
-                    <img src="img/dark-mode.png" alt="Ícone modo escuro">
-                </button>
+        <button id="logoutBtn" style="display:none;">
+          <img src="img/logout.png" alt="Sair da conta">
+        </button>
 
-                <div class="notifications">
-                    <img src="img/notifications.png" alt="Notificações" />
-                </div>
-                <div class="settings">
-                    <img src="img/settings.png" alt="Configurações" />
-                </div>
-                <div class="generic-avatar">
-                    <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
-                </div>
-            </div>
-        </header>
-
-        <div class="jogo-container">
-            <div class="jogo-conteudo">
-                <img class="tela" src="img/tela-1.png" alt="placa" />
-                <img class="nome-jogo" src="img/nome-jogo.png" alt="Nome do jogo" />
-                <img class="perfeito" src="img/perfeito-1.png" alt="Foto da menina">
-                <button class="botao" type="button" aria-label="Botao jogo">
-                    <img class="placa" src="img/Botao.png" alt="" />
-                </button>
-            </div>
+        <div class="notifications">
+          <img src="img/notifications.png" alt="Notificações" />
         </div>
+        <div class="settings">
+          <img src="img/settings.png" alt="Configurações" />
+        </div>
+        <div class="generic-avatar">
+          <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
+        </div>
+      </div>
+    </header>
+
+    <div class="jogo-container">
+      <div class="jogo-conteudo">
+        <img class="tela" src="img/tela-1.png" alt="placa" />
+        <img class="nome-jogo" src="img/nome-jogo.png" alt="Nome do jogo" />
+        <img class="perfeito" src="img/perfeito-1.png" alt="Foto da menina">
+
+        <button class="botao" type="button" aria-label="Botao jogo">
+          <a href="maredeesperanca.html">
+            <img class="placa" src="img/Botao.png" alt="" />
+          </a>
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section class="empresa">
+      <div class="empresa-content">
+        <div class="empresa-imgs">
+          <img class="frente" src="img/Frente-1.png" alt="Frente" />
+        </div>
+        <div class="empresa-text">
+          <h2 class="text-wrapper-2">A empresa</h2>
+          <p class="text-wrapper">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
+            Etiam eget mauris tincidunt, ultrices odio a, commodo tellus. Mauris dapibus dui est. Curabitur cursus
+            ligula ut tellus semper, sit amet hendrerit purus ornare. Donec et porttitor libero. Suspendisse
+            convallis, diam et sollicitudin varius, sapien felis luctus dui, id tincidunt est libero nec ante. Sed
+            non feugiat lacus. Mauris tincidunt erat eu nibh finibus, nec tristique tellus tempor. Sed ut dignissim
+            nunc. Nullam fringilla at dui quis feugiat. Nulla facilisi. Nam velit arcu, bibendum id vestibulum vel,
+            bibendum eget velit. Duis eget ligula laoreet, scelerisque enim nec, feugiat elit.
+          </p>
+        </div>
+      </div>
     </section>
 
-    <main>
-        <section class="empresa">
-            <div class="empresa-content">
-                <div class="empresa-imgs">
-                    <img class="frente" src="img/Frente-1.png" alt="Frente" />
-                </div>
-                <div class="empresa-text">
-                    <h2 class="text-wrapper-2">A empresa</h2>
-                    <p class="text-wrapper">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
-                        Etiam eget mauris tincidunt, ultrices odio a, commodo tellus. Mauris dapibus dui est. Curabitur cursus
-                        ligula ut tellus semper, sit amet hendrerit purus ornare. Donec et porttitor libero. Suspendisse
-                        convallis, diam et sollicitudin varius, sapien felis luctus dui, id tincidunt est libero nec ante. Sed
-                        non feugiat lacus. Mauris tincidunt erat eu nibh finibus, nec tristique tellus tempor. Sed ut dignissim
-                        nunc. Nullam fringilla at dui quis feugiat. Nulla facilisi. Nam velit arcu, bibendum id vestibulum vel,
-                        bibendum eget velit. Duis eget ligula laoreet, scelerisque enim nec, feugiat elit.
-                    </p>
-                </div>
+    <section class="videos" aria-label="Seção de Vídeos">
+      <article class="card grande"></article>
+      <article class="card grande"></article>
+      <article class="card pequeno"></article>
+      <article class="card pequeno"></article>
+      <article class="card pequeno"></article>
+      <article class="card pequeno"></article>
+    </section>
+
+    <section class="jogos">
+      <h1 class="titulo-principal">Nossos Jogos</h1>
+
+      <div class="jogos-container">
+        <div class="imagem-wrapper">
+          <div class="imagem-fundo"></div>
+          <div class="imagem-frente"></div>
+        </div>
+
+        <div class="info-jogo">
+          <h2 class="titulo-jogo">MARÉ DE ESPERANÇA</h2>
+          <p class="descricao-jogo">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
+          </p>
+          <a href="maredeesperanca.html">
+            <button class="botao-jogo" type="button">
+              Saiba Mais
+            </button>
+          </a>
+
+          <div class="ultimo-comentario">
+            <div class="avatar"></div>
+            <div>
+              <h3 class="nome-usuario">Knapicko</h3>
+              <p class="texto-comentario">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
+                Etiam eget mauris tincidunt, ultrices odio a, commodo tellus.
+              </p>
             </div>
-        </section>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <section class="videos" aria-label="Seção de Vídeos">
-            <article class="card grande"></article>
-            <article class="card grande"></article>
-            <article class="card pequeno"></article>
-            <article class="card pequeno"></article>
-            <article class="card pequeno"></article>
-            <article class="card pequeno"></article>
-        </section>
+    <section class="criadores" aria-label="criadores">
+      <div class="criador"><img src="img/marcelo.png" alt="Marcelo"></div>
+      <div class="criador"><img src="img/raniroca.png" alt="Raniroca"></div>
+      <div class="criador"><img src="img/isaque.png" alt="Isaque"></div>
+      <div class="criador"><img src="img/arthur.png" alt="Arthur"></div>
+      <div class="criador"><img src="img/davi.png" alt="Davi"></div>
+      <div class="criador"><img src="img/yasmin.png" alt="Yasmin"></div>
+    </section>
 
-        <section class="jogos">
-            <h1 class="titulo-principal">Nossos Jogos</h1>
+    <section class="footer">
+      <div class="footer-content">
+        <div class="footer-inner">
+          <h3>Brasa Studio</h3>
+          <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+          <hr>
+          <span>© 2025 Brasa Studio. Todos os direitos reservados.</span>
+        </div>
+      </div>
+    </section>
 
-            <div class="jogos-container">
-                <div class="imagem-wrapper">
-                    <div class="imagem-fundo"></div>
-                    <div class="imagem-frente"></div>
-                </div>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+      import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
+        from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+      import { getFirestore, collection, query, where, orderBy, limit, getDocs }
+        from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-                <div class="info-jogo">
-                    <h2 class="titulo-jogo">MARÉ DE ESPERANÇA</h2>
-                    <p class="descricao-jogo">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
-                    </p>
-                    <button class="botao-jogo" type="button">
-                        Saiba Mais
-                    </button>
+      const firebaseConfig = {
+        apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+        authDomain: "brasastudio-bd.firebaseapp.com",
+        projectId: "brasastudio-bd",
+        storageBucket: "brasastudio-bd.firebasestorage.app",
+        messagingSenderId: "622309371157",
+        appId: "1:622309371157:web:449025a3906b2674208d1c",
+        measurementId: "G-SY8N6JTN63"
+      };
 
-                    <div class="ultimo-comentario">
-                        <div class="avatar"></div>
-                        <div>
-                            <h3 class="nome-usuario">Knapicko</h3>
-                            <p class="texto-comentario">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
-                                Etiam eget mauris tincidunt, ultrices odio a, commodo tellus.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+      const db = getFirestore(app);
 
-        <section class="criadores" aria-label="criadores">
-            <div class="criador"><img src="img/marcelo.png" alt="Marcelo"></div>
-            <div class="criador"><img src="img/raniroca.png" alt="Raniroca"></div>
-            <div class="criador"><img src="img/isaque.png" alt="Isaque"></div>
-            <div class="criador"><img src="img/arthur.png" alt="Arthur"></div>
-            <div class="criador"><img src="img/davi.png" alt="Davi"></div>
-            <div class="criador"><img src="img/yasmin.png" alt="Yasmin"></div>
-        </section>
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-        <section class="footer">
-            <div class="footer-content">
-                <div class="footer-inner">
-                    <h3>Brasa Studio</h3>
-                    <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
-                    <hr>
-                    <span>© 2025 Brasa Studio. Todos os direitos reservados.</span>
-                </div>
-            </div>
-        </section>
+      const loginBtn = document.createElement("button");
+      loginBtn.textContent = "Entrar com Google";
+      document.querySelector(".header-right").appendChild(loginBtn);
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } 
-  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, collection, query, where, orderBy, limit, getDocs } 
-  from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+      const login = async () => {
+        try {
+          if (isMobile) {
+            await signInWithRedirect(auth, provider);
+          } else {
+            const result = await signInWithPopup(auth, provider);
+            console.log("Usuário logado:", result.user.displayName, result.user.email);
+          }
+        } catch (error) {
+          console.error("Erro no login:", error);
+        }
+      };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
-  authDomain: "brasastudio-bd.firebaseapp.com",
-  projectId: "brasastudio-bd",
-  storageBucket: "brasastudio-bd.firebasestorage.app",
-  messagingSenderId: "622309371157",
-  appId: "1:622309371157:web:449025a3906b2674208d1c",
-  measurementId: "G-SY8N6JTN63"
-};
+      loginBtn.addEventListener("click", login);
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-const db = getFirestore(app);
+      getRedirectResult(auth)
+        .then((result) => {
+          if (result) {
+            console.log("Usuário logado via redirect:", result.user.displayName);
+          }
+        })
+        .catch((error) => console.error(error));
 
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      onAuthStateChanged(auth, (user) => {
+        const avatar = document.querySelector(".generic-avatar img");
+        if (user) {
+          avatar.src = user.photoURL || "img/Generic_avatar.png";
+          loginBtn.textContent = "Sair";
+          loginBtn.onclick = () => signOut(auth);
+        } else {
+          avatar.src = "img/Generic_avatar.png";
+          loginBtn.textContent = "Entrar com Google";
+          loginBtn.onclick = login;
+        }
+      });
 
-const loginBtn = document.createElement("button");
-loginBtn.textContent = "Entrar com Google";
-document.querySelector(".header-right").appendChild(loginBtn);
+      async function mostrarUltimoComentario() {
+        try {
+          const comentariosRef = collection(db, "comentarios");
+          const q = query(
+            comentariosRef,
+            where("jogo", "==", "Maré de Esperança"),
+            orderBy("data", "desc"),
+            limit(1)
+          );
 
-const login = async () => {
-  try {
-    if (isMobile) {
-      await signInWithRedirect(auth, provider);
-    } else {
-      const result = await signInWithPopup(auth, provider);
-      console.log("Usuário logado:", result.user.displayName, result.user.email);
-    }
-  } catch (error) {
-    console.error("Erro no login:", error);
-  }
-};
+          const snapshot = await getDocs(q);
+          if (!snapshot.empty) {
+            const doc = snapshot.docs[0].data();
+            const divUltimo = document.querySelector(".ultimo-comentario");
 
-loginBtn.addEventListener("click", login);
-
-getRedirectResult(auth)
-  .then((result) => {
-    if (result) {
-      console.log("Usuário logado via redirect:", result.user.displayName);
-    }
-  })
-  .catch((error) => console.error(error));
-
-onAuthStateChanged(auth, (user) => {
-  const avatar = document.querySelector(".generic-avatar img");
-  if (user) {
-    avatar.src = user.photoURL || "img/Generic_avatar.png";
-    loginBtn.textContent = "Sair";
-    loginBtn.onclick = () => signOut(auth);
-  } else {
-    avatar.src = "img/Generic_avatar.png";
-    loginBtn.textContent = "Entrar com Google";
-    loginBtn.onclick = login;
-  }
-});
-
-async function mostrarUltimoComentario() {
-  try {
-    const comentariosRef = collection(db, "comentarios");
-    const q = query(
-      comentariosRef,
-      where("jogo", "==", "Maré de Esperança"),
-      orderBy("data", "desc"),
-      limit(1)
-    );
-
-    const snapshot = await getDocs(q);
-    if (!snapshot.empty) {
-      const doc = snapshot.docs[0].data();
-      const divUltimo = document.querySelector(".ultimo-comentario");
-
-      divUltimo.innerHTML = `
+            divUltimo.innerHTML = `
         <div class="avatar">
           <img src="${doc.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;">
         </div>
@@ -232,18 +239,19 @@ async function mostrarUltimoComentario() {
           <p class="texto-comentario">${doc.texto}</p>
         </div>
       `;
-    } else {
-      document.querySelector(".ultimo-comentario").innerHTML = "<p>Nenhum comentário ainda.</p>";
-    }
-  } catch (error) {
-    console.error("Erro ao carregar último comentário:", error);
-  }
-}
+          } else {
+            document.querySelector(".ultimo-comentario").innerHTML = "<p>Nenhum comentário ainda.</p>";
+          }
+        } catch (error) {
+          console.error("Erro ao carregar último comentário:", error);
+        }
+      }
 
-mostrarUltimoComentario();
-</script>
+      mostrarUltimoComentario();
+    </script>
 
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
+
 </html>
