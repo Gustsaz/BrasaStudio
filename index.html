@@ -51,6 +51,7 @@
       </div>
     </header>
 
+
     <div class="jogo-container">
       <div class="jogo-conteudo">
         <img class="tela" src="img/tela-1.png" alt="placa" />
@@ -77,13 +78,9 @@
         <div class="empresa-text">
           <h2 class="text-wrapper-2">A empresa</h2>
           <p class="text-wrapper">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
-            Etiam eget mauris tincidunt, ultrices odio a, commodo tellus. Mauris dapibus dui est. Curabitur cursus
-            ligula ut tellus semper, sit amet hendrerit purus ornare. Donec et porttitor libero. Suspendisse
-            convallis, diam et sollicitudin varius, sapien felis luctus dui, id tincidunt est libero nec ante. Sed
-            non feugiat lacus. Mauris tincidunt erat eu nibh finibus, nec tristique tellus tempor. Sed ut dignissim
-            nunc. Nullam fringilla at dui quis feugiat. Nulla facilisi. Nam velit arcu, bibendum id vestibulum vel,
-            bibendum eget velit. Duis eget ligula laoreet, scelerisque enim nec, feugiat elit.
+            Nós somo a Brasa Studio. Uma equipe brasileira independente de produção de jogos digitais. Nosso objetivo é
+            trazer o entretenimento para todos os públicos, de maneira acessível e buscando sempre a melhor qualidade
+            para nosso produto final.
           </p>
         </div>
       </div>
@@ -163,10 +160,20 @@
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(
         45,
-        1, // depois a gente corrige com resize
+        1,
         0.1,
         1000
       );
+
+      // Define a posição inicial exata da câmera
+      camera.position.set(-5.08, 0.25, 0.32);
+
+      // Define a rotação exata
+      camera.rotation.set(-0.66, -1.49, -0.66);
+
+      // Faz a câmera olhar para o ponto central do modelo
+      camera.lookAt(0, 0, 0);
+
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(400, 400); // <--- aqui estava
@@ -190,10 +197,17 @@
         const objLoader = new THREE.OBJLoader();
         objLoader.setMaterials(materials);
         objLoader.load("source.obj", (object) => {
-          object.scale.set(2, 2, 2);
-          object.position.set(0, -1, 0);
-          object.rotation.x = -Math.PI / 2; 
-          object.rotation.y = Math.PI;      
+          object.scale.set(4, 4, 4);
+          object.position.set(0, 0, 0);
+
+          const angle = Math.atan2(
+            camera.position.x - object.position.x,
+            camera.position.z - object.position.z
+          );
+          object.rotation.x = -Math.PI / 2;
+
+          object.rotation.y = 0;
+          object.rotation.z = -1.5;
 
           scene.add(object);
         });
@@ -202,15 +216,21 @@
 
       // Controles de rotação
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableZoom = false; 
-      controls.enablePan = false;   
-      camera.position.set(0, 2, 8);
-      camera.lookAt(0, 0, 0);
+      controls.enableZoom = false;   // bloqueia zoom
+      controls.enablePan = false;    // opcional: bloqueia arrastar
 
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
 
-      camera.position.z = 5;
+      camera.position.set(0, 1, 5); // centraliza verticalmente e horizontalmente
+      camera.lookAt(0, 0, 0);
+
+      controls.minPolarAngle = Math.PI / 2.2; // trava vertical para não olhar de cima
+      controls.maxPolarAngle = Math.PI / 2;   // trava vertical para não olhar de baixo
+      controls.target.set(0, 0, 0);
+      controls.update();
+
+
 
       // Redimensionar automaticamente
       function resizeRenderer() {
@@ -231,7 +251,27 @@
         requestAnimationFrame(animate);
         controls.update();
         renderer.render(scene, camera);
+
+        // Log dinâmico da câmera
+        console.log("Câmera:", {
+          position: {
+            x: camera.position.x.toFixed(2),
+            y: camera.position.y.toFixed(2),
+            z: camera.position.z.toFixed(2)
+          },
+          rotation: {
+            x: camera.rotation.x.toFixed(2),
+            y: camera.rotation.y.toFixed(2),
+            z: camera.rotation.z.toFixed(2)
+          },
+          target: {
+            x: controls.target.x.toFixed(2),
+            y: controls.target.y.toFixed(2),
+            z: controls.target.z.toFixed(2)
+          }
+        });
       }
+
 
       animate();
     </script>

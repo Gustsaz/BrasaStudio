@@ -32,11 +32,12 @@ body {
 #modelo3d {
     width: 100%;
     height: 400px;
-    /* altura fixa para garantir que o renderizador tenha espaço */
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background: transparent;
+    overflow: hidden;
 }
-
-
 
 .header-left {
     display: flex;
