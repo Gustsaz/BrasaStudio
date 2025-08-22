@@ -338,10 +338,14 @@
         const avatar = document.querySelector(".generic-avatar img");
         if (user) {
           avatar.src = user.photoURL || "img/Generic_avatar.png";
+          logoutBtn.style.display = "inline-flex";
+          logoutBtn.className = "logout-btn"; // mantém o estilo correto
         } else {
           avatar.src = "img/Generic_avatar.png";
+          logoutBtn.style.display = "none";
         }
       });
+
 
       async function mostrarUltimoComentario() {
         try {
