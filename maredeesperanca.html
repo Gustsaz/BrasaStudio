@@ -51,7 +51,8 @@
     </section>
 
     <div id="comment-box" style="margin-top:20px;">
-      <textarea id="commentInput" placeholder="Escreva seu comentário..." rows="3" style="width:100%;resize: none;"></textarea>
+      <textarea id="commentInput" placeholder="Escreva seu comentário..." rows="3"
+        style="width:100%;resize: none;"></textarea>
       <button id="sendComment">Enviar</button>
     </div>
     <br>
@@ -120,7 +121,8 @@
       const avatar = document.querySelector(".generic-avatar img");
       if (user) {
         avatar.src = user.photoURL || "img/Generic_avatar.png";
-        loginBtn.textContent = "Sair";
+        loginBtn.className = "logout-btn";
+        loginBtn.innerHTML = '<img src="img/logout.png" alt="Sair">';
         loginBtn.onclick = () => signOut(auth);
         commentInput.disabled = false;
         sendCommentBtn.disabled = false;

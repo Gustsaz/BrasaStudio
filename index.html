@@ -71,8 +71,9 @@
     <section class="empresa">
       <div class="empresa-content">
         <div class="empresa-imgs">
-          <img class="frente" src="img/Frente-1.png" alt="Frente" />
+          <div id="modelo3d"></div>
         </div>
+
         <div class="empresa-text">
           <h2 class="text-wrapper-2">A empresa</h2>
           <p class="text-wrapper">
@@ -150,6 +151,90 @@
         </div>
       </div>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+
+    <script>
+      // Cena, câmera e renderizador
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        45,
+        1, // depois a gente corrige com resize
+        0.1,
+        1000
+      );
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(400, 400); // <--- aqui estava
+      document.getElementById("modelo3d").appendChild(renderer.domElement);
+
+      console.log("Renderer anexado em #modelo3d:", renderer.domElement);
+
+
+      // Luzes
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(10, 10, 10);
+      scene.add(directionalLight);
+
+      // Carregar modelo 3D
+      const mtlLoader = new THREE.MTLLoader();
+      mtlLoader.load("source.mtl", (materials) => {
+        materials.preload();
+        const objLoader = new THREE.OBJLoader();
+        objLoader.setMaterials(materials);
+        objLoader.load("source.obj", (object) => {
+          object.scale.set(2, 2, 2);
+          object.position.set(0, -1, 0);
+          object.rotation.x = -Math.PI / 2; 
+          object.rotation.y = Math.PI;      
+
+          scene.add(object);
+        });
+
+      });
+
+      // Controles de rotação
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false; 
+      controls.enablePan = false;   
+      camera.position.set(0, 2, 8);
+      camera.lookAt(0, 0, 0);
+
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+
+      camera.position.z = 5;
+
+      // Redimensionar automaticamente
+      function resizeRenderer() {
+        const container = document.getElementById("modelo3d");
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      }
+
+      window.addEventListener("resize", resizeRenderer);
+      resizeRenderer();
+
+      // Loop de renderização
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
