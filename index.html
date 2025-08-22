@@ -204,16 +204,20 @@
 
       onAuthStateChanged(auth, (user) => {
         const avatar = document.querySelector(".generic-avatar img");
+        const logoutBtn = document.getElementById("logoutBtn");
+
         if (user) {
           avatar.src = user.photoURL || "img/Generic_avatar.png";
-          loginBtn.innerHTML = '<img src="img/logout.png" alt="Sair" style="width: 24px;height: 24px;object-fit: contain; background-color: none; border: none;">';
-          loginBtn.onclick = () => signOut(auth);
+          logoutBtn.style.display = "flex";   // mostra botão de logout
+          logoutBtn.onclick = () => signOut(auth);
+          loginBtn.style.display = "none";    // esconde botão de login
         } else {
           avatar.src = "img/Generic_avatar.png";
-          loginBtn.textContent = "Entrar com Google";
-          loginBtn.onclick = login;
+          loginBtn.style.display = "block";   // mostra botão login
+          logoutBtn.style.display = "none";   // esconde botão logout
         }
       });
+
 
       async function mostrarUltimoComentario() {
         try {
