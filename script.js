@@ -27,3 +27,13 @@ if (header) {
         }
     });
 }
+
+
+// Define a cor da wave com base no atributo data-wave
+document.querySelectorAll(".criador").forEach(criador => {
+    const color = criador.getAttribute("data-wave") || "#3f68c5";
+    const wave = criador.querySelector(".wave");
+    if (wave) {
+        wave.style.backgroundColor = color;
+    }
+});
