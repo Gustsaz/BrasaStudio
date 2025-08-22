@@ -364,6 +364,7 @@
         <div>
           <h3 class="nome-usuario">${doc.nome || "Anônimo"}</h3>
           <p class="texto-comentario">${doc.texto}</p>
+          <span class="data">${new Date(c.data.seconds * 1000).toLocaleString("pt-BR")}</span>
         </div>
       `;
           } else {
@@ -380,5 +381,6 @@
     <script src="script.js"></script>
 
 </body>
+
 
 </html>
