@@ -301,8 +301,9 @@
 
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-      // Seleciona o avatar que já existe no header
+      // Seleciona elementos
       const avatarContainer = document.querySelector(".generic-avatar");
+      const logoutBtn = document.getElementById("logoutBtn");
 
       const login = async () => {
         try {
@@ -317,14 +318,15 @@
         }
       };
 
-      // Clique no avatar faz login/logout
+      // Avatar = só login
       avatarContainer.addEventListener("click", () => {
-        if (auth.currentUser) {
-          signOut(auth);
-        } else {
+        if (!auth.currentUser) {
           login();
         }
       });
+
+      // Botão logout = só logout
+      logoutBtn.addEventListener("click", () => signOut(auth));
 
       getRedirectResult(auth)
         .then((result) => {
@@ -339,12 +341,13 @@
         if (user) {
           avatar.src = user.photoURL || "img/Generic_avatar.png";
           logoutBtn.style.display = "inline-flex";
-          logoutBtn.className = "logout-btn"; // mantém o estilo correto
+          logoutBtn.className = "logout-btn"; // mantém estilo
         } else {
           avatar.src = "img/Generic_avatar.png";
           logoutBtn.style.display = "none";
         }
       });
+
 
 
       async function mostrarUltimoComentario() {
