@@ -300,9 +300,9 @@
       const db = getFirestore(app);
 
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
+
+      // Seleciona o avatar que já existe no header
       const avatarContainer = document.querySelector(".generic-avatar");
-      const logoutBtn = document.getElementById("logoutBtn");
 
       const login = async () => {
         try {
@@ -317,13 +317,14 @@
         }
       };
 
+      // Clique no avatar faz login/logout
       avatarContainer.addEventListener("click", () => {
-        if (!auth.currentUser) {
+        if (auth.currentUser) {
+          signOut(auth);
+        } else {
           login();
         }
       });
-
-      logoutBtn.addEventListener("click", () => signOut(auth));
 
       getRedirectResult(auth)
         .then((result) => {
@@ -337,12 +338,8 @@
         const avatar = document.querySelector(".generic-avatar img");
         if (user) {
           avatar.src = user.photoURL || "img/Generic_avatar.png";
-          loginBtn.className = "logout-btn";
-          loginBtn.innerHTML = '<img src="img/logout.png" alt="Sair">';
-          loginBtn.onclick = () => signOut(auth);
         } else {
           avatar.src = "img/Generic_avatar.png";
-          logoutBtn.style.display = "none"; 
         }
       });
 
