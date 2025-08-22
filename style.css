@@ -81,26 +81,6 @@ body {
     opacity: 1 !important;
 }
 
-.logout-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    /* mesmo tamanho dos outros */
-    height: 40px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    padding: 5px;
-    transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-.logout-btn img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-}
-
 .jogo {
     position: relative;
     height: 100vh;
