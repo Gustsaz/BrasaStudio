@@ -280,146 +280,163 @@
     </script>
 
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-      import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
-        from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-      import { getFirestore, collection, query, where, orderBy, limit, getDocs }
-        from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import {
+    getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+    getRedirectResult, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import {
+    getFirestore, collection, query, where, orderBy, limit, getDocs
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-      // Função que transforma link normal em embed
-      function getEmbedUrl(youtubeUrl) {
-        const videoId = youtubeUrl.split("v=")[1]?.split("&")[0];
-        return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+  // ---- Firebase ----
+  const firebaseConfig = {
+    apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+    authDomain: "brasastudio-bd.firebaseapp.com",
+    projectId: "brasastudio-bd",
+    storageBucket: "brasastudio-bd.firebasestorage.app",
+    messagingSenderId: "622309371157",
+    appId: "1:622309371157:web:449025a3906b2674208d1c",
+    measurementId: "G-SY8N6JTN63"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  const db = getFirestore(app);
+
+  // ---- Utils: YouTube ----
+  function getYouTubeId(url) {
+    try {
+      const u = new URL(url);
+      if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);                  // youtu.be/ID
+      if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];          // /shorts/ID
+      if (u.pathname.startsWith("/embed/"))  return u.pathname.split("/")[2];          // /embed/ID
+      const v = u.searchParams.get("v");                                               // ?v=ID
+      if (v) return v;
+    } catch (_) {
+      /* se não for URL válida, tenta regex bruta abaixo */
+    }
+    const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&/]|\b)/);
+    return m ? m[1] : null;
+  }
+
+  function getEmbedUrl(url) {
+    const id = getYouTubeId(url);
+    return id ? `https://www.youtube.com/embed/${id}` : "";
+  }
+
+  // ---- Carregar vídeos ----
+  async function carregarVideos() {
+    const preload = (n) => {
+      const el = document.getElementById(`videoCard${n}`);
+      if (el) el.innerHTML = '<div style="padding:16px">Carregando vídeo…</div>';
+    };
+    preload(1); preload(2);
+
+    try {
+      const snap = await getDocs(collection(db, "videos"));
+      console.log(`[videos] documentos: ${snap.size}`);
+      if (snap.empty) {
+        console.warn('Coleção "videos" vazia.');
+        return;
       }
 
-      async function carregarVideos() {
-        try {
-          const videosRef = collection(db, "videos");
-          const snapshot = await getDocs(videosRef);
+      snap.forEach((d) => {
+        const data = d.data();
+        const el = document.getElementById(`videoCard${data.card}`);
+        const embed = getEmbedUrl(data.url);
+        if (!el) {
+          console.warn("Card não encontrado para", data);
+          return;
+        }
+        if (!embed) {
+          el.innerHTML = '<div style="padding:16px">URL do YouTube inválida.</div>';
+          console.warn("URL inválida:", data.url);
+          return;
+        }
 
-          snapshot.forEach((doc) => {
-            const data = doc.data();
-            const card = document.getElementById(`videoCard${data.card}`);
-
-            if (card && data.url) {
-              card.innerHTML = `
-          <iframe width="100%" height="100%" 
-            src="${getEmbedUrl(data.url)}" 
+        el.innerHTML = `
+          <iframe
+            src="${embed}"
             title="YouTube video player"
-            frameborder="0" allowfullscreen>
-          </iframe>`;
-            }
-          });
-        } catch (error) {
-          console.error("Erro ao carregar vídeos:", error);
-        }
-      }
-
-      carregarVideos();
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
-        authDomain: "brasastudio-bd.firebaseapp.com",
-        projectId: "brasastudio-bd",
-        storageBucket: "brasastudio-bd.firebasestorage.app",
-        messagingSenderId: "622309371157",
-        appId: "1:622309371157:web:449025a3906b2674208d1c",
-        measurementId: "G-SY8N6JTN63"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const provider = new GoogleAuthProvider();
-      const db = getFirestore(app);
-
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-      // Seleciona elementos
-      const avatarContainer = document.querySelector(".generic-avatar");
-      const logoutBtn = document.getElementById("logoutBtn");
-
-      const login = async () => {
-        try {
-          if (isMobile) {
-            await signInWithRedirect(auth, provider);
-          } else {
-            const result = await signInWithPopup(auth, provider);
-            console.log("Usuário logado:", result.user.displayName, result.user.email);
-          }
-        } catch (error) {
-          console.error("Erro no login:", error);
-        }
-      };
-
-      // Avatar = só login
-      avatarContainer.addEventListener("click", () => {
-        if (!auth.currentUser) {
-          login();
-        }
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            style="width:100%;height:100%;border:0;border-radius:12px;"
+          ></iframe>`;
+        console.log(`Preenchido: videoCard${data.card} ← ${embed}`);
       });
+    } catch (e) {
+      console.error("Erro Firestore ao carregar vídeos:", e);
+      const c1 = document.getElementById("videoCard1");
+      const c2 = document.getElementById("videoCard2");
+      [c1, c2].forEach(el => el && (el.innerHTML = '<div style="padding:16px">Erro ao carregar vídeos.</div>'));
+    }
+  }
 
-      // Botão logout = só logout
-      logoutBtn.addEventListener("click", () => signOut(auth));
+  // roda após db pronto
+  carregarVideos();
 
-      getRedirectResult(auth)
-        .then((result) => {
-          if (result) {
-            console.log("Usuário logado via redirect:", result.user.displayName);
-          }
-        })
-        .catch((error) => console.error(error));
+  // ---- Login / UI (recoloquei isMobile) ----
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const avatarContainer = document.querySelector(".generic-avatar");
+  const logoutBtn = document.getElementById("logoutBtn");
 
-      onAuthStateChanged(auth, (user) => {
-        const avatar = document.querySelector(".generic-avatar img");
-        if (user) {
-          avatar.src = user.photoURL || "img/Generic_avatar.png";
-          logoutBtn.style.display = "inline-flex";
-          logoutBtn.className = "logout-btn"; // mantém estilo
-        } else {
-          avatar.src = "img/Generic_avatar.png";
-          logoutBtn.style.display = "none";
-        }
-      });
+  const login = async () => {
+    try {
+      if (isMobile) await signInWithRedirect(auth, provider);
+      else await signInWithPopup(auth, provider);
+    } catch (error) { console.error("Erro no login:", error); }
+  };
 
+  avatarContainer.addEventListener("click", () => { if (!auth.currentUser) login(); });
+  logoutBtn.addEventListener("click", () => signOut(auth));
+  getRedirectResult(auth).catch((error) => console.error(error));
 
+  onAuthStateChanged(auth, (user) => {
+    const avatar = document.querySelector(".generic-avatar img");
+    if (user) {
+      avatar.src = user.photoURL || "img/Generic_avatar.png";
+      logoutBtn.style.display = "inline-flex";
+      logoutBtn.className = "logout-btn";
+    } else {
+      avatar.src = "img/Generic_avatar.png";
+      logoutBtn.style.display = "none";
+    }
+  });
 
-      async function mostrarUltimoComentario() {
-        try {
-          const comentariosRef = collection(db, "comentarios");
-          const q = query(
-            comentariosRef,
-            where("jogo", "==", "Maré de Esperança"),
-            orderBy("data", "desc"),
-            limit(1)
-          );
-
-          const snapshot = await getDocs(q);
-          if (!snapshot.empty) {
-            const doc = snapshot.docs[0].data();
-            const divUltimo = document.querySelector(".ultimo-comentario");
-
-            divUltimo.innerHTML = `
-  <div class="avatar">
-    <img src="${doc.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;">
-  </div>
-  <div>
-    <h3 class="nome-usuario">${doc.nome || "Anônimo"}</h3>
-    <span class="data">${doc.data ? new Date(doc.data.seconds * 1000).toLocaleString("pt-BR") : ""}</span>
-    <p class="texto-comentario">${doc.texto}</p>
-  </div>
-`;
-
-          }
-          else {
-            document.querySelector(".ultimo-comentario").innerHTML = "<p>Nenhum comentário ainda.</p>";
-          }
-        } catch (error) {
-          console.error("Erro ao carregar último comentário:", error);
-        }
+  // ---- Último comentário (mantive seu código) ----
+  async function mostrarUltimoComentario() {
+    try {
+      const comentariosRef = collection(db, "comentarios");
+      const q = query(
+        comentariosRef,
+        where("jogo", "==", "Maré de Esperança"),
+        orderBy("data", "desc"),
+        limit(1)
+      );
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0].data();
+        const divUltimo = document.querySelector(".ultimo-comentario");
+        divUltimo.innerHTML = `
+          <div class="avatar">
+            <img src="${doc.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;">
+          </div>
+          <div>
+            <h3 class="nome-usuario">${doc.nome || "Anônimo"}</h3>
+            <span class="data">${doc.data ? new Date(doc.data.seconds * 1000).toLocaleString("pt-BR") : ""}</span>
+            <p class="texto-comentario">${doc.texto}</p>
+          </div>`;
+      } else {
+        document.querySelector(".ultimo-comentario").innerHTML = "<p>Nenhum comentário ainda.</p>";
       }
+    } catch (error) {
+      console.error("Erro ao carregar último comentário:", error);
+    }
+  }
+  mostrarUltimoComentario();
+</script>
 
-      mostrarUltimoComentario();
-    </script>
 
     <script src="script.js"></script>
 
