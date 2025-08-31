@@ -87,13 +87,14 @@
     </section>
 
     <section class="videos" aria-label="Seção de Vídeos">
-      <article class="card grande"></article>
-      <article class="card grande"></article>
+      <article class="card grande" id="videoCard1"></article>
+      <article class="card grande" id="videoCard2"></article>
       <article class="card pequeno"></article>
       <article class="card pequeno"></article>
       <article class="card pequeno"></article>
       <article class="card pequeno"></article>
     </section>
+
 
     <section class="jogos">
       <h1 class="titulo-principal">Nossos Jogos</h1>
@@ -113,7 +114,7 @@
             <button class="botao-jogo" type="button">
               Saiba Mais
             </button>
-            
+
           </a>
 
           <div class="ultimo-comentario">
@@ -284,6 +285,37 @@
         from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
       import { getFirestore, collection, query, where, orderBy, limit, getDocs }
         from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+      // Função que transforma link normal em embed
+      function getEmbedUrl(youtubeUrl) {
+        const videoId = youtubeUrl.split("v=")[1]?.split("&")[0];
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+      }
+
+      async function carregarVideos() {
+        try {
+          const videosRef = collection(db, "videos");
+          const snapshot = await getDocs(videosRef);
+
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            const card = document.getElementById(`videoCard${data.card}`);
+
+            if (card && data.url) {
+              card.innerHTML = `
+          <iframe width="100%" height="100%" 
+            src="${getEmbedUrl(data.url)}" 
+            title="YouTube video player"
+            frameborder="0" allowfullscreen>
+          </iframe>`;
+            }
+          });
+        } catch (error) {
+          console.error("Erro ao carregar vídeos:", error);
+        }
+      }
+
+      carregarVideos();
 
       const firebaseConfig = {
         apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",

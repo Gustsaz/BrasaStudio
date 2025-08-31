@@ -334,6 +334,12 @@ body {
     min-height: 320px;
 }
 
+.card.grande iframe {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
 .card.pequeno {
     min-height: 200px;
 }
