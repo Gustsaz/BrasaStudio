@@ -1,7 +1,16 @@
-// modelo3d.js
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
-import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 
+
+'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
+import { GLTFLoader } from 
+
+'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/GLTFLoader.
+
+js';
+import { OrbitControls } from 
+
+'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitContr
+
+ols.js';
 
 // Cena, câmera e renderizador
 const scene = new THREE.Scene();
