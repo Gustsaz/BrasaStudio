@@ -16,7 +16,6 @@
       // Faz a câmera olhar para o ponto central do modelo
       camera.lookAt(0, 0, 0);
 
-
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setSize(400, 400); // <--- aqui estava
       document.getElementById("modelo3d").appendChild(renderer.domElement);
@@ -31,30 +30,31 @@
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
       directionalLight.position.set(10, 10, 10);
       scene.add(directionalLight);
+// Carregar modelo 3D
+const mtlLoader = new THREE.MTLLoader();
+mtlLoader.setPath("models/Zil3d/"); // pasta onde está tudo
+mtlLoader.load(
+  "tripo_convert_40013212-5b4a-452c-9707-41ed41408f9a.mtl",
+  (materials) => {
+    materials.preload();
 
-      // Carregar modelo 3D
-      const mtlLoader = new THREE.MTLLoader();
-      mtlLoader.load("source.mtl", (materials) => {
-        materials.preload();
-        const objLoader = new THREE.OBJLoader();
-        objLoader.setMaterials(materials);
-        objLoader.load("source.obj", (object) => {
-          object.scale.set(4, 4, 4);
-          object.position.set(0, 0, 0);
+    const objLoader = new THREE.OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.setPath("models/Zil3d/");
 
-          const angle = Math.atan2(
-            camera.position.x - object.position.x,
-            camera.position.z - object.position.z
-          );
-          object.rotation.x = -Math.PI / 2;
+    objLoader.load(
+      "tripo_convert_40013212-5b4a-452c-9707-41ed41408f9a.obj",
+      (object) => {
+        object.scale.set(1, 1, 1); // ajuste conforme necessário
+        object.position.set(0, 0, 0);
 
-          object.rotation.y = 0;
-          object.rotation.z = -1.5;
+        scene.add(object);
+      }
+    ); // fecha objLoader.load
+  }
+); // fecha mtlLoader.load
 
-          scene.add(object);
-        });
 
-      });
 
       // Controles de rotação
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -88,31 +88,11 @@
       window.addEventListener("resize", resizeRenderer);
       resizeRenderer();
 
-      // Loop de renderização
-      function animate() {
-        requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
+// Loop de renderização
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+}
 
-        // Log dinâmico da câmera
-        console.log("Câmera:", {
-          position: {
-            x: camera.position.x.toFixed(2),
-            y: camera.position.y.toFixed(2),
-            z: camera.position.z.toFixed(2)
-          },
-          rotation: {
-            x: camera.rotation.x.toFixed(2),
-            y: camera.rotation.y.toFixed(2),
-            z: camera.rotation.z.toFixed(2)
-          },
-          target: {
-            x: controls.target.x.toFixed(2),
-            y: controls.target.y.toFixed(2),
-            z: controls.target.z.toFixed(2)
-          }
-        });
-      }
-
-
-      animate();
+animate(); // apenas chama a função, sem chaves extras
