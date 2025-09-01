@@ -22,11 +22,14 @@ scene.add(directionalLight);
 
 // Carregar modelo GLB
 const loader = new GLTFLoader();
+console.log("Antes de carregar o GLB");
+
 loader.load(
   'models/Zil3d/Zil3d.glb',
   (gltf) => {
+    console.log("GLB carregado!");
     const model = gltf.scene;
-    model.scale.set(1, 1, 1);
+    model.scale.set(1,1,1);
     scene.add(model);
   },
   undefined,
