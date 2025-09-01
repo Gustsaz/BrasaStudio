@@ -9,8 +9,8 @@ camera.position.set(0, 1, 5);
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setSize(400, 400);
 document.getElementById("modelo3d").appendChild(renderer.domElement);
+resizeRenderer();
 
 // Luzes
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -24,8 +24,7 @@ scene.add(directionalLight);
 const loader = new GLTFLoader();
 console.log("Antes de carregar o GLB");
 
-loader.load(
-  'models/Zil3d/Zil3d.glb',
+loader.load('models/Zil3d/Zil3d.glb',
   (gltf) => {
     console.log("GLB carregado!");
     const model = gltf.scene;
