@@ -1,72 +1,112 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
-import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js';
-
 // Cena, câmera e renderizador
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-camera.position.set(0, 1, 5);
+const camera = new THREE.PerspectiveCamera(
+  45,
+  1,
+  0.1,
+  1000
+);
+
+// Define a posição inicial exata da câmera
+camera.position.set(-5.08, 0.25, 0.32);
+
+// Define a rotação exata
+camera.rotation.set(-0.66, -1.49, -0.66);
+
+// Faz a câmera olhar para o ponto central do modelo
 camera.lookAt(0, 0, 0);
 
+
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(400, 400); // <--- aqui estava
 document.getElementById("modelo3d").appendChild(renderer.domElement);
-resizeRenderer();
+
+console.log("Renderer anexado em #modelo3d:", renderer.domElement);
+
 
 // Luzes
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
 directionalLight.position.set(10, 10, 10);
 scene.add(directionalLight);
 
-// 🚀 Cubo de teste (sempre aparece)
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({ color: 0x44aa88 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+// Carregar modelo 3D
+const mtlLoader = new THREE.MTLLoader();
+mtlLoader.setPath("models/Zil3d/"); // pasta onde está tudo
+mtlLoader.load("tripo_convert_40013212-5b4a-452c-9707-41ed41408f9a.mtl", (materials) => {
+  materials.preload();
 
-// Carregar modelo GLB
-const loader = new GLTFLoader();
-console.log("Tentando carregar GLB...");
+  const objLoader = new THREE.OBJLoader();
+  objLoader.setMaterials(materials);
+  objLoader.setPath("models/Zil3d/");
+  objLoader.load("tripo_convert_40013212-5b4a-452c-9707-41ed41408f9a.obj", (object) => {
+    object.scale.set(4, 4, 4); // ajuste conforme necessário
+    object.position.set(0, 0, 0);
 
-loader.load(
-  'Zil3d.glb', // confere se o arquivo realmente está na raiz do /models ou junto ao index.html
-  (gltf) => {
-    console.log("GLB carregado!");
-    const model = gltf.scene;
-    model.scale.set(1, 1, 1);
-    model.position.set(0, 0, 0);
-    scene.add(model);
-  },
-  undefined,
-  (error) => console.error('❌ Erro ao carregar GLB:', error)
-);
+    scene.add(object);
+  });
+});
 
-// Controles
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableZoom = false;
-controls.enablePan = false;
+
+// Controles de rotação
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableZoom = false;   // bloqueia zoom
+controls.enablePan = false;    // opcional: bloqueia arrastar
+
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
-// Redimensionar
+camera.position.set(0, 1, 5); // centraliza verticalmente e horizontalmente
+camera.lookAt(0, 0, 0);
+
+controls.minPolarAngle = Math.PI / 2.2; // trava vertical para não olhar de cima
+controls.maxPolarAngle = Math.PI / 2;   // trava vertical para não olhar de baixo
+controls.target.set(0, 0, 0);
+controls.update();
+
+
+
+// Redimensionar automaticamente
 function resizeRenderer() {
   const container = document.getElementById("modelo3d");
   const width = container.clientWidth;
   const height = container.clientHeight;
+
   renderer.setSize(width, height);
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
 }
-window.addEventListener('resize', resizeRenderer);
+
+window.addEventListener("resize", resizeRenderer);
 resizeRenderer();
 
-// Loop
+// Loop de renderização
 function animate() {
   requestAnimationFrame(animate);
-  cube.rotation.y += 0.01; // gira o cubo para teste
   controls.update();
   renderer.render(scene, camera);
+
+  // Log dinâmico da câmera
+  console.log("Câmera:", {
+    position: {
+      x: camera.position.x.toFixed(2),
+      y: camera.position.y.toFixed(2),
+      z: camera.position.z.toFixed(2)
+    },
+    rotation: {
+      x: camera.rotation.x.toFixed(2),
+      y: camera.rotation.y.toFixed(2),
+      z: camera.rotation.z.toFixed(2)
+    },
+    target: {
+      x: controls.target.x.toFixed(2),
+      y: controls.target.y.toFixed(2),
+      z: controls.target.z.toFixed(2)
+    }
+  });
 }
+
+
 animate();
