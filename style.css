@@ -17,6 +17,8 @@ body {
     width: 100%;
 }
 
+
+
 .header {
     position: fixed;
     top: 0;
@@ -342,9 +344,12 @@ body {
     border-radius: 12px;
 }
 
-
 .card.pequeno {
-    min-height: 200px;
+  grid-column: 1 / -1;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 /*jogos*/
