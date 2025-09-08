@@ -28,16 +28,23 @@ if (darkModeBtn) {
             { selector: ".brasa", dark: "img/brasa_dark.png", light: "img/brasa.png" },
             { selector: ".dark-mode-btn img", dark: "img/dark-mode_dark.png", light: "img/dark-mode.png" },
             { selector: ".notifications img", dark: "img/notifications_dark.png", light: "img/notifications.png" },
-            { selector: ".logoutBtn img", dark: "img/logout_dark.png", light: "img/logout.png" },
+            { selector: "#logoutBtn img", dark: "img/logout_dark.png", light: "img/logout.png" },
             { selector: ".settings img", dark: "img/settings_dark.png", light: "img/settings.png" },
             { selector: ".jogo-conteudo .tela", dark: "img/tela_dark.png", light: "img/tela-1.png" },
             { selector: ".jogo-conteudo .placa", dark: "img/Botao_dark.png", light: "img/Botao.png" },
-            { selector: ".jogo-conteudo .nome-jogo", dark: "img/nome-jogo_dark.png", light: "img/nome-jogo.png" }
+            { selector: ".jogo-conteudo .nome-jogo", dark: "img/nome-jogo_dark.png", light: "img/nome-jogo.png" },
+            // Avatar genérico – só troca se não estiver logado
+            { selector: ".generic-avatar img", dark: "img/Generic_avatar_dark.png", light: "img/Generic_avatar.png", conditional: true }
         ];
 
         elements.forEach(element => {
             const el = document.querySelector(element.selector);
             if (el) {
+                // Se for avatar e o usuário estiver logado, não troca
+                if (element.selector.includes("generic-avatar") && el.dataset.loggedin === "true") {
+                    return;
+                }
+
                 el.style.transition = "opacity 0.3s ease";
                 el.style.opacity = "0.5";
                 

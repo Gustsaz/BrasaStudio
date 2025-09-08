@@ -37,10 +37,6 @@
           <img src="img/dark-mode.png" alt="Ícone modo escuro">
         </button>
 
-        <button id="logoutBtn" style="display:none;">
-          <img src="img/logout.png" alt="Sair da conta">
-        </button>
-
         <div class="notifications">
           <img src="img/notifications.png" alt="Notificações" />
         </div>
@@ -50,6 +46,11 @@
         <div class="generic-avatar">
           <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
         </div>
+
+        <button id="logoutBtn" style="display:none;">
+          <img src="img/logout.png" alt="Sair da conta">
+        </button>
+
       </div>
     </header>
 
@@ -322,19 +323,20 @@
       onAuthStateChanged(auth, (user) => {
         const avatar = document.querySelector(".generic-avatar img");
         if (user) {
-          console.log("Usuário logado:", user.displayName, user.photoURL); // debug
-          if (user.photoURL) {
-            avatar.src = user.photoURL;
-          } else {
-            avatar.src = "img/Generic_avatar.png"; // fallback
-          }
+          // --- logado ---
+          avatar.src = user.photoURL || "img/Generic_avatar.png";
+          avatar.dataset.loggedin = "true";  // flag custom
           logoutBtn.style.display = "inline-flex";
           logoutBtn.className = "logout-btn";
         } else {
-          avatar.src = "img/Generic_avatar.png";
+          // --- não logado ---
+          const isDark = document.body.classList.contains("dark-mode");
+          avatar.src = isDark ? "img/Generic_avatar_dark.png" : "img/Generic_avatar.png";
+          avatar.dataset.loggedin = "false";
           logoutBtn.style.display = "none";
         }
       });
+
 
 
       // ---- Último comentário (mantive seu código) ----
