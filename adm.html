@@ -79,15 +79,15 @@
   <script src="script.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { 
-      getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, 
-      getRedirectResult, signOut, onAuthStateChanged, 
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+      getRedirectResult, signOut, onAuthStateChanged,
       setPersistence, browserLocalPersistence,
       createUserWithEmailAndPassword, signInWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { 
-      getFirestore, collection, doc, setDoc, getDocs, onSnapshot, 
-      query, where, orderBy, deleteDoc, serverTimestamp 
+    import {
+      getFirestore, collection, doc, setDoc, getDocs, onSnapshot,
+      query, where, orderBy, deleteDoc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     // ---- Firebase ----
@@ -106,10 +106,8 @@
     const provider = new GoogleAuthProvider();
     const db = getFirestore(app);
 
-    // 🔑 Persistência do login (não precisa mexer no index.html)
-    setPersistence(auth, browserLocalPersistence)
-      .then(() => console.log("Persistência configurada."))
-      .catch(err => console.error("Erro na persistência:", err));
+    // Persistência do login
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     // ---- Login / Logout ----
@@ -117,7 +115,6 @@
     const logoutBtn = document.getElementById("logoutBtn");
 
     const login = async () => {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       try {
         if (isMobile) await signInWithRedirect(auth, provider);
         else await signInWithPopup(auth, provider);
@@ -128,39 +125,27 @@
     logoutBtn.addEventListener("click", () => signOut(auth));
     getRedirectResult(auth).catch((error) => console.error(error));
 
+    // ---- Sempre libera o painel quando logar ----
     onAuthStateChanged(auth, async (user) => {
       const avatar = document.querySelector(".generic-avatar img");
       const root = document.querySelector("main.admin-wrapper");
       if (!root) return;
+
       if (!user) {
         if (avatar) avatar.src = "img/Generic_avatar.png";
         logoutBtn.style.display = "none";
-        root.innerHTML = '<section class="admin-card"><h2>Acesso restrito</h2><p>Faça login com uma conta administrativa.</p></section>';
-        setTimeout(() => location.href = 'index.html', 1200);
+        root.innerHTML = '<section class="admin-card"><h2>Acesso restrito</h2><p>Faça login para acessar o painel.</p></section>';
         return;
       }
-      try {
-        const token = await auth.currentUser.getIdTokenResult(true);
-        const isAdmin = Boolean(token?.claims?.admin);
-        if (!isAdmin) {
-          if (avatar) avatar.src = user.photoURL || "img/Generic_avatar.png";
-          logoutBtn.style.display = "inline-flex";
-          root.innerHTML = '<section class="admin-card"><h2>Acesso restrito</h2><p>Esta conta não possui permissão de administrador.</p></section>';
-          setTimeout(() => location.href = 'index.html', 1500);
-          return;
-        }
-        // Admin OK → mostra avatar e inicializa painel
-        if (avatar) avatar.src = user.photoURL || "img/Generic_avatar.png";
-        logoutBtn.style.display = "inline-flex";
-        logoutBtn.className = "logout-btn";
-        // Inicialização do painel somente após validação de admin
-        loadVideosForAdmin();
-        subscribeComments();
-      } catch (e) {
-        console.error('Erro ao validar admin:', e);
-        root.innerHTML = '<section class="admin-card"><h2>Erro</h2><p>Não foi possível validar permissões.</p></section>';
-        setTimeout(() => location.href = 'index.html', 1500);
-      }
+
+      // Logado → avatar + painel
+      if (avatar) avatar.src = user.photoURL || "img/Generic_avatar.png";
+      logoutBtn.style.display = "inline-flex";
+      logoutBtn.className = "logout-btn";
+
+      // Inicialização do painel
+      loadVideosForAdmin();
+      subscribeComments();
     });
 
     // ---- Util YouTube ----
@@ -172,7 +157,7 @@
         if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];
         const v = u.searchParams.get("v");
         if (v) return v;
-      } catch (_) {}
+      } catch (_) { }
       const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&/]|\b)/);
       return m ? m[1] : null;
     }
@@ -182,7 +167,6 @@
 
     async function loadVideosForAdmin() {
       videosList.innerHTML = "Carregando…";
-      // buscamos os docs existentes, mas a UI força somente card-1 e card-2
       const snap = await getDocs(collection(db, "videos"));
       const byCard = { 1: { card: 1, url: "" }, 2: { card: 2, url: "" } };
       snap.forEach(d => {
@@ -190,15 +174,15 @@
         if (data.card === 1) byCard[1] = { card: 1, url: data.url || "" };
         if (data.card === 2) byCard[2] = { card: 2, url: data.url || "" };
       });
-      const rows = [1,2].map(n => {
+      const rows = [1, 2].map(n => {
         const v = byCard[n];
         return `
-          <div class="row" data-card="${n}">
-            <div><strong>Card ${n}</strong></div>
-            <div class="grow"><input class="video-input" type="url" placeholder="https://www.youtube.com/watch?v=XXXX" value="${v.url || ''}"></div>
-            <button class="save-btn">Salvar</button>
-          </div>
-        `;
+        <div class="row" data-card="${n}">
+          <div><strong>Card ${n}</strong></div>
+          <div class="grow"><input class="video-input" type="url" placeholder="https://www.youtube.com/watch?v=XXXX" value="${v.url || ''}"></div>
+          <button class="save-btn">Salvar</button>
+        </div>
+      `;
       }).join("");
       videosList.innerHTML = rows;
 
@@ -221,7 +205,7 @@
         });
       });
     }
-    
+
     // ---- Comentários ----
     const commentsList = document.getElementById("commentsList");
     const gameFilter = document.getElementById("gameFilter");
@@ -246,14 +230,14 @@
           const row = document.createElement("div");
           row.className = "row comment-row";
           row.innerHTML = `
-            <div class="avatar small"><img src="${c.foto || 'img/Generic_avatar.png'}" alt="avatar"></div>
-            <div class="grow">
-              <div><strong>${c.nome || 'Anônimo'}</strong> <span class="mono">${c.jogo || ''}</span></div>
-              <div class="text">${c.texto || ''}</div>
-              <div class="date">${c.data?.seconds ? new Date(c.data.seconds*1000).toLocaleString('pt-BR') : ''}</div>
-            </div>
-            <button data-del="${d.id}" class="danger">Apagar</button>
-          `;
+          <div class="avatar small"><img src="${c.foto || 'img/Generic_avatar.png'}" alt="avatar"></div>
+          <div class="grow">
+            <div><strong>${c.nome || 'Anônimo'}</strong> <span class="mono">${c.jogo || ''}</span></div>
+            <div class="text">${c.texto || ''}</div>
+            <div class="date">${c.data?.seconds ? new Date(c.data.seconds * 1000).toLocaleString('pt-BR') : ''}</div>
+          </div>
+          <button data-del="${d.id}" class="danger">Apagar</button>
+        `;
           commentsList.appendChild(row);
         });
 
@@ -311,9 +295,8 @@
         alert("Falha ao limpar notificação. Verifique as permissões do Firestore.");
       }
     });
-    // Inicialização agora acontece após a checagem de admin no onAuthStateChanged
   </script>
-  
+
   <!-- Modal de autenticação -->
   <div class="modal-overlay" id="authOverlay">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
