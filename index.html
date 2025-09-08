@@ -354,7 +354,8 @@
       // ---- Login / UI (melhorada detecção de mobile) ----
       const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
                        (window.innerWidth <= 768) || 
-                       ('ontouchstart' in window);
+                       ('ontouchstart' in window) ||
+                       (navigator.maxTouchPoints > 0);
       const avatarContainer = document.querySelector(".generic-avatar");
       const logoutBtn = document.getElementById("logoutBtn");
 
@@ -425,12 +426,66 @@
         catch (err) { console.error(err); alert('Falha ao entrar: ' + (err?.message || '')); }
       });
       btnGoogle.addEventListener("click", async () => {
-        try { if (isMobile) await signInWithRedirect(auth, provider); else await signInWithPopup(auth, provider); closeAuthModal(); }
-        catch (err) { console.error(err); }
+        const originalText = btnGoogle.textContent;
+        const originalDisabled = btnGoogle.disabled;
+        
+        try { 
+          // Mostrar estado de loading
+          btnGoogle.textContent = isMobile ? 'Redirecionando...' : 'Abrindo Google...';
+          btnGoogle.disabled = true;
+          
+          if (isMobile) {
+            // No mobile, usar redirect
+            await signInWithRedirect(auth, provider);
+            // Não fechar o modal aqui, pois a página será redirecionada
+          } else {
+            // No desktop, tentar popup primeiro
+            try {
+              await signInWithPopup(auth, provider);
+              closeAuthModal();
+            } catch (popupError) {
+              // Se popup falhar (bloqueado), usar redirect
+              if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
+                console.log('Popup bloqueado, usando redirect...');
+                btnGoogle.textContent = 'Redirecionando...';
+                await signInWithRedirect(auth, provider);
+              } else {
+                throw popupError;
+              }
+            }
+          }
+        }
+        catch (err) { 
+          console.error('Erro no login com Google:', err);
+          alert('Erro ao fazer login com Google: ' + (err.message || 'Erro desconhecido'));
+          
+          // Restaurar estado do botão em caso de erro
+          btnGoogle.textContent = originalText;
+          btnGoogle.disabled = originalDisabled;
+        }
       });
       btnAdmin.addEventListener("click", () => {window.location.href = 'adm.html';});
       logoutBtn.addEventListener("click", () => signOut(auth));
-      getRedirectResult(auth).catch((error) => console.error(error));
+      
+      // Tratar o resultado do redirect do Google no mobile
+      getRedirectResult(auth).then((result) => {
+        if (result) {
+          // Login bem-sucedido via redirect
+          console.log('Login com Google bem-sucedido:', result.user);
+          closeAuthModal();
+          
+          // Mostrar mensagem de sucesso
+          if (result.user) {
+            console.log('Usuário logado:', result.user.displayName || result.user.email);
+          }
+        }
+      }).catch((error) => {
+        console.error('Erro no resultado do redirect:', error);
+        // Verificar se é um erro de popup bloqueado ou similar
+        if (error.code === 'auth/popup-blocked') {
+          console.log('Popup bloqueado, tentando redirect...');
+        }
+      });
 
       onAuthStateChanged(auth, (user) => {
         const avatar = document.querySelector(".generic-avatar img");

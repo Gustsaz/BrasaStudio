@@ -64,11 +64,21 @@ if (darkModeBtn) {
 const header = document.querySelector(".header");
 
 if (header) {
-    window.addEventListener("scroll", () => {
+    let ticking = false;
+    
+    function updateHeader() {
         if (window.scrollY > 50) {
             header.classList.add("scrolled");
         } else {
             header.classList.remove("scrolled");
+        }
+        ticking = false;
+    }
+    
+    window.addEventListener("scroll", () => {
+        if (!ticking) {
+            requestAnimationFrame(updateHeader);
+            ticking = true;
         }
     });
 }
@@ -83,33 +93,32 @@ document.querySelectorAll(".criador").forEach(criador => {
     }
 });
 
-// Animações de scroll
+// Animações de scroll otimizadas
 function initScrollAnimations() {
     const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: 0.15,
+        rootMargin: '0px 0px -30px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
+                // Parar de observar após animação para economizar recursos
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    // Adicionar classes de animação aos elementos
+    // Elementos principais apenas (reduzido para melhor performance)
     const elementsToAnimate = [
         { selector: '.empresa', animation: 'fade-in' },
         { selector: '.videos', animation: 'fade-in' },
         { selector: '.jogos', animation: 'fade-in' },
         { selector: '.criadores', animation: 'fade-in' },
-        { selector: '.footer', animation: 'fade-in' },
         { selector: '.empresa-text', animation: 'slide-in-right' },
         { selector: '.empresa-imgs', animation: 'slide-in-left' },
-        { selector: '.card', animation: 'scale-in' },
-        { selector: '.jogos-container', animation: 'fade-in' },
-        { selector: '.ultimo-comentario', animation: 'slide-in-left' }
+        { selector: '.jogos-container', animation: 'fade-in' }
     ];
 
     elementsToAnimate.forEach(({ selector, animation }) => {

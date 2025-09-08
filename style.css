@@ -19,7 +19,7 @@ body {
     color: #ffffff;
     width: 100%;
     line-height: 1.6;
-    transition: all 0.5s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Garantir que os elementos iniciem no modo escuro */
@@ -55,13 +55,13 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 3000;
     padding: 20px;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(2px);
     -webkit-overflow-scrolling: touch;
 }
 
@@ -240,6 +240,20 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
     box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
+.actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.actions button:disabled:hover {
+    background: rgba(255, 107, 53, 0.1);
+    color: #ff6b35;
+    transform: none;
+    box-shadow: none;
+}
+
 .actions button.secondary {
     background: rgba(255, 255, 255, 0.05);
     color: #b3b3b3;
@@ -333,6 +347,20 @@ body.light-mode .actions button.secondary:hover {
     border-color: rgba(0, 0, 0, 0.3);
 }
 
+body.light-mode .actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+body.light-mode .actions button:disabled:hover {
+    background: rgba(255, 107, 53, 0.1);
+    color: #ff6b35;
+    transform: none;
+    box-shadow: none;
+}
+
 body.light-mode .hint {
     color: #999999;
 }
@@ -357,8 +385,8 @@ body.light-mode .hint {
 }
 
 .header.scrolled {
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(20px);
+    background: rgba(10, 10, 10, 0.9);
+    backdrop-filter: blur(8px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1187,30 +1215,27 @@ body.dark-mode .footer {
 body.dark-mode .logo {
     position: relative;
     z-index: 2;
-    filter: drop-shadow(0 0 10px rgba(255, 100, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 60, 0, 0.6)) drop-shadow(0 0 30px rgba(255, 0, 0, 0.4));
-    animation: fogoBrilho 3s infinite ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.6));
+    animation: fogoBrilho 4s infinite ease-in-out;
+    will-change: filter;
 }
 
 /*animacoes*/
 @keyframes fogoBrilho {
-    0% {
-        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7)) drop-shadow(0 0 15px rgba(255, 60, 0, 0.5)) drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
+    0%, 100% {
+        filter: drop-shadow(0 0 6px rgba(255, 120, 0, 0.6));
     }
-
     50% {
-        filter: drop-shadow(0 0 15px rgba(255, 200, 0, 1)) drop-shadow(0 0 30px rgba(255, 80, 0, 0.8)) drop-shadow(0 0 45px rgba(255, 0, 0, 0.6));
-    }
-
-    100% {
-        filter: drop-shadow(0 0 5px rgba(255, 120, 0, 0.7)) drop-shadow(0 0 15px rgba(255, 60, 0, 0.5)) drop-shadow(0 0 25px rgba(255, 0, 0, 0.3));
+        filter: drop-shadow(0 0 12px rgba(255, 200, 0, 0.8));
     }
 }
 
-/* Animações de scroll */
+/* Animações de scroll otimizadas */
 .fade-in {
     opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s ease;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    will-change: opacity, transform;
 }
 
 .fade-in.visible {
@@ -1220,8 +1245,9 @@ body.dark-mode .logo {
 
 .slide-in-left {
     opacity: 0;
-    transform: translateX(-50px);
-    transition: all 0.8s ease;
+    transform: translateX(-30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    will-change: opacity, transform;
 }
 
 .slide-in-left.visible {
@@ -1231,8 +1257,9 @@ body.dark-mode .logo {
 
 .slide-in-right {
     opacity: 0;
-    transform: translateX(50px);
-    transition: all 0.8s ease;
+    transform: translateX(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    will-change: opacity, transform;
 }
 
 .slide-in-right.visible {
@@ -1242,8 +1269,9 @@ body.dark-mode .logo {
 
 .scale-in {
     opacity: 0;
-    transform: scale(0.8);
-    transition: all 0.8s ease;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    will-change: opacity, transform;
 }
 
 .scale-in.visible {
@@ -1251,9 +1279,23 @@ body.dark-mode .logo {
     transform: scale(1);
 }
 
-/* Transições suaves para mudança de tema */
+/* Transições otimizadas para mudança de tema */
 * {
-    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* will-change para elementos que serão animados */
+.header, .generic-avatar, .dark-mode-btn, .notifications, .settings, .logo, .botao-jogo-jogo, .card, .criador img {
+    will-change: transform;
+}
+
+/* contain para melhorar performance de layout */
+.empresa, .videos, .jogos, .criadores, .footer {
+    contain: layout style;
+}
+
+.card, .criador {
+    contain: layout style paint;
 }
 
 /* Estrutura responsiva para section jogo */
@@ -1400,7 +1442,8 @@ body.light-mode .jogo-conteudo {
 
 .jogo-conteudo .tela,
 .jogo-conteudo .nome-jogo {
-    animation: float 6s ease-in-out infinite;
+    animation: float 4s ease-in-out infinite;
+    will-change: transform;
 }
 
 @keyframes float-simple {
@@ -1419,7 +1462,8 @@ body.light-mode .jogo-conteudo {
 
 .jogo-conteudo .perfeito,
 .jogo-conteudo .botao {
-    animation: float-simple 6s ease-in-out infinite;
+    animation: float-simple 4s ease-in-out infinite;
+    will-change: transform;
 }
 
 .jogo-conteudo .perfeito {
