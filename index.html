@@ -12,7 +12,7 @@
 </head>
 
 <body>
-  
+
   <section class="jogo" aria-label="jogo">
     <div class="water"></div>
     <svg>
@@ -65,15 +65,17 @@
         </a>
 
       </div>
-      
+
       <div class="jogo-info">
         <div class="jogo-header">
           <h2 class="jogo-title">Maré de Esperança</h2>
           <span class="jogo-tag">Em desenvolvimento</span>
         </div>
         <p class="jogo-description">
-          Um jogo emocionante que combina aventura e reflexão, levando os jogadores em uma jornada única através de cenários deslumbrantes. 
-          Com mecânicas inovadoras e uma narrativa envolvente, "Maré de Esperança" promete uma experiência de jogo memorável que desafia 
+          Um jogo emocionante que combina aventura e reflexão, levando os jogadores em uma jornada única através de
+          cenários deslumbrantes.
+          Com mecânicas inovadoras e uma narrativa envolvente, "Maré de Esperança" promete uma experiência de jogo
+          memorável que desafia
           e inspira jogadores de todas as idades.
         </p>
       </div>
@@ -90,7 +92,8 @@
         <div class="empresa-text">
           <h2 class="text-wrapper-2">A empresa</h2>
           <p class="text-wrapper">
-            Nós somos a Brasa Studio, uma equipe brasileira independente de desenvolvimento de jogos digitais. Nosso objetivo é
+            Nós somos a Brasa Studio, uma equipe brasileira independente de desenvolvimento de jogos digitais. Nosso
+            objetivo é
             trazer o entretenimento para todos os públicos, de maneira acessível e buscando sempre a melhor qualidade
             para nosso produto final.
           </p>
@@ -119,7 +122,8 @@
         <div class="info-jogo">
           <h2 class="titulo-jogo">Maré de Esperanca</h2>
           <p class="descricao-jogo">
-            Acompanhe Luan e Nalu durante as suas férias na praia, explorando a cidade, limpando-a, salvando seus moradores da poluição e conhecendo suas histórias, além de entender como a poluição os afeta.
+            Acompanhe Luan e Nalu durante as suas férias na praia, explorando a cidade, limpando-a, salvando seus
+            moradores da poluição e conhecendo suas histórias, além de entender como a poluição os afeta.
           </p>
           <a href="maredeesperanca.html">
             <button class="botao-jogo" type="button">
@@ -161,7 +165,7 @@
               <span>Brasa Studio</span>
             </div>
           </div>
-          
+
           <div class="footer-column">
             <h4>Contato</h4>
             <ul class="contact-info">
@@ -170,7 +174,7 @@
               <li><i class="fas fa-map-marker-alt"></i> Brasil</li>
             </ul>
           </div>
-          
+
           <div class="footer-column">
             <h4>Redes Sociais</h4>
             <div class="social-icons">
@@ -181,7 +185,7 @@
             </div>
           </div>
         </div>
-        
+
         <hr class="footer-divider">
         <div class="footer-bottom">
           <p>&copy; 2025 Brasa Studio. Todos os direitos reservados.</p>
@@ -318,7 +322,12 @@
       onAuthStateChanged(auth, (user) => {
         const avatar = document.querySelector(".generic-avatar img");
         if (user) {
-          avatar.src = user.photoURL || "img/Generic_avatar.png";
+          console.log("Usuário logado:", user.displayName, user.photoURL); // debug
+          if (user.photoURL) {
+            avatar.src = user.photoURL;
+          } else {
+            avatar.src = "img/Generic_avatar.png"; // fallback
+          }
           logoutBtn.style.display = "inline-flex";
           logoutBtn.className = "logout-btn";
         } else {
@@ -326,6 +335,7 @@
           logoutBtn.style.display = "none";
         }
       });
+
 
       // ---- Último comentário (mantive seu código) ----
       async function mostrarUltimoComentario() {
