@@ -51,45 +51,290 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
     content: url("img/nome-jogo_dark.png");
 }
 
-.auth-modal {
+/* Modal de autenticação */
+.modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 3000;
-}
-
-.auth-box {
-    background: #1a1a1a;
     padding: 20px;
-    border-radius: 12px;
-    width: 300px;
-    text-align: center;
-    color: white;
+    backdrop-filter: blur(4px);
+    -webkit-overflow-scrolling: touch;
 }
 
-.auth-box input {
+.modal {
+    background: #1a1a1a;
+    border-radius: 16px;
     width: 100%;
-    margin: 8px 0;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    background: #000;
-    color: white;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: modalSlideIn 0.3s ease-out;
 }
 
-.google-btn {
-    background: white;
-    color: black;
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
+}
+
+.modal header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    font-family: "Inter", sans-serif;
+}
+
+.modal header button {
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 10px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal header button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    margin: 0 24px 24px;
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    padding: 12px 16px;
+    border-radius: 6px;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-family: "Inter", sans-serif;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tabs button.active {
+    background: rgba(255, 107, 53, 0.2);
+    color: #ff6b35;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.tabs button:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+}
+
+/* Form sections */
+.modal section {
+    padding: 0 24px 24px;
+}
+
+.form-row {
+    margin-bottom: 20px;
+}
+
+.form-row label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: "Inter", sans-serif;
+}
+
+.form-row input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    font-size: 14px;
+    font-family: "Inter", sans-serif;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.form-row input:focus {
+    outline: none;
+    border-color: #ff6b35;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.form-row input::placeholder {
+    color: #666666;
+}
+
+/* Actions */
+.actions {
+    padding: 0 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.actions button {
+    width: 100%;
+    padding: 14px 20px;
+    border: 1px solid #ff6b35;
+    border-radius: 8px;
+    background: rgba(255, 107, 53, 0.1);
+    color: #ff6b35;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: "Inter", sans-serif;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.actions button:hover {
+    background: #ff6b35;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.actions button.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #b3b3b3;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.actions button.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.hint {
+    text-align: center;
+    color: #666666;
+    font-size: 12px;
+    margin-top: 8px;
+    font-family: "Inter", sans-serif;
+}
+
+/* Modo claro para o modal */
+body.light-mode .modal {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .modal header h3 {
+    color: #1a1a1a;
+}
+
+body.light-mode .modal header button {
+    color: #666666;
+}
+
+body.light-mode .modal header button:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1a1a1a;
+}
+
+body.light-mode .tabs {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .tabs button {
+    color: #666666;
+}
+
+body.light-mode .tabs button.active {
+    background: rgba(255, 107, 53, 0.1);
+    color: #ff6b35;
+    border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+body.light-mode .tabs button:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1a1a1a;
+}
+
+body.light-mode .form-row label {
+    color: #1a1a1a;
+}
+
+body.light-mode .form-row input {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #1a1a1a;
+}
+
+body.light-mode .form-row input:focus {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: #ff6b35;
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+body.light-mode .form-row input::placeholder {
+    color: #999999;
+}
+
+body.light-mode .actions button.secondary {
+    background: rgba(0, 0, 0, 0.05);
+    color: #666666;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .actions button.secondary:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #1a1a1a;
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+body.light-mode .hint {
+    color: #999999;
 }
 
 .header {
@@ -1310,6 +1555,34 @@ body.light-mode .jogo-conteudo {
     .social-links {
         justify-content: center;
     }
+
+    /* Modal responsivo para tablet */
+    .modal-overlay {
+        padding: 20px;
+    }
+
+    .modal {
+        max-width: 450px;
+    }
+
+    .modal header h3 {
+        font-size: 19px;
+    }
+
+    .tabs button {
+        padding: 11px 14px;
+        font-size: 14px;
+    }
+
+    .form-row input {
+        padding: 11px 15px;
+        font-size: 14px;
+    }
+
+    .actions button {
+        padding: 13px 18px;
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1410,5 +1683,98 @@ body.light-mode .jogo-conteudo {
 
     .footer-content {
         padding: 30px 16px;
+    }
+
+    /* Modal responsivo para mobile */
+    .modal-overlay {
+        padding: 16px;
+    }
+
+    .modal {
+        max-width: 100%;
+        max-height: 95vh;
+        border-radius: 12px;
+    }
+
+    .modal header {
+        padding: 20px 20px 0;
+    }
+
+    .modal header h3 {
+        font-size: 18px;
+    }
+
+    .tabs {
+        margin: 0 20px 20px;
+    }
+
+    .tabs button {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .modal section {
+        padding: 0 20px 20px;
+    }
+
+    .form-row {
+        margin-bottom: 16px;
+    }
+
+    .form-row label {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .form-row input {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+    .actions {
+        padding: 0 20px 20px;
+        gap: 10px;
+    }
+
+    .actions button {
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+
+    .hint {
+        font-size: 11px;
+    }
+
+    /* Melhorias para touch no mobile */
+    .modal header button {
+        min-width: 44px;
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+
+    .tabs button {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+
+    .form-row input {
+        min-height: 44px;
+        touch-action: manipulation;
+    }
+
+    .actions button {
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+
+    /* Prevenir zoom no input focus no iOS */
+    .form-row input {
+        font-size: 16px;
+    }
+
+    /* Melhorar área de toque para botões pequenos */
+    .modal header button {
+        padding: 8px;
+        margin: -4px;
     }
 }

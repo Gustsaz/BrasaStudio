@@ -351,8 +351,10 @@
       // roda após db pronto
       carregarVideos();
 
-      // ---- Login / UI (recoloquei isMobile) ----
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      // ---- Login / UI (melhorada detecção de mobile) ----
+      const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                       (window.innerWidth <= 768) || 
+                       ('ontouchstart' in window);
       const avatarContainer = document.querySelector(".generic-avatar");
       const logoutBtn = document.getElementById("logoutBtn");
 
@@ -373,8 +375,20 @@
       const btnGoogle = document.getElementById("btnGoogle");
       const btnAdmin = document.getElementById("btnAdmin");
 
-      function openAuthModal() { overlay.style.display = "flex"; }
-      function closeAuthModal() { overlay.style.display = "none"; }
+      function openAuthModal() { 
+        overlay.style.display = "flex"; 
+        // Prevenir scroll do body no mobile
+        if (isMobile) {
+          document.body.style.overflow = "hidden";
+        }
+      }
+      function closeAuthModal() { 
+        overlay.style.display = "none"; 
+        // Restaurar scroll do body
+        if (isMobile) {
+          document.body.style.overflow = "";
+        }
+      }
       function setTab(which) {
         const signup = which === 'signup';
         tabSignupBtn.classList.toggle('active', signup);
@@ -388,6 +402,13 @@
       overlay.addEventListener("click", (e) => { if (e.target === overlay) closeAuthModal(); });
       tabSignupBtn.addEventListener("click", () => setTab('signup'));
       tabSigninBtn.addEventListener("click", () => setTab('signin'));
+      
+      // Fechar modal com tecla Escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && overlay.style.display === "flex") {
+          closeAuthModal();
+        }
+      });
 
       btnDoSignup.addEventListener("click", async () => {
         const email = signupEmail.value.trim();
