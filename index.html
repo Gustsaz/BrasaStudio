@@ -41,11 +41,6 @@
           <img src="img/notifications.png" alt="Notificações" />
           <span class="notif-dot" id="notifDot" style="display:none"></span>
         </div>
-        
-        <!-- Botão de teste temporário (remover em produção) -->
-        <button id="testNotificationBtn" style="background: #ff6b35; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 10px;">
-          Teste
-        </button>
         <div class="settings">
           <img src="img/settings.png" alt="Configurações" />
         </div>
@@ -262,7 +257,8 @@
         getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
         getRedirectResult, signOut, onAuthStateChanged,
         setPersistence, browserLocalPersistence,
-        createUserWithEmailAndPassword, signInWithEmailAndPassword
+        createUserWithEmailAndPassword, signInWithEmailAndPassword,
+        updatePassword, updateProfile, EmailAuthProvider, reauthenticateWithCredential
       } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
       import {
         getFirestore, collection, query, where, orderBy, limit, getDocs, doc, onSnapshot, addDoc, serverTimestamp
@@ -403,7 +399,6 @@
         signinArea.style.display = signup ? 'none' : 'block';
       }
 
-      avatarContainer.addEventListener("click", () => { if (!auth.currentUser) openAuthModal(); });
       closeModalBtn.addEventListener("click", closeAuthModal);
       overlay.addEventListener("click", (e) => { if (e.target === overlay) closeAuthModal(); });
       tabSignupBtn.addEventListener("click", () => setTab('signup'));
@@ -771,34 +766,218 @@
         }
       }
       
-      // Função de teste para adicionar notificação de exemplo
-      function addTestNotification() {
-        console.log('Adicionando notificação de teste...');
-        addDoc(notificationsCollection, {
-          message: 'Esta é uma notificação de teste!',
-          sender: 'Sistema',
-          timestamp: serverTimestamp()
-        }).then(() => {
-          console.log('Notificação de teste adicionada');
-          // Recarregar contador após 1 segundo
-          setTimeout(() => {
-            loadInitialNotificationCount();
-          }, 1000);
-        }).catch(error => {
-          console.error('Erro ao adicionar notificação de teste:', error);
-        });
+      
+      // ---- Sistema de Perfil do Usuário ----
+      const profileOverlay = document.getElementById("profileOverlay");
+      const profileCloseBtn = document.getElementById("profileCloseBtn");
+      const changeAvatarBtn = document.getElementById("changeAvatarBtn");
+      const avatarFileInput = document.getElementById("avatarFileInput");
+      const currentAvatarImg = document.getElementById("currentAvatarImg");
+      const profileEmail = document.getElementById("profileEmail");
+      const profileName = document.getElementById("profileName");
+      const currentPassword = document.getElementById("currentPassword");
+      const newPassword = document.getElementById("newPassword");
+      const confirmPassword = document.getElementById("confirmPassword");
+      const saveProfileBtn = document.getElementById("saveProfileBtn");
+      const cancelProfileBtn = document.getElementById("cancelProfileBtn");
+      
+      // Função para abrir modal de perfil
+      function openProfileModal() {
+        if (auth.currentUser) {
+          // Preencher dados do usuário
+          profileEmail.value = auth.currentUser.email || '';
+          profileName.value = auth.currentUser.displayName || '';
+          currentAvatarImg.src = auth.currentUser.photoURL || "img/Generic_avatar.png";
+          
+          // Limpar campos de senha
+          currentPassword.value = '';
+          newPassword.value = '';
+          confirmPassword.value = '';
+          
+          profileOverlay.style.display = "flex";
+        }
       }
       
-      // Adicionar notificação de teste após 3 segundos (apenas para debug)
-      setTimeout(() => {
-        console.log('Verificando se há notificações...');
-        // Só adiciona teste se não houver notificações
-        loadInitialNotificationCount();
-      }, 3000);
+      // Função para fechar modal de perfil
+      function closeProfileModal() {
+        profileOverlay.style.display = "none";
+      }
+      
+      // Função para alterar avatar
+      function handleAvatarChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+          // Validar tipo de arquivo
+          if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecione apenas arquivos de imagem.');
+            return;
+          }
+          
+          // Validar tamanho (máximo 5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            alert('A imagem deve ter no máximo 5MB.');
+            return;
+          }
+          
+          // Criar URL temporária para preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            currentAvatarImg.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+      
+      // Função para salvar alterações do perfil
+      async function saveProfileChanges() {
+        if (!auth.currentUser) return;
+        
+        try {
+          // Atualizar nome se foi alterado
+          if (profileName.value.trim() !== auth.currentUser.displayName) {
+            await updateProfile(auth.currentUser, {
+              displayName: profileName.value.trim()
+            });
+          }
+          
+          // Atualizar avatar se foi alterado
+          if (avatarFileInput.files[0]) {
+            const file = avatarFileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+              try {
+                await updateProfile(auth.currentUser, {
+                  photoURL: e.target.result
+                });
+                // Atualizar avatar no header
+                const headerAvatar = document.querySelector(".generic-avatar img");
+                if (headerAvatar) {
+                  headerAvatar.src = e.target.result;
+                }
+              } catch (error) {
+                console.error('Erro ao atualizar avatar:', error);
+                alert('Erro ao atualizar foto de perfil.');
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+          
+          // Atualizar senha se foi fornecida
+          if (newPassword.value.trim()) {
+            if (newPassword.value !== confirmPassword.value) {
+              alert('As senhas não coincidem.');
+              return;
+            }
+            
+            if (newPassword.value.length < 6) {
+              alert('A nova senha deve ter pelo menos 6 caracteres.');
+              return;
+            }
+            
+            // Reautenticar usuário se necessário
+            if (currentPassword.value.trim()) {
+              const credential = EmailAuthProvider.credential(
+                auth.currentUser.email,
+                currentPassword.value
+              );
+              await reauthenticateWithCredential(auth.currentUser, credential);
+            }
+            
+            await updatePassword(auth.currentUser, newPassword.value);
+          }
+          
+          alert('Perfil atualizado com sucesso!');
+          closeProfileModal();
+          
+        } catch (error) {
+          console.error('Erro ao atualizar perfil:', error);
+          if (error.code === 'auth/wrong-password') {
+            alert('Senha atual incorreta.');
+          } else if (error.code === 'auth/weak-password') {
+            alert('A nova senha é muito fraca.');
+          } else {
+            alert('Erro ao atualizar perfil: ' + error.message);
+          }
+        }
+      }
+      
+      // Event listeners para perfil
+      avatarFileInput.addEventListener('change', handleAvatarChange);
+      changeAvatarBtn.addEventListener('click', () => avatarFileInput.click());
+      profileCloseBtn.addEventListener('click', closeProfileModal);
+      cancelProfileBtn.addEventListener('click', closeProfileModal);
+      saveProfileBtn.addEventListener('click', saveProfileChanges);
+      profileOverlay.addEventListener('click', (e) => {
+        if (e.target === profileOverlay) closeProfileModal();
+      });
+      
+      // Modificar o event listener do avatar para abrir perfil se logado
+      avatarContainer.addEventListener("click", () => {
+        if (auth.currentUser) {
+          openProfileModal();
+        } else {
+          openAuthModal();
+        }
+      });
       
       // Carregar contador inicial
       loadInitialNotificationCount();
     </script>
+
+    <!-- Modal de perfil do usuário -->
+    <div class="modal-overlay" id="profileOverlay">
+      <div class="modal profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+        <header>
+          <h3 id="profileTitle">Meu Perfil</h3>
+          <button id="profileCloseBtn" aria-label="Fechar">✕</button>
+        </header>
+        <div class="profile-content">
+          <div class="profile-avatar-section">
+            <div class="current-avatar">
+              <img id="currentAvatarImg" src="img/Generic_avatar.png" alt="Avatar atual" />
+              <div class="avatar-overlay">
+                <button id="changeAvatarBtn" class="avatar-change-btn">
+                  <i class="fas fa-camera"></i>
+                  <span>Alterar Foto</span>
+                </button>
+              </div>
+            </div>
+            <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" />
+          </div>
+          
+          <div class="profile-info">
+            <div class="form-row">
+              <label for="profileEmail">Email</label>
+              <input id="profileEmail" type="email" readonly />
+            </div>
+            <div class="form-row">
+              <label for="profileName">Nome</label>
+              <input id="profileName" type="text" placeholder="Seu nome" />
+            </div>
+          </div>
+          
+          <div class="password-section">
+            <h4>Alterar Senha</h4>
+            <div class="form-row">
+              <label for="currentPassword">Senha Atual</label>
+              <input id="currentPassword" type="password" placeholder="Digite sua senha atual" />
+            </div>
+            <div class="form-row">
+              <label for="newPassword">Nova Senha</label>
+              <input id="newPassword" type="password" placeholder="Digite sua nova senha" />
+            </div>
+            <div class="form-row">
+              <label for="confirmPassword">Confirmar Nova Senha</label>
+              <input id="confirmPassword" type="password" placeholder="Confirme sua nova senha" />
+            </div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button id="saveProfileBtn">Salvar Alterações</button>
+          <button id="cancelProfileBtn" class="secondary">Cancelar</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal de notificações -->
     <div class="modal-overlay" id="notificationsOverlay">

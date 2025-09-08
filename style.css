@@ -509,6 +509,136 @@ body.light-mode .notifications-actions {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Modal de perfil do usuário */
+.profile-modal {
+    max-width: 500px;
+    max-height: 90vh;
+}
+
+.profile-content {
+    padding: 0 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.profile-avatar-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.current-avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 107, 53, 0.3);
+    transition: all 0.3s ease;
+}
+
+.current-avatar:hover {
+    border-color: #ff6b35;
+    transform: scale(1.05);
+}
+
+.current-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.current-avatar:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-change-btn {
+    background: rgba(255, 107, 53, 0.9);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.avatar-change-btn:hover {
+    background: #ff6b35;
+    transform: scale(1.05);
+}
+
+.avatar-change-btn i {
+    font-size: 16px;
+}
+
+.profile-info {
+    margin-bottom: 24px;
+}
+
+.password-section {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 24px;
+}
+
+.password-section h4 {
+    margin: 0 0 16px 0;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.profile-actions {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    gap: 12px;
+}
+
+.profile-actions button {
+    flex: 1;
+}
+
+/* Modo claro para perfil */
+body.light-mode .current-avatar {
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+body.light-mode .current-avatar:hover {
+    border-color: #ff6b35;
+}
+
+body.light-mode .avatar-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+body.light-mode .password-section {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .password-section h4 {
+    color: #1a1a1a;
+}
+
+body.light-mode .profile-actions {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .header {
     position: fixed;
     top: 0;
