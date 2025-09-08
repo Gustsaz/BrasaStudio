@@ -237,7 +237,6 @@
         </div>
       </div>
     </section>
-
     <script>
       (() => {
         const d = document, s = d.createElement("script"); s.type = "module";
@@ -251,13 +250,15 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="modelo3d.js"></script>
     <script src="script.js"></script>
+
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
       import {
         getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
         getRedirectResult, signOut, onAuthStateChanged,
         setPersistence, browserLocalPersistence,
-        createUserWithEmailAndPassword, signInWithEmailAndPassword
+        createUserWithEmailAndPassword, signInWithEmailAndPassword,
+        getIdTokenResult
       } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
       import {
         getFirestore, collection, query, where, orderBy, limit, getDocs, doc, onSnapshot
@@ -283,18 +284,15 @@
       function getYouTubeId(url) {
         try {
           const u = new URL(url);
-          if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);                  // youtu.be/ID
-          if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];          // /shorts/ID
-          if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];          // /embed/ID
-          const v = u.searchParams.get("v");                                               // ?v=ID
+          if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+          if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];
+          if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];
+          const v = u.searchParams.get("v");
           if (v) return v;
-        } catch (_) {
-          /* se não for URL válida, tenta regex bruta abaixo */
-        }
+        } catch (_) { }
         const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&/]|\b)/);
         return m ? m[1] : null;
       }
-
       function getEmbedUrl(url) {
         const id = getYouTubeId(url);
         return id ? `https://www.youtube.com/embed/${id}` : "";
@@ -307,54 +305,34 @@
           if (el) el.innerHTML = '<div style="padding:16px">Carregando vídeo…</div>';
         };
         preload(1); preload(2);
-
         try {
           const snap = await getDocs(collection(db, "videos"));
-          console.log(`[videos] documentos: ${snap.size}`);
-          if (snap.empty) {
-            console.warn('Coleção "videos" vazia.');
-            return;
-          }
-
+          if (snap.empty) return;
           snap.forEach((d) => {
             const data = d.data();
             const el = document.getElementById(`videoCard${data.card}`);
             const embed = getEmbedUrl(data.url);
-            if (!el) {
-              console.warn("Card não encontrado para", data);
-              return;
-            }
-            if (!embed) {
-              el.innerHTML = '<div style="padding:16px">URL do YouTube inválida.</div>';
-              console.warn("URL inválida:", data.url);
-              return;
-            }
-
+            if (!el || !embed) return;
             el.innerHTML = `
-          <iframe
-            src="${embed}"
-            title="YouTube video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen
-            style="width:100%;height:100%;border:0;border-radius:12px;"
-          ></iframe>`;
-            console.log(`Preenchido: videoCard${data.card} ← ${embed}`);
+              <iframe
+                src="${embed}"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                style="width:100%;height:100%;border:0;border-radius:12px;"
+              ></iframe>`;
           });
         } catch (e) {
           console.error("Erro Firestore ao carregar vídeos:", e);
-          const c1 = document.getElementById("videoCard1");
-          const c2 = document.getElementById("videoCard2");
-          [c1, c2].forEach(el => el && (el.innerHTML = '<div style="padding:16px">Erro ao carregar vídeos.</div>'));
         }
       }
-
-      // roda após db pronto
       carregarVideos();
 
-      // ---- Login / UI (recoloquei isMobile) ----
+      // ---- Login / UI ----
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const avatarContainer = document.querySelector(".generic-avatar");
       const logoutBtn = document.getElementById("logoutBtn");
+      const btnAdmin = document.getElementById("btnAdmin");
 
       // Modal auth
       const overlay = document.getElementById("authOverlay");
@@ -371,7 +349,6 @@
       const signinPass = document.getElementById("signinPass");
       const btnDoSignin = document.getElementById("btnDoSignin");
       const btnGoogle = document.getElementById("btnGoogle");
-      const btnAdmin = document.getElementById("btnAdmin");
 
       function openAuthModal() { overlay.style.display = "flex"; }
       function closeAuthModal() { overlay.style.display = "none"; }
@@ -395,66 +372,64 @@
         if (!email || !p1 || !p2) return alert('Preencha todos os campos.');
         if (p1 !== p2) return alert('As senhas não coincidem.');
         try { await createUserWithEmailAndPassword(auth, email, p1); closeAuthModal(); }
-        catch (err) { console.error(err); alert('Falha ao criar conta: ' + (err?.message || '')); }
+        catch (err) { alert('Falha ao criar conta: ' + (err?.message || '')); }
       });
       btnDoSignin.addEventListener("click", async () => {
         const email = signinEmail.value.trim(); const pass = signinPass.value;
         if (!email || !pass) return alert('Informe email e senha.');
         try { await signInWithEmailAndPassword(auth, email, pass); closeAuthModal(); }
-        catch (err) { console.error(err); alert('Falha ao entrar: ' + (err?.message || '')); }
+        catch (err) { alert('Falha ao entrar: ' + (err?.message || '')); }
       });
       btnGoogle.addEventListener("click", async () => {
         try { if (isMobile) await signInWithRedirect(auth, provider); else await signInWithPopup(auth, provider); closeAuthModal(); }
         catch (err) { console.error(err); }
       });
-      btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
       logoutBtn.addEventListener("click", () => signOut(auth));
-      getRedirectResult(auth).catch((error) => console.error(error));
+      getRedirectResult(auth).catch(console.error);
 
-      onAuthStateChanged(auth, (user) => {
+      // ---- Estado de login ----
+      onAuthStateChanged(auth, async (user) => {
         const avatar = document.querySelector(".generic-avatar img");
         if (user) {
-          // --- logado ---
           avatar.src = user.photoURL || "img/Generic_avatar.png";
-          avatar.dataset.loggedin = "true";  // flag custom
           logoutBtn.style.display = "inline-flex";
           logoutBtn.className = "logout-btn";
+
+          // 🔥 Verificar se é admin
+          const tokenResult = await getIdTokenResult(user, true);
+          if (tokenResult.claims.admin) {
+            console.log("✅ Usuário é administrador");
+            btnAdmin.style.display = "inline-block";
+          } else {
+            btnAdmin.style.display = "none";
+          }
         } else {
-          const isDark = document.body.classList.contains("dark-mode");
-          avatar.src = isDark ? "img/Generic_avatar_dark.png" : "img/Generic_avatar.png";
-          avatar.dataset.loggedin = "false";
+          avatar.src = "img/Generic_avatar.png";
           logoutBtn.style.display = "none";
+          btnAdmin.style.display = "none";
           closeAuthModal();
         }
       });
+      btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
 
-
-
-      // ---- Último comentário (mantive seu código) ----
+      // ---- Último comentário ----
       async function mostrarUltimoComentario() {
         try {
           const comentariosRef = collection(db, "comentarios");
-          const q = query(
-            comentariosRef,
-            where("jogo", "==", "Maré de Esperança"),
-            orderBy("data", "desc"),
-            limit(1)
-          );
+          const q = query(comentariosRef, where("jogo", "==", "Maré de Esperança"), orderBy("data", "desc"), limit(1));
           const snapshot = await getDocs(q);
           if (!snapshot.empty) {
-            const doc = snapshot.docs[0].data();
+            const docData = snapshot.docs[0].data();
             const divUltimo = document.querySelector(".ultimo-comentario");
             divUltimo.innerHTML = `
-          <div class="avatar">
-            <img src="${doc.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;">
-          </div>
-          <div>
-            <h3 class="nome-usuario">${doc.nome || "Anônimo"}</h3>
-            <span class="data">${doc.data ? new Date(doc.data.seconds * 1000).toLocaleString("pt-BR") : ""}</span>
-            <p class="texto-comentario">${doc.texto}</p>
-          </div>`;
-          } else {
-            document.querySelector(".ultimo-comentario").innerHTML = "<p>Nenhum comentário ainda.</p>";
+              <div class="avatar">
+                <img src="${docData.foto || "img/Generic_avatar.png"}" style="width:40px; border-radius:50%;">
+              </div>
+              <div>
+                <h3>${docData.nome || "Anônimo"}</h3>
+                <span>${docData.data ? new Date(docData.data.seconds * 1000).toLocaleString("pt-BR") : ""}</span>
+                <p>${docData.texto}</p>
+              </div>`;
           }
         } catch (error) {
           console.error("Erro ao carregar último comentário:", error);
@@ -462,7 +437,7 @@
       }
       mostrarUltimoComentario();
 
-      // ---- Notificações: ouvinte global de sinal ----
+      // ---- Notificações ----
       const notifDot = document.getElementById("notifDot");
       const signalDocRef = doc(collection(db, "notificacoes"), "global");
       onSnapshot(signalDocRef, (snap) => {
@@ -473,52 +448,33 @@
 
     <!-- Modal de autenticação -->
     <div class="modal-overlay" id="authOverlay">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="modal">
         <header>
           <h3 id="authTitle">Entrar ou Criar conta</h3>
-          <button id="authCloseBtn" aria-label="Fechar">✕</button>
+          <button id="authCloseBtn">✕</button>
         </header>
         <div class="tabs">
           <button id="tabSignup" class="active">Criar conta</button>
           <button id="tabSignin">Entrar</button>
         </div>
         <section id="signupArea">
-          <div class="form-row">
-            <label for="signupEmail">Email</label>
-            <input id="signupEmail" type="email" placeholder="voce@exemplo.com" />
-          </div>
-          <div class="form-row">
-            <label for="signupPass">Senha</label>
-            <input id="signupPass" type="password" placeholder="Sua senha" />
-          </div>
-          <div class="form-row">
-            <label for="signupPass2">Repetir senha</label>
-            <input id="signupPass2" type="password" placeholder="Repita a senha" />
-          </div>
-          <div class="actions">
-            <button id="btnDoSignup">Criar conta</button>
-          </div>
+          <input id="signupEmail" type="email" placeholder="voce@exemplo.com" />
+          <input id="signupPass" type="password" placeholder="Senha" />
+          <input id="signupPass2" type="password" placeholder="Repita a senha" />
+          <button id="btnDoSignup">Criar conta</button>
         </section>
         <section id="signinArea" style="display:none">
-          <div class="form-row">
-            <label for="signinEmail">Email</label>
-            <input id="signinEmail" type="email" placeholder="voce@exemplo.com" />
-          </div>
-          <div class="form-row">
-            <label for="signinPass">Senha</label>
-            <input id="signinPass" type="password" placeholder="Sua senha" />
-          </div>
-          <div class="actions">
-            <button id="btnDoSignin">Entrar</button>
-          </div>
+          <input id="signinEmail" type="email" placeholder="voce@exemplo.com" />
+          <input id="signinPass" type="password" placeholder="Senha" />
+          <button id="btnDoSignin">Entrar</button>
         </section>
         <div class="actions">
           <button id="btnGoogle">Entrar com Google</button>
-          <button id="btnAdmin" class="secondary">Entrar como Administrador</button>
-          <div class="hint">Ao entrar, você concorda com os termos de uso.</div>
+          <button id="btnAdmin" class="secondary" style="display:none">Entrar como Administrador</button>
         </div>
       </div>
     </div>
+
 
 </body>
 
