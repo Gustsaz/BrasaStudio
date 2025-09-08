@@ -833,6 +833,17 @@ body.light-mode .jogo::after {
     background: linear-gradient(transparent, rgba(255, 255, 255, 0.9));
 }
 
+/* fundo no modo claro */
+body.light-mode .jogo {
+    background: url("img/image3.png") center center / cover no-repeat;
+}
+
+/* camada de água/transparência no modo claro */
+body.light-mode .jogo .water {
+    background: url("img/image3_trans.png") center center / cover no-repeat;
+}
+
+
 /* Footer modo escuro */
 body.dark-mode .footer {
     background: #0a0a0a;
@@ -1086,10 +1097,6 @@ body.light-mode .jogo-description {
 
 body.light-mode .jogo-conteudo {
     background: linear-gradient(135deg, rgba(255, 107, 53, 0.05), rgba(255, 140, 66, 0.05));
-}
-
-body.light-mode .jogo {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
 }
 
 @keyframes float {
@@ -1363,3 +1370,4 @@ body.light-mode .jogo {
         padding: 30px 16px;
     }
 }
+
