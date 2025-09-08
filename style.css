@@ -295,8 +295,8 @@ body:not(.light-mode) .generic-avatar img {
 
 .botao-jogo-jogo {
     position: absolute;
-    right: 280px;
-    top: calc(29% + 120px);
+    right: 200px;
+    top: calc(40% + 120px);
     width: 160px;
     height: 48px;
     border-radius: 8px;

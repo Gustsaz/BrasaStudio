@@ -29,6 +29,7 @@ if (darkModeBtn) {
             { selector: ".dark-mode-btn img", dark: "img/dark-mode_dark.png", light: "img/dark-mode.png" },
             { selector: ".notifications img", dark: "img/notifications_dark.png", light: "img/notifications.png" },
             { selector: ".generic-avatar img", dark: "img/Generic_avatar_dark.png", light: "img/Generic_avatar.png" },
+            { selector: ".logoutBtn img", dark: "img/logout_dark.png", light: "img/logout.png" },
             { selector: ".settings img", dark: "img/settings_dark.png", light: "img/settings.png" },
             { selector: ".jogo-conteudo .tela", dark: "img/tela_dark.png", light: "img/tela-1.png" },
             { selector: ".jogo-conteudo .placa", dark: "img/Botao_dark.png", light: "img/Botao.png" },
