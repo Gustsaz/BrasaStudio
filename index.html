@@ -407,7 +407,7 @@
         try { if (isMobile) await signInWithRedirect(auth, provider); else await signInWithPopup(auth, provider); closeAuthModal(); }
         catch (err) { console.error(err); }
       });
-      btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
+      btnAdmin.addEventListener("click", () => {window.location.href = 'adm.html';});
       logoutBtn.addEventListener("click", () => signOut(auth));
       getRedirectResult(auth).catch((error) => console.error(error));
 
