@@ -701,12 +701,6 @@
         if (e.target === notificationsOverlay) closeNotificationsModal();
       });
       
-      // Botão de teste (temporário)
-      const testNotificationBtn = document.getElementById("testNotificationBtn");
-      if (testNotificationBtn) {
-        testNotificationBtn.addEventListener("click", addTestNotification);
-      }
-      
       markAllReadBtn.addEventListener("click", () => {
         const unreadItems = document.querySelectorAll('.notification-item.unread');
         unreadItems.forEach(item => {
