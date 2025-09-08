@@ -37,8 +37,9 @@
           <img src="img/dark-mode.png" alt="Ícone modo escuro">
         </button>
 
-        <div class="notifications">
+        <div class="notifications" id="notificationsIcon">
           <img src="img/notifications.png" alt="Notificações" />
+          <span class="notif-dot" id="notifDot" style="display:none"></span>
         </div>
         <div class="settings">
           <img src="img/settings.png" alt="Configurações" />
@@ -214,7 +215,7 @@
         getRedirectResult, signOut, onAuthStateChanged
       } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
       import {
-        getFirestore, collection, query, where, orderBy, limit, getDocs
+        getFirestore, collection, query, where, orderBy, limit, getDocs, doc, onSnapshot
       } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
       // ---- Firebase ----
@@ -370,6 +371,14 @@
         }
       }
       mostrarUltimoComentario();
+
+      // ---- Notificações: ouvinte global de sinal ----
+      const notifDot = document.getElementById("notifDot");
+      const signalDocRef = doc(collection(db, "notificacoes"), "global");
+      onSnapshot(signalDocRef, (snap) => {
+        const active = snap.exists() && Boolean(snap.data().active);
+        notifDot.style.display = active ? "inline-block" : "none";
+      });
     </script>
 
 </body>
