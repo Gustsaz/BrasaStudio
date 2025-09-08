@@ -106,7 +106,7 @@
     <section class="videos" aria-label="Seção de Vídeos">
       <article class="card grande" id="videoCard1"></article>
       <article class="card grande" id="videoCard2"></article>
-      <article class="card pequeno">
+      <article class="card feed">
         <behold-widget feed-id="q4ROx0Y68PxwDwrjffMd"></behold-widget>
       </article>
     </section>
@@ -149,12 +149,54 @@
     </section>
 
     <section class="criadores" aria-label="criadores">
-      <div class="criador"><img src="img/marcelo.png" alt="Marcelo"></div>
-      <div class="criador"><img src="img/raniroca.png" alt="Raniroca"></div>
-      <div class="criador"><img src="img/isaque.png" alt="Isaque"></div>
-      <div class="criador"><img src="img/arthur.png" alt="Arthur"></div>
-      <div class="criador"><img src="img/davi.png" alt="Davi"></div>
-      <div class="criador"><img src="img/yasmin.png" alt="Yasmin"></div>
+      <div class="criador">
+        <img src="img/marcelo.png" alt="Marcelo">
+        <div class="criador-overlay">
+          <div class="nome">Marcelo</div>
+          <div class="funcao">Game Designer</div>
+          <div class="ig">@marcelo</div>
+        </div>
+      </div>
+      <div class="criador">
+        <img src="img/raniroca.png" alt="Raniroca">
+        <div class="criador-overlay">
+          <div class="nome">Raniroca</div>
+          <div class="funcao">Programador</div>
+          <div class="ig">@raniroca</div>
+        </div>
+      </div>
+      <div class="criador">
+        <img src="img/isaque.png" alt="Isaque">
+        <div class="criador-overlay">
+          <div class="nome">Isaque</div>
+          <div class="funcao">Artista</div>
+          <div class="ig">@isaque</div>
+        </div>
+      </div>
+      <div class="criador">
+        <img src="img/arthur.png" alt="Arthur">
+        <div class="criador-overlay">
+          <div class="nome">Arthur</div>
+          <div class="funcao">Dev Frontend</div>
+          <div class="ig">@arthur</div>
+        </div>
+      </div>
+      <div class="criador">
+        <img src="img/davi.png" alt="Davi">
+        <div class="criador-overlay">
+          <div class="nome">Davi</div>
+          <div class="funcao">Dev Backend</div>
+          <div class="ig">@davi</div>
+        </div>
+      </div>
+      <div class="criador">
+        <img src="img/yasmin.png" alt="Yasmin">
+        <div class="criador-overlay">
+          <div class="nome">Yasmin</div>
+          <div class="funcao">UI/UX</div>
+          <div class="ig">@yasmin</div>
+        </div>
+      </div>
     </section>
 
 
@@ -182,7 +224,8 @@
             <div class="social-icons">
               <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
               <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-              <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+              <a href="https://www.instagram.com/brasa_studio?igsh=MWk3cHJ5azNpZHdkaw==" aria-label="Instagram"><i
+                  class="fab fa-instagram"></i></a>
               <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
             </div>
           </div>
@@ -352,17 +395,17 @@
         if (!email || !p1 || !p2) return alert('Preencha todos os campos.');
         if (p1 !== p2) return alert('As senhas não coincidem.');
         try { await createUserWithEmailAndPassword(auth, email, p1); closeAuthModal(); }
-        catch(err){ console.error(err); alert('Falha ao criar conta: '+(err?.message||'')); }
+        catch (err) { console.error(err); alert('Falha ao criar conta: ' + (err?.message || '')); }
       });
       btnDoSignin.addEventListener("click", async () => {
         const email = signinEmail.value.trim(); const pass = signinPass.value;
         if (!email || !pass) return alert('Informe email e senha.');
         try { await signInWithEmailAndPassword(auth, email, pass); closeAuthModal(); }
-        catch(err){ console.error(err); alert('Falha ao entrar: '+(err?.message||'')); }
+        catch (err) { console.error(err); alert('Falha ao entrar: ' + (err?.message || '')); }
       });
       btnGoogle.addEventListener("click", async () => {
         try { if (isMobile) await signInWithRedirect(auth, provider); else await signInWithPopup(auth, provider); closeAuthModal(); }
-        catch(err){ console.error(err); }
+        catch (err) { console.error(err); }
       });
       btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
       logoutBtn.addEventListener("click", () => signOut(auth));
