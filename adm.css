@@ -19,6 +19,12 @@
 .row .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; opacity: .9; word-break: break-all; }
 .row button { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.08); color: inherit; cursor: pointer; }
 .row button.danger { border-color: #d9534f88; color: #ffb3b0; }
+.row .video-input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.15); color: inherit; }
+
+/* Estilo para gameFilter quando usado (mantido por compatibilidade) */
+.filters label { font-weight: 600; margin-right: 8px; }
+#gameFilter { padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.06); color: inherit; }
+#gameFilter:focus { outline: none; border-color: #4a90e2; box-shadow: 0 0 0 2px rgba(74,144,226,0.25); }
 
 .comment-row .text { white-space: pre-wrap; }
 .comment-row .date { font-size: 12px; opacity: .7; }
@@ -30,5 +36,3 @@
   .form-row { flex-direction: column; align-items: stretch; }
   .form-row label { min-width: 0; }
 }
-
-
