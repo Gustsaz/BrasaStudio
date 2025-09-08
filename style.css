@@ -51,10 +51,6 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
     content: url("img/nome-jogo_dark.png");
 }
 
-body:not(.light-mode) .generic-avatar img {
-    content: url("img/Generic_avatar_dark.png");
-}
-
 .header {
     position: fixed;
     top: 0;
