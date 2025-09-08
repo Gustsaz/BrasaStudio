@@ -92,7 +92,6 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
     cursor: pointer;
 }
 
-
 .header {
     position: fixed;
     top: 0;
@@ -492,6 +491,29 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
     padding: 0;
 }
 
+/* Feed behold responsivo e cartões maiores */
+.videos .card.feed {
+    grid-column: 1 / -1; /* ocupa 100% da largura do grid */
+    min-height: clamp(320px, 40vw, 640px);
+}
+.videos .feed-wrapper {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* altura proporcional à largura */
+}
+.videos behold-widget {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+.videos behold-widget iframe,
+.videos behold-widget .behold-grid {
+    width: 100% !important;
+    height: 100% !important;
+}
+.videos behold-widget .behold-grid .behold-card {
+    transform: scale(1.06);
+}
+
 /*jogos*/
 .jogos {
     padding: 80px 32px;
@@ -638,20 +660,15 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
     flex-wrap: wrap;
 }
 
-.criadores img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid rgba(255, 107, 53, 0.3);
-    transition: all 0.3s ease;
-}
-
-.criadores img:hover {
-    transform: scale(1.1);
-    border-color: #ff6b35;
-    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
-}
+/* Cartões de criadores com overlay interno acima da imagem */
+.criador { position: relative; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; }
+.criador img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; border: 3px solid rgba(255, 107, 53, 0.3); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
+.criador:hover img { transform: scale(1.06); border-color: #ff6b35; box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3); }
+.criador .criador-overlay { position: absolute; inset: 0; border-radius: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: rgba(0,0,0,0.55); color: #fff; opacity: 0; transition: opacity .25s ease; z-index: 1; pointer-events: none; padding: 10px; }
+.criador .criador-overlay .nome { font-weight: 700; font-size: 1rem; }
+.criador .criador-overlay .funcao { opacity: .9; margin-top: 2px; }
+.criador .criador-overlay .ig { opacity: .8; font-size: .9rem; margin-top: 2px; }
+.criador:hover .criador-overlay { opacity: 1; }
 
 /*footer*/
 .footer {
@@ -1226,6 +1243,10 @@ body.light-mode .jogo-conteudo {
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
     }
+    .videos .card.feed {
+        grid-column: 1 / -1;
+        min-height: clamp(300px, 45vw, 560px);
+    }
 }
 
 @media (max-width: 768px) {
@@ -1277,6 +1298,10 @@ body.light-mode .jogo-conteudo {
         grid-template-columns: 1fr;
         padding: 60px 20px;
         gap: 16px;
+    }
+    .videos .card.feed {
+        grid-column: 1 / -1;
+        min-height: clamp(240px, 55vw, 520px);
     }
 
     .jogos {
