@@ -45,23 +45,7 @@
 
     <section class="admin-card" id="videosAdmin">
       <h2>Vídeos (cards 1 e 2)</h2>
-      <p>Atualize os links do YouTube para os cards da seção vídeos da home.</p>
-      <form id="videoForm" autocomplete="off">
-        <div class="form-row">
-          <label for="videoCard">Card</label>
-          <select id="videoCard">
-            <option value="1">Card 1</option>
-            <option value="2">Card 2</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label for="videoUrl">URL do YouTube</label>
-          <input id="videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=XXXX" required />
-        </div>
-        <div class="form-actions">
-          <button type="submit">Salvar / Atualizar</button>
-        </div>
-      </form>
+      <p>Edite os links do YouTube mostrados na home. Somente Card 1 e Card 2.</p>
       <div id="videosList" class="list"></div>
     </section>
 
@@ -171,56 +155,50 @@
     }
 
     // ---- Vídeos ----
-    const videoForm = document.getElementById("videoForm");
-    const videoCard = document.getElementById("videoCard");
-    const videoUrl = document.getElementById("videoUrl");
     const videosList = document.getElementById("videosList");
 
     async function loadVideosForAdmin() {
       videosList.innerHTML = "Carregando…";
+      // buscamos os docs existentes, mas a UI força somente card-1 e card-2
       const snap = await getDocs(collection(db, "videos"));
-      const arr = [];
-      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-      arr.sort((a, b) => (a.card || 0) - (b.card || 0));
-      videosList.innerHTML = arr.map(v => `
-        <div class="row">
-          <div><strong>Card:</strong> ${v.card || "?"}</div>
-          <div class="grow"><span class="mono">${v.url || ""}</span></div>
-          <button data-edit="${v.card}">Editar</button>
-        </div>
-      `).join("") || "Nenhum vídeo cadastrado.";
+      const byCard = { 1: { card: 1, url: "" }, 2: { card: 2, url: "" } };
+      snap.forEach(d => {
+        const data = d.data();
+        if (data.card === 1) byCard[1] = { card: 1, url: data.url || "" };
+        if (data.card === 2) byCard[2] = { card: 2, url: data.url || "" };
+      });
+      const rows = [1,2].map(n => {
+        const v = byCard[n];
+        return `
+          <div class="row" data-card="${n}">
+            <div><strong>Card ${n}</strong></div>
+            <div class="grow"><input class="video-input" type="url" placeholder="https://www.youtube.com/watch?v=XXXX" value="${v.url || ''}"></div>
+            <button class="save-btn">Salvar</button>
+          </div>
+        `;
+      }).join("");
+      videosList.innerHTML = rows;
 
-      videosList.querySelectorAll("[data-edit]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          videoCard.value = btn.getAttribute("data-edit");
-          const v = arr.find(x => String(x.card) === btn.getAttribute("data-edit"));
-          if (v) videoUrl.value = v.url || "";
-          window.scrollTo({ top: videoForm.offsetTop - 20, behavior: 'smooth' });
+      videosList.querySelectorAll(".row").forEach(row => {
+        const n = Number(row.getAttribute("data-card"));
+        const input = row.querySelector(".video-input");
+        const save = row.querySelector(".save-btn");
+        save.addEventListener("click", async () => {
+          const url = input.value.trim();
+          if (!url) return alert("Informe a URL do YouTube.");
+          if (!getYouTubeId(url)) return alert("URL do YouTube inválida.");
+          const id = `card-${n}`;
+          try {
+            await setDoc(doc(collection(db, "videos"), id), { card: n, url }, { merge: true });
+            alert("Vídeo salvo!");
+          } catch (err) {
+            console.error(err);
+            alert("Falha ao salvar. Verifique as permissões do Firestore.");
+          }
         });
       });
     }
-
-    videoForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const cardNum = Number(videoCard.value);
-      const url = videoUrl.value.trim();
-      if (!cardNum || !url) return;
-      if (!getYouTubeId(url)) {
-        alert("URL do YouTube inválida.");
-        return;
-      }
-      const id = `card-${cardNum}`;
-      try {
-        await setDoc(doc(collection(db, "videos"), id), { card: cardNum, url }, { merge: true });
-        videoUrl.value = "";
-        await loadVideosForAdmin();
-        alert("Vídeo salvo/atualizado!");
-      } catch (err) {
-        console.error("Erro ao salvar vídeo:", err);
-        alert("Falha ao salvar o vídeo. Verifique as permissões do Firestore.");
-      }
-    });
-
+    
     // ---- Comentários ----
     const commentsList = document.getElementById("commentsList");
     const gameFilter = document.getElementById("gameFilter");
@@ -228,10 +206,11 @@
     let commentsUnsub = null;
     function subscribeComments() {
       if (commentsUnsub) commentsUnsub();
+      if (!commentsList) return;
       commentsList.innerHTML = "Carregando comentários…";
       const base = collection(db, "comentarios");
-      const q = gameFilter.value 
-        ? query(base, where("jogo", "==", gameFilter.value), orderBy("data", "desc")) 
+      const q = gameFilter && gameFilter.value
+        ? query(base, where("jogo", "==", gameFilter.value), orderBy("data", "desc"))
         : query(base, orderBy("data", "desc"));
       commentsUnsub = onSnapshot(q, (snapshot) => {
         if (snapshot.empty) {
@@ -268,7 +247,7 @@
         });
       });
     }
-    gameFilter.addEventListener("change", subscribeComments);
+    if (gameFilter) gameFilter.addEventListener("change", subscribeComments);
 
     // ---- Notificações ----
     const notifDot = document.getElementById("notifDot");
@@ -278,8 +257,8 @@
     const notifMessage = document.getElementById("notifMessage");
 
     function setNotifUI(active, message) {
-      notifDot.style.display = active ? "inline-block" : "none";
-      notifStatus.textContent = active ? (message ? `Ativo: ${message}` : "Notificação ativa") : "Sem notificação";
+      if (notifDot) notifDot.style.display = active ? "inline-block" : "none";
+      if (notifStatus) notifStatus.textContent = active ? (message ? `Ativo: ${message}` : "Notificação ativa") : "Sem notificação";
     }
 
     const signalDocRef = doc(collection(db, "notificacoes"), "global");
@@ -292,16 +271,16 @@
       }
     });
 
-    sendNotif.addEventListener("click", async () => {
+    if (sendNotif) sendNotif.addEventListener("click", async () => {
       try {
         await setDoc(signalDocRef, { active: true, message: notifMessage.value.trim(), ts: serverTimestamp() }, { merge: true });
-        notifMessage.value = "";
+        if (notifMessage) notifMessage.value = "";
       } catch (err) {
         console.error("Erro ao enviar notificação:", err);
         alert("Falha ao enviar notificação. Verifique as permissões do Firestore.");
       }
     });
-    clearNotif.addEventListener("click", async () => {
+    if (clearNotif) clearNotif.addEventListener("click", async () => {
       try {
         await setDoc(signalDocRef, { active: false, message: "", ts: serverTimestamp() }, { merge: true });
       } catch (err) {
@@ -309,7 +288,6 @@
         alert("Falha ao limpar notificação. Verifique as permissões do Firestore.");
       }
     });
-
     // ---- Inicialização ----
     loadVideosForAdmin();
     subscribeComments();
