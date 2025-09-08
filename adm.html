@@ -95,11 +95,17 @@
   <script src="script.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
-      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, addDoc, getDocs, onSnapshot, query, where, orderBy, deleteDoc, serverTimestamp }
-      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+    import { 
+      getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, 
+      getRedirectResult, signOut, onAuthStateChanged, 
+      setPersistence, browserLocalPersistence 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { 
+      getFirestore, collection, doc, setDoc, getDocs, onSnapshot, 
+      query, where, orderBy, deleteDoc, serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
+    // ---- Firebase ----
     const firebaseConfig = {
       apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
       authDomain: "brasastudio-bd.firebaseapp.com",
@@ -115,6 +121,12 @@
     const provider = new GoogleAuthProvider();
     const db = getFirestore(app);
 
+    // 🔑 Persistência do login (não precisa mexer no index.html)
+    setPersistence(auth, browserLocalPersistence)
+      .then(() => console.log("Persistência configurada."))
+      .catch(err => console.error("Erro na persistência:", err));
+
+    // ---- Login / Logout ----
     const avatarContainer = document.querySelector(".generic-avatar");
     const logoutBtn = document.getElementById("logoutBtn");
 
@@ -125,10 +137,6 @@
         else await signInWithPopup(auth, provider);
       } catch (error) { console.error("Erro no login:", error); }
     };
-
-    console.log("Usuário atual:", auth.currentUser);
-    await setDoc(doc(collection(db, "videos"), id), { card: cardNum, url }, { merge: true });
-
 
     avatarContainer.addEventListener("click", () => { if (!auth.currentUser) login(); });
     logoutBtn.addEventListener("click", () => signOut(auth));
@@ -146,7 +154,7 @@
       }
     });
 
-    // Utilidades YouTube
+    // ---- Util YouTube ----
     function getYouTubeId(url) {
       try {
         const u = new URL(url);
@@ -155,12 +163,12 @@
         if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];
         const v = u.searchParams.get("v");
         if (v) return v;
-      } catch (_) { }
-      const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&\/]|\b)/);
+      } catch (_) {}
+      const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&/]|\b)/);
       return m ? m[1] : null;
     }
 
-    // 1) Vídeos: upsert por card (docId = card-<n>)
+    // ---- Vídeos ----
     const videoForm = document.getElementById("videoForm");
     const videoCard = document.getElementById("videoCard");
     const videoUrl = document.getElementById("videoUrl");
@@ -211,7 +219,7 @@
       }
     });
 
-    // 2) Comentários: listar e excluir
+    // ---- Comentários ----
     const commentsList = document.getElementById("commentsList");
     const gameFilter = document.getElementById("gameFilter");
 
@@ -220,7 +228,9 @@
       if (commentsUnsub) commentsUnsub();
       commentsList.innerHTML = "Carregando comentários…";
       const base = collection(db, "comentarios");
-      const q = gameFilter.value ? query(base, where("jogo", "==", gameFilter.value), orderBy("data", "desc")) : query(base, orderBy("data", "desc"));
+      const q = gameFilter.value 
+        ? query(base, where("jogo", "==", gameFilter.value), orderBy("data", "desc")) 
+        : query(base, orderBy("data", "desc"));
       commentsUnsub = onSnapshot(q, (snapshot) => {
         if (snapshot.empty) {
           commentsList.innerHTML = "Nenhum comentário.";
@@ -236,7 +246,7 @@
             <div class="grow">
               <div><strong>${c.nome || 'Anônimo'}</strong> <span class="mono">${c.jogo || ''}</span></div>
               <div class="text">${c.texto || ''}</div>
-              <div class="date">${c.data?.seconds ? new Date(c.data.seconds * 1000).toLocaleString('pt-BR') : ''}</div>
+              <div class="date">${c.data?.seconds ? new Date(c.data.seconds*1000).toLocaleString('pt-BR') : ''}</div>
             </div>
             <button data-del="${d.id}" class="danger">Apagar</button>
           `;
@@ -258,7 +268,7 @@
     }
     gameFilter.addEventListener("change", subscribeComments);
 
-    // 3) Notificações: usar coleção "notificacoes" doc "global"
+    // ---- Notificações ----
     const notifDot = document.getElementById("notifDot");
     const notifStatus = document.getElementById("notifStatus");
     const sendNotif = document.getElementById("sendNotif");
@@ -298,7 +308,7 @@
       }
     });
 
-    // Inicialização
+    // ---- Inicialização ----
     loadVideosForAdmin();
     subscribeComments();
   </script>
