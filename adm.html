@@ -63,10 +63,14 @@
 
     <section class="admin-card" id="notificationsAdmin">
       <h2>Notificações</h2>
-      <p>Enviar um sinal de notificação para todos os usuários. A bolinha será exibida no ícone de notificações.</p>
+      <p>Enviar notificações para todos os usuários. As notificações aparecerão no modal de notificações e como push notifications.</p>
       <div class="form-row">
-        <label for="notifMessage">Mensagem (opcional)</label>
-        <input id="notifMessage" type="text" maxlength="120" placeholder="Texto curto da notificação" />
+        <label for="notifMessage">Mensagem</label>
+        <input id="notifMessage" type="text" maxlength="200" placeholder="Digite sua mensagem aqui..." required />
+      </div>
+      <div class="form-row">
+        <label for="notifSender">Remetente</label>
+        <input id="notifSender" type="text" maxlength="50" placeholder="Seu nome" value="Administrador" />
       </div>
       <div class="form-actions">
         <button id="sendNotif">Enviar notificação</button>
@@ -262,6 +266,7 @@
     const sendNotif = document.getElementById("sendNotif");
     const clearNotif = document.getElementById("clearNotif");
     const notifMessage = document.getElementById("notifMessage");
+    const notifSender = document.getElementById("notifSender");
 
     function setNotifUI(active, message) {
       if (notifDot) notifDot.style.display = active ? "inline-block" : "none";
@@ -279,9 +284,29 @@
     });
 
     if (sendNotif) sendNotif.addEventListener("click", async () => {
+      const message = notifMessage.value.trim();
+      const sender = notifSender.value.trim() || "Administrador";
+      
+      if (!message) {
+        alert("Por favor, digite uma mensagem.");
+        return;
+      }
+      
       try {
-        await setDoc(signalDocRef, { active: true, message: notifMessage.value.trim(), ts: serverTimestamp() }, { merge: true });
+        await setDoc(signalDocRef, { 
+          active: true, 
+          message: message, 
+          sender: sender,
+          ts: serverTimestamp() 
+        }, { merge: true });
+        
         if (notifMessage) notifMessage.value = "";
+        if (notifStatus) notifStatus.textContent = "Notificação enviada com sucesso!";
+        
+        // Limpar status após 3 segundos
+        setTimeout(() => {
+          if (notifStatus) notifStatus.textContent = "";
+        }, 3000);
       } catch (err) {
         console.error("Erro ao enviar notificação:", err);
         alert("Falha ao enviar notificação. Verifique as permissões do Firestore.");
