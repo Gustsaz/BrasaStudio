@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administração - Brasa Studio</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="stylesheet" href="globals.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="adm.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-left">
+      <a href="index.html">
+        <img class="logo" src="img/logo.png" alt="Logo" />
+      </a>
+      <img class="brasa" src="img/brasa.png" alt="Brasa Studio" />
+    </div>
+
+    <div class="header-right">
+      <button class="dark-mode-btn" aria-label="Alternar modo escuro">
+        <img src="img/dark-mode.png" alt="Ícone modo escuro">
+      </button>
+      <div class="notifications" id="notificationsIcon">
+        <img src="img/notifications.png" alt="Notificações" />
+        <span class="notif-dot" id="notifDot" style="display:none"></span>
+      </div>
+      <div class="settings">
+        <img src="img/settings.png" alt="Configurações" />
+      </div>
+      <div class="generic-avatar">
+        <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
+      </div>
+      <button id="logoutBtn" style="display:none;">
+        <img src="img/logout.png" alt="Sair da conta">
+      </button>
+    </div>
+  </header>
+
+  <main class="admin-wrapper">
+    <h1>Painel Administrativo</h1>
+
+    <section class="admin-card" id="videosAdmin">
+      <h2>Vídeos (cards 1 e 2)</h2>
+      <p>Atualize os links do YouTube para os cards da seção vídeos da home.</p>
+      <form id="videoForm" autocomplete="off">
+        <div class="form-row">
+          <label for="videoCard">Card</label>
+          <select id="videoCard">
+            <option value="1">Card 1</option>
+            <option value="2">Card 2</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="videoUrl">URL do YouTube</label>
+          <input id="videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=XXXX" required />
+        </div>
+        <div class="form-actions">
+          <button type="submit">Salvar / Atualizar</button>
+        </div>
+      </form>
+      <div id="videosList" class="list"></div>
+    </section>
+
+    <section class="admin-card" id="commentsAdmin">
+      <h2>Moderar comentários</h2>
+      <div class="filters">
+        <label for="gameFilter">Jogo</label>
+        <select id="gameFilter">
+          <option value="">Todos</option>
+          <option value="Maré de Esperança" selected>Maré de Esperança</option>
+        </select>
+      </div>
+      <div id="commentsList" class="list"></div>
+    </section>
+
+    <section class="admin-card" id="notificationsAdmin">
+      <h2>Notificações</h2>
+      <p>Enviar um sinal de notificação para todos os usuários. A bolinha será exibida no ícone de notificações.</p>
+      <div class="form-row">
+        <label for="notifMessage">Mensagem (opcional)</label>
+        <input id="notifMessage" type="text" maxlength="120" placeholder="Texto curto da notificação" />
+      </div>
+      <div class="form-actions">
+        <button id="sendNotif">Enviar notificação</button>
+        <button id="clearNotif" class="outline">Limpar notificação</button>
+      </div>
+      <div id="notifStatus" class="status"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, addDoc, getDocs, onSnapshot, query, where, orderBy, deleteDoc, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+      authDomain: "brasastudio-bd.firebaseapp.com",
+      projectId: "brasastudio-bd",
+      storageBucket: "brasastudio-bd.firebasestorage.app",
+      messagingSenderId: "622309371157",
+      appId: "1:622309371157:web:449025a3906b2674208d1c",
+      measurementId: "G-SY8N6JTN63"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const db = getFirestore(app);
+
+    const avatarContainer = document.querySelector(".generic-avatar");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const login = async () => {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      try {
+        if (isMobile) await signInWithRedirect(auth, provider);
+        else await signInWithPopup(auth, provider);
+      } catch (error) { console.error("Erro no login:", error); }
+    };
+
+    console.log("Usuário atual:", auth.currentUser);
+    await setDoc(doc(collection(db, "videos"), id), { card: cardNum, url }, { merge: true });
+
+
+    avatarContainer.addEventListener("click", () => { if (!auth.currentUser) login(); });
+    logoutBtn.addEventListener("click", () => signOut(auth));
+    getRedirectResult(auth).catch((error) => console.error(error));
+
+    onAuthStateChanged(auth, (user) => {
+      const avatar = document.querySelector(".generic-avatar img");
+      if (user) {
+        avatar.src = user.photoURL || "img/Generic_avatar.png";
+        logoutBtn.style.display = "inline-flex";
+        logoutBtn.className = "logout-btn";
+      } else {
+        avatar.src = "img/Generic_avatar.png";
+        logoutBtn.style.display = "none";
+      }
+    });
+
+    // Utilidades YouTube
+    function getYouTubeId(url) {
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+        if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];
+        if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];
+        const v = u.searchParams.get("v");
+        if (v) return v;
+      } catch (_) { }
+      const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&\/]|\b)/);
+      return m ? m[1] : null;
+    }
+
+    // 1) Vídeos: upsert por card (docId = card-<n>)
+    const videoForm = document.getElementById("videoForm");
+    const videoCard = document.getElementById("videoCard");
+    const videoUrl = document.getElementById("videoUrl");
+    const videosList = document.getElementById("videosList");
+
+    async function loadVideosForAdmin() {
+      videosList.innerHTML = "Carregando…";
+      const snap = await getDocs(collection(db, "videos"));
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      arr.sort((a, b) => (a.card || 0) - (b.card || 0));
+      videosList.innerHTML = arr.map(v => `
+        <div class="row">
+          <div><strong>Card:</strong> ${v.card || "?"}</div>
+          <div class="grow"><span class="mono">${v.url || ""}</span></div>
+          <button data-edit="${v.card}">Editar</button>
+        </div>
+      `).join("") || "Nenhum vídeo cadastrado.";
+
+      videosList.querySelectorAll("[data-edit]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          videoCard.value = btn.getAttribute("data-edit");
+          const v = arr.find(x => String(x.card) === btn.getAttribute("data-edit"));
+          if (v) videoUrl.value = v.url || "";
+          window.scrollTo({ top: videoForm.offsetTop - 20, behavior: 'smooth' });
+        });
+      });
+    }
+
+    videoForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cardNum = Number(videoCard.value);
+      const url = videoUrl.value.trim();
+      if (!cardNum || !url) return;
+      if (!getYouTubeId(url)) {
+        alert("URL do YouTube inválida.");
+        return;
+      }
+      const id = `card-${cardNum}`;
+      try {
+        await setDoc(doc(collection(db, "videos"), id), { card: cardNum, url }, { merge: true });
+        videoUrl.value = "";
+        await loadVideosForAdmin();
+        alert("Vídeo salvo/atualizado!");
+      } catch (err) {
+        console.error("Erro ao salvar vídeo:", err);
+        alert("Falha ao salvar o vídeo. Verifique as permissões do Firestore.");
+      }
+    });
+
+    // 2) Comentários: listar e excluir
+    const commentsList = document.getElementById("commentsList");
+    const gameFilter = document.getElementById("gameFilter");
+
+    let commentsUnsub = null;
+    function subscribeComments() {
+      if (commentsUnsub) commentsUnsub();
+      commentsList.innerHTML = "Carregando comentários…";
+      const base = collection(db, "comentarios");
+      const q = gameFilter.value ? query(base, where("jogo", "==", gameFilter.value), orderBy("data", "desc")) : query(base, orderBy("data", "desc"));
+      commentsUnsub = onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+          commentsList.innerHTML = "Nenhum comentário.";
+          return;
+        }
+        commentsList.innerHTML = "";
+        snapshot.forEach((d) => {
+          const c = d.data();
+          const row = document.createElement("div");
+          row.className = "row comment-row";
+          row.innerHTML = `
+            <div class="avatar small"><img src="${c.foto || 'img/Generic_avatar.png'}" alt="avatar"></div>
+            <div class="grow">
+              <div><strong>${c.nome || 'Anônimo'}</strong> <span class="mono">${c.jogo || ''}</span></div>
+              <div class="text">${c.texto || ''}</div>
+              <div class="date">${c.data?.seconds ? new Date(c.data.seconds * 1000).toLocaleString('pt-BR') : ''}</div>
+            </div>
+            <button data-del="${d.id}" class="danger">Apagar</button>
+          `;
+          commentsList.appendChild(row);
+        });
+
+        commentsList.querySelectorAll("[data-del]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            if (!confirm("Tem certeza que deseja apagar este comentário?")) return;
+            try {
+              await deleteDoc(doc(db, "comentarios", btn.getAttribute("data-del")));
+            } catch (err) {
+              console.error("Erro ao apagar comentário:", err);
+              alert("Falha ao apagar. Verifique as permissões do Firestore.");
+            }
+          });
+        });
+      });
+    }
+    gameFilter.addEventListener("change", subscribeComments);
+
+    // 3) Notificações: usar coleção "notificacoes" doc "global"
+    const notifDot = document.getElementById("notifDot");
+    const notifStatus = document.getElementById("notifStatus");
+    const sendNotif = document.getElementById("sendNotif");
+    const clearNotif = document.getElementById("clearNotif");
+    const notifMessage = document.getElementById("notifMessage");
+
+    function setNotifUI(active, message) {
+      notifDot.style.display = active ? "inline-block" : "none";
+      notifStatus.textContent = active ? (message ? `Ativo: ${message}` : "Notificação ativa") : "Sem notificação";
+    }
+
+    const signalDocRef = doc(collection(db, "notificacoes"), "global");
+    onSnapshot(signalDocRef, (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setNotifUI(Boolean(data.active), data.message);
+      } else {
+        setNotifUI(false, "");
+      }
+    });
+
+    sendNotif.addEventListener("click", async () => {
+      try {
+        await setDoc(signalDocRef, { active: true, message: notifMessage.value.trim(), ts: serverTimestamp() }, { merge: true });
+        notifMessage.value = "";
+      } catch (err) {
+        console.error("Erro ao enviar notificação:", err);
+        alert("Falha ao enviar notificação. Verifique as permissões do Firestore.");
+      }
+    });
+    clearNotif.addEventListener("click", async () => {
+      try {
+        await setDoc(signalDocRef, { active: false, message: "", ts: serverTimestamp() }, { merge: true });
+      } catch (err) {
+        console.error("Erro ao limpar notificação:", err);
+        alert("Falha ao limpar notificação. Verifique as permissões do Firestore.");
+      }
+    });
+
+    // Inicialização
+    loadVideosForAdmin();
+    subscribeComments();
+  </script>
+</body>
+
+</html>
