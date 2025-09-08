@@ -41,6 +41,11 @@
           <img src="img/notifications.png" alt="Notificações" />
           <span class="notif-dot" id="notifDot" style="display:none"></span>
         </div>
+        
+        <!-- Botão de teste temporário (remover em produção) -->
+        <button id="testNotificationBtn" style="background: #ff6b35; color: white; border: none; padding: 8px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 10px;">
+          Teste
+        </button>
         <div class="settings">
           <img src="img/settings.png" alt="Configurações" />
         </div>
@@ -605,6 +610,7 @@
           if (snapshot.empty) {
             notificationsList.style.display = "none";
             noNotifications.style.display = "block";
+            updateNotificationBadge();
             return;
           }
           
@@ -675,12 +681,16 @@
       // Função para atualizar badge de notificações
       function updateNotificationBadge() {
         const unreadCount = document.querySelectorAll('.notification-item.unread').length;
+        console.log('Atualizando badge - notificações não lidas:', unreadCount);
+        
         if (unreadCount > 0) {
           notifDot.textContent = unreadCount > 99 ? '99+' : unreadCount.toString();
           notifDot.style.display = "flex";
+          console.log('Badge mostrado com contador:', notifDot.textContent);
         } else {
           notifDot.style.display = "none";
           notifDot.textContent = "";
+          console.log('Badge escondido');
         }
       }
       
@@ -690,6 +700,12 @@
       notificationsOverlay.addEventListener("click", (e) => {
         if (e.target === notificationsOverlay) closeNotificationsModal();
       });
+      
+      // Botão de teste (temporário)
+      const testNotificationBtn = document.getElementById("testNotificationBtn");
+      if (testNotificationBtn) {
+        testNotificationBtn.addEventListener("click", addTestNotification);
+      }
       
       markAllReadBtn.addEventListener("click", () => {
         const unreadItems = document.querySelectorAll('.notification-item.unread');
@@ -728,8 +744,66 @@
         }
       });
       
-      // Carregar notificações iniciais
-      loadNotifications();
+      // Função para carregar contador inicial de notificações
+      async function loadInitialNotificationCount() {
+        try {
+          console.log('Carregando contador inicial de notificações...');
+          const q = query(notificationsCollection, orderBy("timestamp", "desc"), limit(20));
+          const snapshot = await getDocs(q);
+          
+          console.log('Notificações encontradas:', snapshot.size);
+          console.log('Notificações lidas:', readNotifications);
+          
+          let unreadCount = 0;
+          snapshot.forEach((doc) => {
+            if (!readNotifications.includes(doc.id)) {
+              unreadCount++;
+            }
+          });
+          
+          console.log('Notificações não lidas:', unreadCount);
+          
+          if (unreadCount > 0) {
+            notifDot.textContent = unreadCount > 99 ? '99+' : unreadCount.toString();
+            notifDot.style.display = "flex";
+            console.log('Badge inicial mostrado com contador:', notifDot.textContent);
+          } else {
+            notifDot.style.display = "none";
+            notifDot.textContent = "";
+            console.log('Badge inicial escondido');
+          }
+        } catch (error) {
+          console.error("Erro ao carregar contador de notificações:", error);
+        }
+      }
+      
+      // Função de teste para adicionar notificação de exemplo
+      function addTestNotification() {
+        console.log('Adicionando notificação de teste...');
+        addDoc(notificationsCollection, {
+          message: 'Esta é uma notificação de teste!',
+          sender: 'Sistema',
+          timestamp: serverTimestamp()
+        }).then(() => {
+          console.log('Notificação de teste adicionada');
+          // Recarregar contador após 1 segundo
+          setTimeout(() => {
+            loadInitialNotificationCount();
+          }, 1000);
+        }).catch(error => {
+          console.error('Erro ao adicionar notificação de teste:', error);
+        });
+      }
+      
+      // Adicionar notificação de teste após 3 segundos (apenas para debug)
+      setTimeout(() => {
+        console.log('Verificando se há notificações...');
+        // Só adiciona teste se não houver notificações
+        loadInitialNotificationCount();
+      }, 3000);
+      
+      // Carregar contador inicial
+      loadInitialNotificationCount();
     </script>
 
     <!-- Modal de notificações -->
