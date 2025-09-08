@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maré de Esperança</title>
+  <link rel="stylesheet" href="maredeesperanca.css">
+  <link rel="stylesheet" href="globals.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <a href="index.html">
+        <img class="logo" src="img/logo.png" alt="Logo" />
+      </a>
+      <img class="brasa" src="img/brasa.png" alt="Brasa Studio" />
+    </div>
+
+    <div class="header-right">
+      <button class="dark-mode-btn" aria-label="Alternar modo escuro">
+        <img src="img/dark-mode.png" alt="Ícone modo escuro">
+      </button>
+
+      <button id="logoutBtn" style="display:none;">
+        <img src="img/logout.png" alt="Sair da conta">
+      </button>
+
+      <div class="notifications" id="notificationsIcon">
+        <img src="img/notifications.png" alt="Notificações" />
+        <span class="notif-dot" id="notifDot" style="display:none"></span>
+      </div>
+      <div class="settings">
+        <img src="img/settings.png" alt="Configurações" />
+      </div>
+      <div class="generic-avatar">
+        <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
+      </div>
+    </div>
+  </header>
+
+  <main class="mare-wrapper">
+    <section class="banner">
+      <div class="botao-container">
+        <img src="img/Botao.png" alt="Botão" class="botao">
+        <img src="img/Botao.png" alt="Botão" class="botao">
+      </div>
+    </section>
+
+    <div id="comment-box" style="margin-top:20px;">
+      <textarea id="commentInput" placeholder="Escreva seu comentário..." rows="3"
+        style="width:100%;resize: none;"></textarea>
+      <button id="sendComment">Enviar</button>
+    </div>
+    <br>
+
+    <section class="comentarios">
+      <article class="comentario"></article>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+
+  <script>
+    // Inicializar com modo escuro por padrão
+    document.body.classList.add("dark-mode");
+
+    const darkModeBtn = document.querySelector(".dark-mode-btn");
+
+    if (darkModeBtn) {
+      darkModeBtn.addEventListener("click", () => {
+        const isDark = document.body.classList.contains("dark-mode");
+        
+        if (isDark) {
+          // Mudar para modo claro
+          document.body.classList.remove("dark-mode");
+          document.body.classList.add("light-mode");
+        } else {
+          // Mudar para modo escuro
+          document.body.classList.remove("light-mode");
+          document.body.classList.add("dark-mode");
+        }
+
+        const isDarkAfterToggle = document.body.classList.contains("dark-mode");
+
+        document.querySelector(".brasa").src = isDarkAfterToggle ? "img/brasa_dark.png" : "img/brasa.png";
+        document.querySelector(".dark-mode-btn img").src = isDarkAfterToggle ? "img/dark-mode_dark.png" : "img/dark-mode.png";
+        document.querySelector(".notifications img").src = isDarkAfterToggle ? "img/notifications_dark.png" : "img/notifications.png";
+        document.querySelector(".settings img").src = isDarkAfterToggle ? "img/settings_dark.png" : "img/settings.png";
+      });
+    }
+
+    const header = document.querySelector(".header");
+
+    if (header) {
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+          header.classList.add("scrolled");
+        } else {
+          header.classList.remove("scrolled");
+        }
+      });
+    }
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword }
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc }
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+      authDomain: "brasastudio-bd.firebaseapp.com",
+      projectId: "brasastudio-bd",
+      storageBucket: "brasastudio-bd.firebasestorage.app",
+      messagingSenderId: "622309371157",
+      appId: "1:622309371157:web:449025a3906b2674208d1c",
+      measurementId: "G-SY8N6JTN63"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
+    const db = getFirestore(app);
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const avatarContainer = document.querySelector(".generic-avatar");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Modal
+    const overlay = document.getElementById("authOverlay");
+    const closeModalBtn = document.getElementById("authCloseBtn");
+    const tabSignupBtn = document.getElementById("tabSignup");
+    const tabSigninBtn = document.getElementById("tabSignin");
+    const signupArea = document.getElementById("signupArea");
+    const signinArea = document.getElementById("signinArea");
+    const signupEmail = document.getElementById("signupEmail");
+    const signupPass = document.getElementById("signupPass");
+    const signupPass2 = document.getElementById("signupPass2");
+    const btnDoSignup = document.getElementById("btnDoSignup");
+    const signinEmail = document.getElementById("signinEmail");
+    const signinPass = document.getElementById("signinPass");
+    const btnDoSignin = document.getElementById("btnDoSignin");
+    const btnGoogle = document.getElementById("btnGoogle");
+    const btnAdmin = document.getElementById("btnAdmin");
+
+    function openAuthModal() { overlay.style.display = "flex"; }
+    function closeAuthModal() { overlay.style.display = "none"; }
+    function setTab(which) {
+      const signup = which === 'signup';
+      tabSignupBtn.classList.toggle('active', signup);
+      tabSigninBtn.classList.toggle('active', !signup);
+      signupArea.style.display = signup ? 'block' : 'none';
+      signinArea.style.display = signup ? 'none' : 'block';
+    }
+
+    avatarContainer.addEventListener("click", () => { if (!auth.currentUser) openAuthModal(); });
+    closeModalBtn.addEventListener("click", closeAuthModal);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) closeAuthModal(); });
+    tabSignupBtn.addEventListener("click", () => setTab('signup'));
+    tabSigninBtn.addEventListener("click", () => setTab('signin'));
+
+    btnDoSignup.addEventListener("click", async () => {
+      const email = signupEmail.value.trim();
+      const p1 = signupPass.value; const p2 = signupPass2.value;
+      if (!email || !p1 || !p2) return alert('Preencha todos os campos.');
+      if (p1 !== p2) return alert('As senhas não coincidem.');
+      try { await createUserWithEmailAndPassword(auth, email, p1); closeAuthModal(); }
+      catch(err){ console.error(err); alert('Falha ao criar conta: '+(err?.message||'')); }
+    });
+    btnDoSignin.addEventListener("click", async () => {
+      const email = signinEmail.value.trim(); const pass = signinPass.value;
+      if (!email || !pass) return alert('Informe email e senha.');
+      try { await signInWithEmailAndPassword(auth, email, pass); closeAuthModal(); }
+      catch(err){ console.error(err); alert('Falha ao entrar: '+(err?.message||'')); }
+    });
+    btnGoogle.addEventListener("click", async () => {
+      try { if (isMobile) await signInWithRedirect(auth, provider); else await signInWithPopup(auth, provider); closeAuthModal(); }
+      catch(err){ console.error(err); }
+    });
+    btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
+    logoutBtn.addEventListener("click", () => signOut(auth));
+    getRedirectResult(auth).catch((error) => console.error(error));
+
+    const comentariosSection = document.querySelector(".comentarios");
+    const commentInput = document.getElementById("commentInput");
+    const sendCommentBtn = document.getElementById("sendComment");
+
+    onAuthStateChanged(auth, (user) => {
+      const avatar = document.querySelector(".generic-avatar img");
+      if (user) {
+        avatar.src = user.photoURL || "img/Generic_avatar.png";
+        logoutBtn.style.display = "inline-flex";
+        logoutBtn.className = "logout-btn";
+        commentInput.disabled = false;
+        sendCommentBtn.disabled = false;
+        commentInput.placeholder = "Escreva seu comentário...";
+      } else {
+        avatar.src = "img/Generic_avatar.png";
+        logoutBtn.style.display = "none";
+        commentInput.disabled = true;
+        sendCommentBtn.disabled = true;
+        commentInput.placeholder = "Faça login para comentar...";
+        closeAuthModal();
+      }
+    });
+
+    sendCommentBtn.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user || !commentInput.value.trim()) return;
+
+      try {
+        await addDoc(collection(db, "comentarios"), {
+          nome: user.displayName,
+          foto: user.photoURL,
+          texto: commentInput.value,
+          data: new Date(),
+          jogo: "Maré de Esperança"
+        });
+        commentInput.value = "";
+      } catch (e) {
+        console.error("Erro ao salvar comentário:", e);
+      }
+    });
+
+    const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
+    onSnapshot(q, (snapshot) => {
+      comentariosSection.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const c = doc.data();
+        const artigo = document.createElement("article");
+        artigo.classList.add("comentario");
+        artigo.innerHTML = `
+      <div class="avatar">
+        <img src="${c.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;" />
+      </div>
+      <div class="conteudo">
+        <header>
+          <h3 class="nome">${c.nome || "Anônimo"}</h3>
+          <span class="data">${new Date(c.data.seconds * 1000).toLocaleString("pt-BR")}</span>
+        </header>
+        <p>${c.texto}</p>
+      </div>
+    `;
+        comentariosSection.appendChild(artigo);
+      });
+    });
+
+    // Notificações
+    const notifDot = document.getElementById("notifDot");
+    const signalDocRef = doc(collection(db, "notificacoes"), "global");
+    onSnapshot(signalDocRef, (snap) => {
+      const active = snap.exists() && Boolean(snap.data().active);
+      notifDot.style.display = active ? "inline-block" : "none";
+    });
+  </script>
+
+  <!-- Modal de autenticação -->
+  <div class="modal-overlay" id="authOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <header>
+        <h3 id="authTitle">Entrar ou Criar conta</h3>
+        <button id="authCloseBtn" aria-label="Fechar">✕</button>
+      </header>
+      <div class="tabs">
+        <button id="tabSignup" class="active">Criar conta</button>
+        <button id="tabSignin">Entrar</button>
+      </div>
+      <section id="signupArea">
+        <div class="form-row">
+          <label for="signupEmail">Email</label>
+          <input id="signupEmail" type="email" placeholder="voce@exemplo.com" />
+        </div>
+        <div class="form-row">
+          <label for="signupPass">Senha</label>
+          <input id="signupPass" type="password" placeholder="Sua senha" />
+        </div>
+        <div class="form-row">
+          <label for="signupPass2">Repetir senha</label>
+          <input id="signupPass2" type="password" placeholder="Repita a senha" />
+        </div>
+        <div class="actions">
+          <button id="btnDoSignup">Criar conta</button>
+        </div>
+      </section>
+      <section id="signinArea" style="display:none">
+        <div class="form-row">
+          <label for="signinEmail">Email</label>
+          <input id="signinEmail" type="email" placeholder="voce@exemplo.com" />
+        </div>
+        <div class="form-row">
+          <label for="signinPass">Senha</label>
+          <input id="signinPass" type="password" placeholder="Sua senha" />
+        </div>
+        <div class="actions">
+          <button id="btnDoSignin">Entrar</button>
+        </div>
+      </section>
+      <div class="actions">
+        <button id="btnGoogle">Entrar com Google</button>
+        <button id="btnAdmin" class="secondary">Entrar como Administrador</button>
+        <div class="hint">Ao entrar, você concorda com os termos de uso.</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

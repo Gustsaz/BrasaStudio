@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administração - Brasa Studio</title>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <link rel="stylesheet" href="globals.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="adm.css">
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-left">
+      <a href="index.html">
+        <img class="logo" src="img/logo.png" alt="Logo" />
+      </a>
+      <img class="brasa" src="img/brasa.png" alt="Brasa Studio" />
+    </div>
+
+    <div class="header-right">
+      <button class="dark-mode-btn" aria-label="Alternar modo escuro">
+        <img src="img/dark-mode.png" alt="Ícone modo escuro">
+      </button>
+      <div class="notifications" id="notificationsIcon">
+        <img src="img/notifications.png" alt="Notificações" />
+        <span class="notif-dot" id="notifDot" style="display:none"></span>
+      </div>
+      <div class="settings">
+        <img src="img/settings.png" alt="Configurações" />
+      </div>
+      <div class="generic-avatar">
+        <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
+      </div>
+      <button id="logoutBtn" style="display:none;">
+        <img src="img/logout.png" alt="Sair da conta">
+      </button>
+    </div>
+  </header>
+
+  <main class="admin-wrapper">
+    <h1>Painel Administrativo</h1>
+
+    <section class="admin-card" id="videosAdmin">
+      <h2>Vídeos (cards 1 e 2)</h2>
+      <p>Edite os links do YouTube mostrados na home. Somente Card 1 e Card 2.</p>
+      <div id="videosList" class="list"></div>
+    </section>
+
+    <section class="admin-card" id="commentsAdmin">
+      <h2>Moderar comentários</h2>
+      <div class="filters">
+        <label for="gameFilter">Jogo</label>
+        <select id="gameFilter">
+          <option value="">Todos</option>
+          <option value="Maré de Esperança" selected>Maré de Esperança</option>
+        </select>
+      </div>
+      <div id="commentsList" class="list"></div>
+    </section>
+
+    <section class="admin-card" id="notificationsAdmin">
+      <h2>Notificações</h2>
+      <p>Enviar um sinal de notificação para todos os usuários. A bolinha será exibida no ícone de notificações.</p>
+      <div class="form-row">
+        <label for="notifMessage">Mensagem (opcional)</label>
+        <input id="notifMessage" type="text" maxlength="120" placeholder="Texto curto da notificação" />
+      </div>
+      <div class="form-actions">
+        <button id="sendNotif">Enviar notificação</button>
+        <button id="clearNotif" class="outline">Limpar notificação</button>
+      </div>
+      <div id="notifStatus" class="status"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { 
+      getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, 
+      getRedirectResult, signOut, onAuthStateChanged, 
+      setPersistence, browserLocalPersistence,
+      createUserWithEmailAndPassword, signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { 
+      getFirestore, collection, doc, setDoc, getDocs, onSnapshot, 
+      query, where, orderBy, deleteDoc, serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // ---- Firebase ----
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+      authDomain: "brasastudio-bd.firebaseapp.com",
+      projectId: "brasastudio-bd",
+      storageBucket: "brasastudio-bd.firebasestorage.app",
+      messagingSenderId: "622309371157",
+      appId: "1:622309371157:web:449025a3906b2674208d1c",
+      measurementId: "G-SY8N6JTN63"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const db = getFirestore(app);
+
+    // 🔑 Persistência do login (não precisa mexer no index.html)
+    setPersistence(auth, browserLocalPersistence)
+      .then(() => console.log("Persistência configurada."))
+      .catch(err => console.error("Erro na persistência:", err));
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    // ---- Login / Logout ----
+    const avatarContainer = document.querySelector(".generic-avatar");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const login = async () => {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      try {
+        if (isMobile) await signInWithRedirect(auth, provider);
+        else await signInWithPopup(auth, provider);
+      } catch (error) { console.error("Erro no login:", error); }
+    };
+
+    avatarContainer.addEventListener("click", () => { if (!auth.currentUser) login(); });
+    logoutBtn.addEventListener("click", () => signOut(auth));
+    getRedirectResult(auth).catch((error) => console.error(error));
+
+    onAuthStateChanged(auth, async (user) => {
+      const avatar = document.querySelector(".generic-avatar img");
+      const root = document.querySelector("main.admin-wrapper");
+      if (!root) return;
+      if (!user) {
+        if (avatar) avatar.src = "img/Generic_avatar.png";
+        logoutBtn.style.display = "none";
+        root.innerHTML = '<section class="admin-card"><h2>Acesso restrito</h2><p>Faça login com uma conta administrativa.</p></section>';
+        setTimeout(() => location.href = 'index.html', 1200);
+        return;
+      }
+      try {
+        const token = await auth.currentUser.getIdTokenResult(true);
+        const isAdmin = Boolean(token?.claims?.admin);
+        if (!isAdmin) {
+          if (avatar) avatar.src = user.photoURL || "img/Generic_avatar.png";
+          logoutBtn.style.display = "inline-flex";
+          root.innerHTML = '<section class="admin-card"><h2>Acesso restrito</h2><p>Esta conta não possui permissão de administrador.</p></section>';
+          setTimeout(() => location.href = 'index.html', 1500);
+          return;
+        }
+        // Admin OK → mostra avatar e inicializa painel
+        if (avatar) avatar.src = user.photoURL || "img/Generic_avatar.png";
+        logoutBtn.style.display = "inline-flex";
+        logoutBtn.className = "logout-btn";
+        // Inicialização do painel somente após validação de admin
+        loadVideosForAdmin();
+        subscribeComments();
+      } catch (e) {
+        console.error('Erro ao validar admin:', e);
+        root.innerHTML = '<section class="admin-card"><h2>Erro</h2><p>Não foi possível validar permissões.</p></section>';
+        setTimeout(() => location.href = 'index.html', 1500);
+      }
+    });
+
+    // ---- Util YouTube ----
+    function getYouTubeId(url) {
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+        if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];
+        if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];
+        const v = u.searchParams.get("v");
+        if (v) return v;
+      } catch (_) {}
+      const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&/]|\b)/);
+      return m ? m[1] : null;
+    }
+
+    // ---- Vídeos ----
+    const videosList = document.getElementById("videosList");
+
+    async function loadVideosForAdmin() {
+      videosList.innerHTML = "Carregando…";
+      // buscamos os docs existentes, mas a UI força somente card-1 e card-2
+      const snap = await getDocs(collection(db, "videos"));
+      const byCard = { 1: { card: 1, url: "" }, 2: { card: 2, url: "" } };
+      snap.forEach(d => {
+        const data = d.data();
+        if (data.card === 1) byCard[1] = { card: 1, url: data.url || "" };
+        if (data.card === 2) byCard[2] = { card: 2, url: data.url || "" };
+      });
+      const rows = [1,2].map(n => {
+        const v = byCard[n];
+        return `
+          <div class="row" data-card="${n}">
+            <div><strong>Card ${n}</strong></div>
+            <div class="grow"><input class="video-input" type="url" placeholder="https://www.youtube.com/watch?v=XXXX" value="${v.url || ''}"></div>
+            <button class="save-btn">Salvar</button>
+          </div>
+        `;
+      }).join("");
+      videosList.innerHTML = rows;
+
+      videosList.querySelectorAll(".row").forEach(row => {
+        const n = Number(row.getAttribute("data-card"));
+        const input = row.querySelector(".video-input");
+        const save = row.querySelector(".save-btn");
+        save.addEventListener("click", async () => {
+          const url = input.value.trim();
+          if (!url) return alert("Informe a URL do YouTube.");
+          if (!getYouTubeId(url)) return alert("URL do YouTube inválida.");
+          const id = `card-${n}`;
+          try {
+            await setDoc(doc(collection(db, "videos"), id), { card: n, url }, { merge: true });
+            alert("Vídeo salvo!");
+          } catch (err) {
+            console.error(err);
+            alert("Falha ao salvar. Verifique as permissões do Firestore.");
+          }
+        });
+      });
+    }
+    
+    // ---- Comentários ----
+    const commentsList = document.getElementById("commentsList");
+    const gameFilter = document.getElementById("gameFilter");
+
+    let commentsUnsub = null;
+    function subscribeComments() {
+      if (commentsUnsub) commentsUnsub();
+      if (!commentsList) return;
+      commentsList.innerHTML = "Carregando comentários…";
+      const base = collection(db, "comentarios");
+      const q = gameFilter && gameFilter.value
+        ? query(base, where("jogo", "==", gameFilter.value), orderBy("data", "desc"))
+        : query(base, orderBy("data", "desc"));
+      commentsUnsub = onSnapshot(q, (snapshot) => {
+        if (snapshot.empty) {
+          commentsList.innerHTML = "Nenhum comentário.";
+          return;
+        }
+        commentsList.innerHTML = "";
+        snapshot.forEach((d) => {
+          const c = d.data();
+          const row = document.createElement("div");
+          row.className = "row comment-row";
+          row.innerHTML = `
+            <div class="avatar small"><img src="${c.foto || 'img/Generic_avatar.png'}" alt="avatar"></div>
+            <div class="grow">
+              <div><strong>${c.nome || 'Anônimo'}</strong> <span class="mono">${c.jogo || ''}</span></div>
+              <div class="text">${c.texto || ''}</div>
+              <div class="date">${c.data?.seconds ? new Date(c.data.seconds*1000).toLocaleString('pt-BR') : ''}</div>
+            </div>
+            <button data-del="${d.id}" class="danger">Apagar</button>
+          `;
+          commentsList.appendChild(row);
+        });
+
+        commentsList.querySelectorAll("[data-del]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            if (!confirm("Tem certeza que deseja apagar este comentário?")) return;
+            try {
+              await deleteDoc(doc(db, "comentarios", btn.getAttribute("data-del")));
+            } catch (err) {
+              console.error("Erro ao apagar comentário:", err);
+              alert("Falha ao apagar. Verifique as permissões do Firestore.");
+            }
+          });
+        });
+      });
+    }
+    if (gameFilter) gameFilter.addEventListener("change", subscribeComments);
+
+    // ---- Notificações ----
+    const notifDot = document.getElementById("notifDot");
+    const notifStatus = document.getElementById("notifStatus");
+    const sendNotif = document.getElementById("sendNotif");
+    const clearNotif = document.getElementById("clearNotif");
+    const notifMessage = document.getElementById("notifMessage");
+
+    function setNotifUI(active, message) {
+      if (notifDot) notifDot.style.display = active ? "inline-block" : "none";
+      if (notifStatus) notifStatus.textContent = active ? (message ? `Ativo: ${message}` : "Notificação ativa") : "Sem notificação";
+    }
+
+    const signalDocRef = doc(collection(db, "notificacoes"), "global");
+    onSnapshot(signalDocRef, (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setNotifUI(Boolean(data.active), data.message);
+      } else {
+        setNotifUI(false, "");
+      }
+    });
+
+    if (sendNotif) sendNotif.addEventListener("click", async () => {
+      try {
+        await setDoc(signalDocRef, { active: true, message: notifMessage.value.trim(), ts: serverTimestamp() }, { merge: true });
+        if (notifMessage) notifMessage.value = "";
+      } catch (err) {
+        console.error("Erro ao enviar notificação:", err);
+        alert("Falha ao enviar notificação. Verifique as permissões do Firestore.");
+      }
+    });
+    if (clearNotif) clearNotif.addEventListener("click", async () => {
+      try {
+        await setDoc(signalDocRef, { active: false, message: "", ts: serverTimestamp() }, { merge: true });
+      } catch (err) {
+        console.error("Erro ao limpar notificação:", err);
+        alert("Falha ao limpar notificação. Verifique as permissões do Firestore.");
+      }
+    });
+    // Inicialização agora acontece após a checagem de admin no onAuthStateChanged
+  </script>
+  
+  <!-- Modal de autenticação -->
+  <div class="modal-overlay" id="authOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <header>
+        <h3 id="authTitle">Entrar ou Criar conta</h3>
+        <button id="authCloseBtn" aria-label="Fechar">✕</button>
+      </header>
+      <div class="tabs">
+        <button id="tabSignup" class="active">Criar conta</button>
+        <button id="tabSignin">Entrar</button>
+      </div>
+      <section id="signupArea">
+        <div class="form-row">
+          <label for="signupEmail">Email</label>
+          <input id="signupEmail" type="email" placeholder="voce@exemplo.com" />
+        </div>
+        <div class="form-row">
+          <label for="signupPass">Senha</label>
+          <input id="signupPass" type="password" placeholder="Sua senha" />
+        </div>
+        <div class="form-row">
+          <label for="signupPass2">Repetir senha</label>
+          <input id="signupPass2" type="password" placeholder="Repita a senha" />
+        </div>
+        <div class="actions">
+          <button id="btnDoSignup">Criar conta</button>
+        </div>
+      </section>
+      <section id="signinArea" style="display:none">
+        <div class="form-row">
+          <label for="signinEmail">Email</label>
+          <input id="signinEmail" type="email" placeholder="voce@exemplo.com" />
+        </div>
+        <div class="form-row">
+          <label for="signinPass">Senha</label>
+          <input id="signinPass" type="password" placeholder="Sua senha" />
+        </div>
+        <div class="actions">
+          <button id="btnDoSignin">Entrar</button>
+        </div>
+      </section>
+      <div class="actions">
+        <button id="btnGoogle">Entrar com Google</button>
+        <button id="btnAdmin" class="secondary">Entrar como Administrador</button>
+        <div class="hint">Ao entrar, você concorda com os termos de uso.</div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
