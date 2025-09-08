@@ -5,12 +5,14 @@
   <link rel="icon" type="image/png" href="img/logo.png">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="globals.css" />
   <link rel="stylesheet" href="style.css" />
   <title>Brasa Studio</title>
 </head>
 
 <body>
+  
   <section class="jogo" aria-label="jogo">
     <div class="water"></div>
     <svg>
@@ -58,12 +60,22 @@
         <img class="nome-jogo" src="img/nome-jogo.png" alt="Nome do jogo" />
         <img class="perfeito" src="img/perfeito-1.png" alt="Foto da menina">
 
-        <button class="botao" type="button" aria-label="Botao jogo">
-          <a href="maredeesperanca.html">
-            <img class="placa" src="img/BotaoTitu.png" alt="" />
-          </a>
-        </button>
+        <a href="maredeesperanca.html" class="botao-jogo-jogo">
+          Jogar Agora
+        </a>
 
+      </div>
+      
+      <div class="jogo-info">
+        <div class="jogo-header">
+          <h2 class="jogo-title">Maré de Esperança</h2>
+          <span class="jogo-tag">Em desenvolvimento</span>
+        </div>
+        <p class="jogo-description">
+          Um jogo emocionante que combina aventura e reflexão, levando os jogadores em uma jornada única através de cenários deslumbrantes. 
+          Com mecânicas inovadoras e uma narrativa envolvente, "Maré de Esperança" promete uma experiência de jogo memorável que desafia 
+          e inspira jogadores de todas as idades.
+        </p>
       </div>
     </div>
   </section>
@@ -78,7 +90,7 @@
         <div class="empresa-text">
           <h2 class="text-wrapper-2">A empresa</h2>
           <p class="text-wrapper">
-            Nós somo a Brasa Studio. Uma equipe brasileira independente de produção de jogos digitais. Nosso objetivo é
+            Nós somos a Brasa Studio, uma equipe brasileira independente de desenvolvimento de jogos digitais. Nosso objetivo é
             trazer o entretenimento para todos os públicos, de maneira acessível e buscando sempre a melhor qualidade
             para nosso produto final.
           </p>
@@ -94,9 +106,9 @@
       </article>
     </section>
 
-
     <section class="jogos">
-      <h1 class="titulo-principal">Nossos Jogos</h1>
+
+      <br>
 
       <div class="jogos-container">
         <div class="imagem-wrapper">
@@ -105,9 +117,9 @@
         </div>
 
         <div class="info-jogo">
-          <h2 class="titulo-jogo">MARÉ DE ESPERANÇA</h2>
+          <h2 class="titulo-jogo">Maré de Esperanca</h2>
           <p class="descricao-jogo">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
+            Acompanhe Luan e Nalu durante as suas férias na praia, explorando a cidade, limpando-a, salvando seus moradores da poluição e conhecendo suas histórias, além de entender como a poluição os afeta.
           </p>
           <a href="maredeesperanca.html">
             <button class="botao-jogo" type="button">
@@ -142,11 +154,37 @@
 
     <section class="footer">
       <div class="footer-content">
-        <div class="footer-inner">
-          <h3>Brasa Studio</h3>
-          <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
-          <hr>
-          <span>© 2025 Brasa Studio. Todos os direitos reservados.</span>
+        <div class="footer-columns">
+          <div class="footer-column">
+            <div class="footer-logo">
+              <img src="img/logo.png" alt="Brasa Studio Logo" class="footer-logo-img">
+              <span>Brasa Studio</span>
+            </div>
+          </div>
+          
+          <div class="footer-column">
+            <h4>Contato</h4>
+            <ul class="contact-info">
+              <li><i class="fas fa-envelope"></i> contato@brasastudio.com</li>
+              <li><i class="fas fa-phone"></i> +55 (11) 99999-9999</li>
+              <li><i class="fas fa-map-marker-alt"></i> Brasil</li>
+            </ul>
+          </div>
+          
+          <div class="footer-column">
+            <h4>Redes Sociais</h4>
+            <div class="social-icons">
+              <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+              <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+              <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+              <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+          </div>
+        </div>
+        
+        <hr class="footer-divider">
+        <div class="footer-bottom">
+          <p>&copy; 2025 Brasa Studio. Todos os direitos reservados.</p>
         </div>
       </div>
     </section>

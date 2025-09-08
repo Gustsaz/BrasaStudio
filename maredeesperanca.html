@@ -64,6 +64,48 @@
 
   <script src="script.js"></script>
 
+  <script>
+    // Inicializar com modo escuro por padrão
+    document.body.classList.add("dark-mode");
+
+    const darkModeBtn = document.querySelector(".dark-mode-btn");
+
+    if (darkModeBtn) {
+      darkModeBtn.addEventListener("click", () => {
+        const isDark = document.body.classList.contains("dark-mode");
+        
+        if (isDark) {
+          // Mudar para modo claro
+          document.body.classList.remove("dark-mode");
+          document.body.classList.add("light-mode");
+        } else {
+          // Mudar para modo escuro
+          document.body.classList.remove("light-mode");
+          document.body.classList.add("dark-mode");
+        }
+
+        const isDarkAfterToggle = document.body.classList.contains("dark-mode");
+
+        document.querySelector(".brasa").src = isDarkAfterToggle ? "img/brasa_dark.png" : "img/brasa.png";
+        document.querySelector(".dark-mode-btn img").src = isDarkAfterToggle ? "img/dark-mode_dark.png" : "img/dark-mode.png";
+        document.querySelector(".notifications img").src = isDarkAfterToggle ? "img/notifications_dark.png" : "img/notifications.png";
+        document.querySelector(".settings img").src = isDarkAfterToggle ? "img/settings_dark.png" : "img/settings.png";
+      });
+    }
+
+    const header = document.querySelector(".header");
+
+    if (header) {
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+          header.classList.add("scrolled");
+        } else {
+          header.classList.remove("scrolled");
+        }
+      });
+    }
+  </script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
@@ -87,31 +129,19 @@
     const db = getFirestore(app);
 
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    const loginBtn = document.createElement("button");
-    loginBtn.textContent = "Entrar com Google";
-    document.querySelector(".header-right").appendChild(loginBtn);
+    const avatarContainer = document.querySelector(".generic-avatar");
+    const logoutBtn = document.getElementById("logoutBtn");
 
     const login = async () => {
       try {
-        if (isMobile) {
-          await signInWithRedirect(auth, provider);
-        } else {
-          const result = await signInWithPopup(auth, provider);
-          console.log("Usuário logado:", result.user.displayName, result.user.email);
-        }
-      } catch (error) {
-        console.error("Erro no login:", error);
-      }
+        if (isMobile) await signInWithRedirect(auth, provider);
+        else await signInWithPopup(auth, provider);
+      } catch (error) { console.error("Erro no login:", error); }
     };
 
-    loginBtn.addEventListener("click", login);
-
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) console.log("Usuário logado via redirect:", result.user.displayName);
-      })
-      .catch((error) => console.error(error));
+    avatarContainer.addEventListener("click", () => { if (!auth.currentUser) login(); });
+    logoutBtn.addEventListener("click", () => signOut(auth));
+    getRedirectResult(auth).catch((error) => console.error(error));
 
     const comentariosSection = document.querySelector(".comentarios");
     const commentInput = document.getElementById("commentInput");
@@ -121,16 +151,14 @@
       const avatar = document.querySelector(".generic-avatar img");
       if (user) {
         avatar.src = user.photoURL || "img/Generic_avatar.png";
-        loginBtn.className = "logout-btn";
-        loginBtn.innerHTML = '<img src="img/logout.png" alt="Sair">';
-        loginBtn.onclick = () => signOut(auth);
+        logoutBtn.style.display = "inline-flex";
+        logoutBtn.className = "logout-btn";
         commentInput.disabled = false;
         sendCommentBtn.disabled = false;
         commentInput.placeholder = "Escreva seu comentário...";
       } else {
         avatar.src = "img/Generic_avatar.png";
-        loginBtn.textContent = "Entrar com Google";
-        loginBtn.onclick = login;
+        logoutBtn.style.display = "none";
         commentInput.disabled = true;
         sendCommentBtn.disabled = true;
         commentInput.placeholder = "Faça login para comentar...";
