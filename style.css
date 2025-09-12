@@ -19,8 +19,13 @@ body {
     color: #ffffff;
     width: 100%;
     line-height: 1.6;
+    transition: none;
+}
+
+body.ready {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 
 /* Garantir que os elementos iniciem no modo escuro */
 body:not(.light-mode) .brasa {
@@ -82,6 +87,7 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
         opacity: 0;
         transform: translateY(-20px) scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -1070,9 +1076,18 @@ body.light-mode .profile-actions {
     padding: 0;
 }
 
-.videos behold-widget { display: block; width: 100% !important; }
-.videos behold-widget .behold-grid { width: 100% !important; }
-.videos behold-widget .behold-grid .behold-card { transform: scale(1.08); }
+.videos behold-widget {
+    display: block;
+    width: 100% !important;
+}
+
+.videos behold-widget .behold-grid {
+    width: 100% !important;
+}
+
+.videos behold-widget .behold-grid .behold-card {
+    transform: scale(1.08);
+}
 
 /*jogos*/
 .jogos {
@@ -1209,26 +1224,98 @@ body.light-mode .profile-actions {
     flex-shrink: 0;
 }
 
-/*craidores*/
+/* ====== CRIADORES ====== */
 .criadores {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 32px;
-    padding: 80px 32px;
+    gap: clamp(16px, 4vw, 32px);
+    padding: clamp(40px, 8vw, 80px) clamp(16px, 5vw, 32px);
     background: #0a0a0a;
     flex-wrap: wrap;
 }
 
-/* Cartões de criadores com overlay interno acima da imagem */
-.criador { position: relative; width: 120px; height: 120px; border-radius: 50%; overflow: hidden; }
-.criador img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; border: 3px solid rgba(255, 107, 53, 0.3); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
-.criador:hover img { transform: scale(1.06); border-color: #ff6b35; box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3); }
-.criador .criador-overlay { position: absolute; inset: 0; border-radius: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: rgba(0,0,0,0.55); color: #fff; opacity: 0; transition: opacity .25s ease; z-index: 1; pointer-events: none; padding: 10px; }
-.criador .criador-overlay .nome { font-weight: 700; font-size: 1rem; }
-.criador .criador-overlay .funcao { opacity: .9; margin-top: 2px; font-size: 0.9rem; }
-.criador .criador-overlay .ig { opacity: .8; font-size: .9rem; margin-top: 2px; }
-.criador:hover .criador-overlay { opacity: 1; }
+/* Cartões de criadores responsivos */
+.criador {
+    position: relative;
+    width: clamp(100px, 22vw, 160px);
+    height: clamp(100px, 22vw, 160px);
+    border-radius: 50%;
+    overflow: hidden;
+    transition: transform 0.4s ease, border-radius 0.4s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.criador img {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+    border: 3px solid rgba(255, 107, 53, 0.3);
+    transition: transform 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.criador:hover img {
+    transform: scale(1.08);
+    border-color: #ff6b35;
+    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.35);
+}
+
+/* Overlay responsivo */
+.criador .criador-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.35s ease, transform 0.35s ease, border-radius 0.35s ease;
+    z-index: 1;
+    pointer-events: none;
+    padding: clamp(6px, 2vw, 12px);
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+
+.criador .criador-overlay .nome {
+    font-weight: 700;
+    font-size: clamp(0.85rem, 2vw, 1.2rem);
+    line-height: 1.2;
+}
+
+.criador .criador-overlay .funcao {
+    opacity: .9;
+    margin-top: 4px;
+    font-size: clamp(0.75rem, 1.8vw, 1rem);
+    line-height: 1.3;
+}
+
+.criador .criador-overlay .ig {
+    opacity: .8;
+    font-size: clamp(0.7rem, 1.5vw, 0.95rem);
+    margin-top: 4px;
+    word-break: break-word;
+}
+
+.criador:hover .criador-overlay {
+    opacity: 1;
+    transform: scale(1);
+    border-radius: 16px;
+}
+
+.criador:hover {
+    transform: scale(1.1);
+    border-radius: 16px;
+}
+
 
 /*footer*/
 .footer {
@@ -1454,7 +1541,8 @@ body.light-mode .jogo::after {
 
 /* fundo no modo claro */
 body.light-mode .jogo {
-    background: url("img/image3.png") center center / cover no-repeat;
+    background: url("img/image3.png") center top / cover no-repeat;
+    z-index: 100;
 }
 
 /* camada de água/transparência no modo claro */
@@ -1528,9 +1616,12 @@ body.dark-mode .logo {
 
 /*animacoes*/
 @keyframes fogoBrilho {
-    0%, 100% {
+
+    0%,
+    100% {
         filter: drop-shadow(0 0 6px rgba(255, 120, 0, 0.6));
     }
+
     50% {
         filter: drop-shadow(0 0 12px rgba(255, 200, 0, 0.8));
     }
@@ -1591,16 +1682,29 @@ body.dark-mode .logo {
 }
 
 /* will-change para elementos que serão animados */
-.header, .generic-avatar, .dark-mode-btn, .notifications, .settings, .logo, .botao-jogo-jogo, .card, .criador img {
+.header,
+.generic-avatar,
+.dark-mode-btn,
+.notifications,
+.settings,
+.logo,
+.botao-jogo-jogo,
+.card,
+.criador img {
     will-change: transform;
 }
 
 /* contain para melhorar performance de layout */
-.empresa, .videos, .jogos, .criadores, .footer {
+.empresa,
+.videos,
+.jogos,
+.criadores,
+.footer {
     contain: layout style;
 }
 
-.card, .criador {
+.card,
+.criador {
     contain: layout style paint;
 }
 
@@ -1710,11 +1814,7 @@ body.dark-mode .logo {
 }
 
 /* Modo claro para estrutura responsiva */
-body.light-mode .jogo-container {
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
+
 
 body.light-mode .jogo-info {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
@@ -2127,4 +2227,28 @@ body.light-mode .jogo-conteudo {
         padding: 8px;
         margin: -4px;
     }
+}
+
+/* Transições suaves para quando trocar de tema */
+body,
+body * {
+    transition: background-color 0.4s ease,
+        color 0.4s ease,
+        border-color 0.4s ease,
+        filter 0.4s ease;
+}
+
+/* Para seções com fundo */
+.jogo,
+.empresa,
+.videos,
+.jogos,
+.criadores,
+.footer {
+    transition: background-color 0.4s ease, background-image 0.4s ease;
+}
+
+img,
+svg {
+    transition: opacity 0.3s ease;
 }
