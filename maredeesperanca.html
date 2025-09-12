@@ -26,10 +26,6 @@
         <img src="img/dark-mode.png" alt="Ícone modo escuro">
       </button>
 
-      <button id="logoutBtn" style="display:none;">
-        <img src="img/logout.png" alt="Sair da conta">
-      </button>
-
       <div class="notifications" id="notificationsIcon">
         <img src="img/notifications.png" alt="Notificações" />
         <span class="notif-dot" id="notifDot" style="display:none"></span>
@@ -40,6 +36,11 @@
       <div class="generic-avatar">
         <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
       </div>
+
+      <button id="logoutBtn" style="display:none;">
+        <img src="img/logout.png" alt="Sair da conta">
+      </button>
+
     </div>
   </header>
 
@@ -66,7 +67,6 @@
   <script src="script.js"></script>
 
   <script>
-    // Inicializar com modo escuro por padrão
     document.body.classList.add("dark-mode");
 
     const darkModeBtn = document.querySelector(".dark-mode-btn");
@@ -74,13 +74,11 @@
     if (darkModeBtn) {
       darkModeBtn.addEventListener("click", () => {
         const isDark = document.body.classList.contains("dark-mode");
-        
+
         if (isDark) {
-          // Mudar para modo claro
           document.body.classList.remove("dark-mode");
           document.body.classList.add("light-mode");
         } else {
-          // Mudar para modo escuro
           document.body.classList.remove("light-mode");
           document.body.classList.add("dark-mode");
         }
@@ -111,8 +109,9 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword }
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc }
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, doc, serverTimestamp }
       from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
 
     const firebaseConfig = {
       apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
@@ -134,7 +133,6 @@
     const avatarContainer = document.querySelector(".generic-avatar");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // Modal
     const overlay = document.getElementById("authOverlay");
     const closeModalBtn = document.getElementById("authCloseBtn");
     const tabSignupBtn = document.getElementById("tabSignup");
@@ -173,17 +171,17 @@
       if (!email || !p1 || !p2) return alert('Preencha todos os campos.');
       if (p1 !== p2) return alert('As senhas não coincidem.');
       try { await createUserWithEmailAndPassword(auth, email, p1); closeAuthModal(); }
-      catch(err){ console.error(err); alert('Falha ao criar conta: '+(err?.message||'')); }
+      catch (err) { console.error(err); alert('Falha ao criar conta: ' + (err?.message || '')); }
     });
     btnDoSignin.addEventListener("click", async () => {
       const email = signinEmail.value.trim(); const pass = signinPass.value;
       if (!email || !pass) return alert('Informe email e senha.');
       try { await signInWithEmailAndPassword(auth, email, pass); closeAuthModal(); }
-      catch(err){ console.error(err); alert('Falha ao entrar: '+(err?.message||'')); }
+      catch (err) { console.error(err); alert('Falha ao entrar: ' + (err?.message || '')); }
     });
     btnGoogle.addEventListener("click", async () => {
       try { if (isMobile) await signInWithRedirect(auth, provider); else await signInWithPopup(auth, provider); closeAuthModal(); }
-      catch(err){ console.error(err); }
+      catch (err) { console.error(err); }
     });
     btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
     logoutBtn.addEventListener("click", () => signOut(auth));
@@ -218,17 +216,22 @@
 
       try {
         await addDoc(collection(db, "comentarios"), {
-          nome: user.displayName,
-          foto: user.photoURL,
-          texto: commentInput.value,
-          data: new Date(),
-          jogo: "Maré de Esperança"
+          uid: user.uid, 
+          nome: user.displayName || "Anônimo",  
+          foto: user.photoURL || "img/Generic_avatar.png", 
+          texto: commentInput.value.trim(),
+          jogo: "Maré de Esperança",
+          data: serverTimestamp()
         });
+
         commentInput.value = "";
+
       } catch (e) {
         console.error("Erro ao salvar comentário:", e);
+        alert("Erro ao salvar comentário: " + (e.message || ""));
       }
     });
+
 
     const q = query(collection(db, "comentarios"), orderBy("data", "desc"));
     onSnapshot(q, (snapshot) => {
@@ -243,8 +246,12 @@
       </div>
       <div class="conteudo">
         <header>
-          <h3 class="nome">${c.nome || "Anônimo"}</h3>
-          <span class="data">${new Date(c.data.seconds * 1000).toLocaleString("pt-BR")}</span>
+          <h3 class="nome-usuario" data-uid="${c.uid}">${c.nome || "Anônimo"}</h3>
+          <span class="data">
+            ${c.data && c.data.seconds
+            ? new Date(c.data.seconds * 1000).toLocaleString("pt-BR")
+            : ""}
+          </span>
         </header>
         <p>${c.texto}</p>
       </div>
@@ -253,7 +260,7 @@
       });
     });
 
-    // Notificações
+
     const notifDot = document.getElementById("notifDot");
     const signalDocRef = doc(collection(db, "notificacoes"), "global");
     onSnapshot(signalDocRef, (snap) => {
@@ -262,7 +269,6 @@
     });
   </script>
 
-  <!-- Modal de autenticação -->
   <div class="modal-overlay" id="authOverlay">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <header>
