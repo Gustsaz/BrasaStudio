@@ -250,7 +250,6 @@
         getFirestore, collection, query, where, orderBy, limit, getDocs, doc, onSnapshot, addDoc, serverTimestamp
       } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-      // ---- Firebase ----
       const firebaseConfig = {
         apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
         authDomain: "brasastudio-bd.firebaseapp.com",
@@ -266,17 +265,15 @@
       const db = getFirestore(app);
       setPersistence(auth, browserLocalPersistence).catch(console.error);
 
-      // ---- Utils: YouTube ----
       function getYouTubeId(url) {
         try {
           const u = new URL(url);
-          if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);                  // youtu.be/ID
-          if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];          // /shorts/ID
-          if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];          // /embed/ID
-          const v = u.searchParams.get("v");                                               // ?v=ID
+          if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+          if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];
+          if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];
+          const v = u.searchParams.get("v");
           if (v) return v;
         } catch (_) {
-          /* se não for URL válida, tenta regex bruta abaixo */
         }
         const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&/]|\b)/);
         return m ? m[1] : null;
@@ -287,7 +284,6 @@
         return id ? `https://www.youtube.com/embed/${id}` : "";
       }
 
-      // ---- Carregar vídeos ----
       async function carregarVideos() {
         const preload = (n) => {
           const el = document.getElementById(`videoCard${n}`);
@@ -335,10 +331,8 @@
         }
       }
 
-      // roda após db pronto
       carregarVideos();
 
-      // ---- Login / UI (melhorada detecção de mobile) ----
       const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
         (window.innerWidth <= 768) ||
         ('ontouchstart' in window) ||
@@ -346,7 +340,6 @@
       const avatarContainer = document.querySelector(".generic-avatar");
       const logoutBtn = document.getElementById("logoutBtn");
 
-      // Modal auth
       const overlay = document.getElementById("authOverlay");
       const closeModalBtn = document.getElementById("authCloseBtn");
       const tabSignupBtn = document.getElementById("tabSignup");
@@ -365,14 +358,12 @@
 
       function openAuthModal() {
         overlay.style.display = "flex";
-        // Prevenir scroll do body no mobile
         if (isMobile) {
           document.body.style.overflow = "hidden";
         }
       }
       function closeAuthModal() {
         overlay.style.display = "none";
-        // Restaurar scroll do body
         if (isMobile) {
           document.body.style.overflow = "";
         }
@@ -390,7 +381,6 @@
       tabSignupBtn.addEventListener("click", () => setTab('signup'));
       tabSigninBtn.addEventListener("click", () => setTab('signin'));
 
-      // Fechar modal com tecla Escape
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && overlay.style.display === "flex") {
           closeAuthModal();
@@ -416,21 +406,16 @@
         const originalDisabled = btnGoogle.disabled;
 
         try {
-          // Mostrar estado de loading
           btnGoogle.textContent = isMobile ? 'Redirecionando...' : 'Abrindo Google...';
           btnGoogle.disabled = true;
 
           if (isMobile) {
-            // No mobile, usar redirect
             await signInWithRedirect(auth, provider);
-            // Não fechar o modal aqui, pois a página será redirecionada
           } else {
-            // No desktop, tentar popup primeiro
             try {
               await signInWithPopup(auth, provider);
               closeAuthModal();
             } catch (popupError) {
-              // Se popup falhar (bloqueado), usar redirect
               if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
                 console.log('Popup bloqueado, usando redirect...');
                 btnGoogle.textContent = 'Redirecionando...';
@@ -445,7 +430,6 @@
           console.error('Erro no login com Google:', err);
           alert('Erro ao fazer login com Google: ' + (err.message || 'Erro desconhecido'));
 
-          // Restaurar estado do botão em caso de erro
           btnGoogle.textContent = originalText;
           btnGoogle.disabled = originalDisabled;
         }
@@ -453,21 +437,17 @@
       btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
       logoutBtn.addEventListener("click", () => signOut(auth));
 
-      // Tratar o resultado do redirect do Google no mobile
       getRedirectResult(auth).then((result) => {
         if (result) {
-          // Login bem-sucedido via redirect
           console.log('Login com Google bem-sucedido:', result.user);
           closeAuthModal();
 
-          // Mostrar mensagem de sucesso
           if (result.user) {
             console.log('Usuário logado:', result.user.displayName || result.user.email);
           }
         }
       }).catch((error) => {
         console.error('Erro no resultado do redirect:', error);
-        // Verificar se é um erro de popup bloqueado ou similar
         if (error.code === 'auth/popup-blocked') {
           console.log('Popup bloqueado, tentando redirect...');
         }
@@ -476,9 +456,8 @@
       onAuthStateChanged(auth, (user) => {
         const avatar = document.querySelector(".generic-avatar img");
         if (user) {
-          // --- logado ---
           avatar.src = user.photoURL || "img/Generic_avatar.png";
-          avatar.dataset.loggedin = "true";  // flag custom
+          avatar.dataset.loggedin = "true";
           logoutBtn.style.display = "inline-flex";
           logoutBtn.className = "logout-btn";
         } else {
@@ -490,7 +469,6 @@
         }
       });
 
-      // ---- Último comentário (mantive seu código) ----
       async function mostrarUltimoComentario() {
         try {
           const comentariosRef = collection(db, "comentarios");
@@ -522,7 +500,6 @@
       }
       mostrarUltimoComentario();
 
-      // ---- Sistema de Notificações ----
       const notifDot = document.getElementById("notifDot");
       const notificationsIcon = document.getElementById("notificationsIcon");
       const notificationsOverlay = document.getElementById("notificationsOverlay");
@@ -531,15 +508,12 @@
       const noNotifications = document.getElementById("noNotifications");
       const markAllReadBtn = document.getElementById("markAllReadBtn");
 
-      // Referências do Firestore
       const signalDocRef = doc(collection(db, "notificacoes"), "global");
       const notificationsCollection = collection(db, "notificacoes_historico");
 
-      // Armazenamento local para notificações lidas
       const READ_NOTIFICATIONS_KEY = 'brasastudio_read_notifications';
       let readNotifications = JSON.parse(localStorage.getItem(READ_NOTIFICATIONS_KEY) || '[]');
 
-      // Função para solicitar permissão de notificação
       async function requestNotificationPermission() {
         if ('Notification' in window) {
           const permission = await Notification.requestPermission();
@@ -548,7 +522,6 @@
         return false;
       }
 
-      // Função para enviar notificação push
       function sendPushNotification(notification) {
         if ('Notification' in window && Notification.permission === 'granted') {
           const notificationObj = new Notification('Brasa Studio', {
@@ -566,23 +539,19 @@
             notificationObj.close();
           };
 
-          // Fechar automaticamente após 5 segundos
           setTimeout(() => notificationObj.close(), 5000);
         }
       }
 
-      // Função para abrir modal de notificações
       function openNotificationsModal() {
         notificationsOverlay.style.display = "flex";
         loadNotifications();
       }
 
-      // Função para fechar modal de notificações
       function closeNotificationsModal() {
         notificationsOverlay.style.display = "none";
       }
 
-      // Função para carregar notificações
       async function loadNotifications() {
         try {
           const q = query(notificationsCollection, orderBy("timestamp", "desc"), limit(20));
@@ -612,7 +581,6 @@
         }
       }
 
-      // Função para criar elemento de notificação
       function createNotificationElement(id, data, isRead) {
         const div = document.createElement('div');
         div.className = `notification-item ${!isRead ? 'unread' : ''}`;
@@ -638,7 +606,6 @@
           </div>
         `;
 
-        // Marcar como lida ao clicar
         div.addEventListener('click', () => {
           if (!isRead) {
             markAsRead(id);
@@ -651,7 +618,6 @@
         return div;
       }
 
-      // Função para marcar notificação como lida
       function markAsRead(notificationId) {
         if (!readNotifications.includes(notificationId)) {
           readNotifications.push(notificationId);
@@ -659,7 +625,6 @@
         }
       }
 
-      // Função para atualizar badge de notificações
       function updateNotificationBadge() {
         const unreadCount = document.querySelectorAll('.notification-item.unread').length;
         console.log('Atualizando badge - notificações não lidas:', unreadCount);
@@ -675,7 +640,6 @@
         }
       }
 
-      // Event listeners
       notificationsIcon.addEventListener("click", openNotificationsModal);
       notificationsCloseBtn.addEventListener("click", closeNotificationsModal);
       notificationsOverlay.addEventListener("click", (e) => {
@@ -693,25 +657,20 @@
         updateNotificationBadge();
       });
 
-      // Solicitar permissão de notificação ao carregar
       requestNotificationPermission();
 
-      // Ouvinte para novas notificações
       onSnapshot(signalDocRef, (snap) => {
         if (snap.exists()) {
           const data = snap.data();
           if (data.active && data.message) {
-            // Adicionar ao histórico de notificações
             addDoc(notificationsCollection, {
               message: data.message,
               sender: data.sender || 'Administrador',
               timestamp: serverTimestamp()
             });
 
-            // Enviar notificação push
             sendPushNotification(data);
 
-            // Recarregar notificações se o modal estiver aberto
             if (notificationsOverlay.style.display === "flex") {
               loadNotifications();
             }
@@ -719,7 +678,6 @@
         }
       });
 
-      // Função para carregar contador inicial de notificações
       async function loadInitialNotificationCount() {
         try {
           console.log('Carregando contador inicial de notificações...');
@@ -752,8 +710,6 @@
         }
       }
 
-
-      // ---- Sistema de Perfil do Usuário ----
       const profileOverlay = document.getElementById("profileOverlay");
       const profileCloseBtn = document.getElementById("profileCloseBtn");
       const changeAvatarBtn = document.getElementById("changeAvatarBtn");
@@ -767,15 +723,12 @@
       const saveProfileBtn = document.getElementById("saveProfileBtn");
       const cancelProfileBtn = document.getElementById("cancelProfileBtn");
 
-      // Função para abrir modal de perfil
       function openProfileModal() {
         if (auth.currentUser) {
-          // Preencher dados do usuário
           profileEmail.value = auth.currentUser.email || '';
           profileName.value = auth.currentUser.displayName || '';
           currentAvatarImg.src = auth.currentUser.photoURL || "img/Generic_avatar.png";
 
-          // Limpar campos de senha
           currentPassword.value = '';
           newPassword.value = '';
           confirmPassword.value = '';
@@ -784,28 +737,23 @@
         }
       }
 
-      // Função para fechar modal de perfil
       function closeProfileModal() {
         profileOverlay.style.display = "none";
       }
 
-      // Função para alterar avatar
       function handleAvatarChange(event) {
         const file = event.target.files[0];
         if (file) {
-          // Validar tipo de arquivo
           if (!file.type.startsWith('image/')) {
             alert('Por favor, selecione apenas arquivos de imagem.');
             return;
           }
 
-          // Validar tamanho (máximo 5MB)
           if (file.size > 5 * 1024 * 1024) {
             alert('A imagem deve ter no máximo 5MB.');
             return;
           }
 
-          // Criar URL temporária para preview
           const reader = new FileReader();
           reader.onload = function (e) {
             currentAvatarImg.src = e.target.result;
@@ -814,21 +762,17 @@
         }
       }
 
-      // Função para salvar alterações do perfil
       async function saveProfileChanges() {
         if (!auth.currentUser) return;
 
         try {
-          // Atualizar nome se foi alterado
           if (profileName.value.trim() !== auth.currentUser.displayName) {
             const novoNome = profileName.value.trim();
             await updateProfile(auth.currentUser, { displayName: novoNome });
 
-            // Atualizar avatar/nome no header
             const avatarHeader = document.querySelector(".generic-avatar img");
             if (avatarHeader) avatarHeader.alt = novoNome;
 
-            // Atualizar nome em comentários renderizados
             document.querySelectorAll(".nome-usuario").forEach(el => {
               if (el.dataset.uid === auth.currentUser.uid) {
                 el.textContent = novoNome;
@@ -836,7 +780,6 @@
             });
           }
 
-          // Atualizar avatar se foi alterado
           if (avatarFileInput.files[0]) {
             const file = avatarFileInput.files[0];
             const reader = new FileReader();
@@ -845,7 +788,6 @@
                 await updateProfile(auth.currentUser, {
                   photoURL: e.target.result
                 });
-                // Atualizar avatar no header
                 const headerAvatar = document.querySelector(".generic-avatar img");
                 if (headerAvatar) {
                   headerAvatar.src = e.target.result;
@@ -858,7 +800,6 @@
             reader.readAsDataURL(file);
           }
 
-          // Atualizar senha se foi fornecida
           if (newPassword.value.trim()) {
             if (newPassword.value !== confirmPassword.value) {
               alert('As senhas não coincidem.');
@@ -870,7 +811,6 @@
               return;
             }
 
-            // Reautenticar usuário se necessário
             if (currentPassword.value.trim()) {
               const credential = EmailAuthProvider.credential(
                 auth.currentUser.email,
@@ -897,7 +837,6 @@
         }
       }
 
-      // Event listeners para perfil
       avatarFileInput.addEventListener('change', handleAvatarChange);
       changeAvatarBtn.addEventListener('click', () => avatarFileInput.click());
       profileCloseBtn.addEventListener('click', closeProfileModal);
@@ -907,7 +846,6 @@
         if (e.target === profileOverlay) closeProfileModal();
       });
 
-      // Modificar o event listener do avatar para abrir perfil se logado
       avatarContainer.addEventListener("click", () => {
         if (auth.currentUser) {
           openProfileModal();
@@ -924,11 +862,9 @@
           await updateProfile(user, { displayName: novoNome });
           alert("Nome atualizado com sucesso!");
 
-          // Atualizar avatar/nome na UI imediatamente
           const avatar = document.querySelector(".generic-avatar img");
           if (avatar) avatar.alt = novoNome;
 
-          // Atualizar nome nos comentários já exibidos
           document.querySelectorAll(".comentario .nome-usuario").forEach(el => {
             if (el.dataset.uid === user.uid) {
               el.textContent = novoNome;
@@ -939,13 +875,10 @@
           alert("Falha ao atualizar nome: " + (err?.message || ""));
         }
       }
-
-
-      // Carregar contador inicial
       loadInitialNotificationCount();
+
     </script>
 
-    <!-- Modal de perfil do usuário -->
     <div class="modal-overlay" id="profileOverlay">
       <div class="modal profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
         <header>
@@ -954,7 +887,6 @@
         </header>
 
         <div class="profile-content">
-          <!-- Avatar -->
           <div class="profile-avatar-section">
             <div class="current-avatar">
               <img id="currentAvatarImg" src="img/Generic_avatar.png" alt="Avatar atual" />
@@ -968,7 +900,6 @@
             <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" />
           </div>
 
-          <!-- Nome e Email -->
           <div class="profile-info">
             <div class="form-row">
               <label for="profileEmail">Email</label>
@@ -980,7 +911,6 @@
             </div>
           </div>
 
-          <!-- Alterar senha -->
           <div class="password-section">
             <h4>Alterar Senha</h4>
             <div class="form-row">
@@ -998,7 +928,6 @@
           </div>
         </div>
 
-        <!-- Botões -->
         <div class="profile-actions">
           <button id="saveProfileBtn">Salvar Alterações</button>
           <button id="cancelProfileBtn" class="secondary">Cancelar</button>
@@ -1006,7 +935,6 @@
       </div>
     </div>
 
-    <!-- Modal de notificações -->
     <div class="modal-overlay" id="notificationsOverlay">
       <div class="modal notifications-modal" role="dialog" aria-modal="true" aria-labelledby="notificationsTitle">
         <header>
@@ -1015,7 +943,6 @@
         </header>
         <div class="notifications-content">
           <div id="notificationsList" class="notifications-list">
-            <!-- Notificações serão carregadas aqui -->
           </div>
           <div id="noNotifications" class="no-notifications" style="display: none;">
             <p>Nenhuma notificação ainda.</p>
@@ -1027,7 +954,6 @@
       </div>
     </div>
 
-    <!-- Modal de autenticação -->
     <div class="modal-overlay" id="authOverlay">
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
         <header>
