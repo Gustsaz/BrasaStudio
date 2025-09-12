@@ -55,11 +55,10 @@
       </div>
     </header>
 
-
     <div class="jogo-container">
       <div class="jogo-conteudo">
-        <img class="tela" src="img/tela-1.png" alt="placa" loading="lazy"/>
-        <img class="nome-jogo" src="img/nome-jogo.png" alt="Nome do jogo" loading="lazy"/>
+        <img class="tela" src="img/tela-1.png" alt="placa" loading="lazy" />
+        <img class="nome-jogo" src="img/nome-jogo.png" alt="Nome do jogo" loading="lazy" />
         <img class="perfeito" src="img/perfeito-1.png" alt="Foto da menina" loading="lazy">
 
         <a href="maredeesperanca.html" class="botao-jogo-jogo">
@@ -67,7 +66,7 @@
         </a>
 
       </div>
-    </div> 
+    </div>
   </section>
 
   <main>
@@ -130,6 +129,7 @@
               </p>
             </div>
           </div>
+
         </div>
       </div>
     </section>
@@ -339,10 +339,10 @@
       carregarVideos();
 
       // ---- Login / UI (melhorada detecção de mobile) ----
-      const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                       (window.innerWidth <= 768) || 
-                       ('ontouchstart' in window) ||
-                       (navigator.maxTouchPoints > 0);
+      const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (window.innerWidth <= 768) ||
+        ('ontouchstart' in window) ||
+        (navigator.maxTouchPoints > 0);
       const avatarContainer = document.querySelector(".generic-avatar");
       const logoutBtn = document.getElementById("logoutBtn");
 
@@ -363,15 +363,15 @@
       const btnGoogle = document.getElementById("btnGoogle");
       const btnAdmin = document.getElementById("btnAdmin");
 
-      function openAuthModal() { 
-        overlay.style.display = "flex"; 
+      function openAuthModal() {
+        overlay.style.display = "flex";
         // Prevenir scroll do body no mobile
         if (isMobile) {
           document.body.style.overflow = "hidden";
         }
       }
-      function closeAuthModal() { 
-        overlay.style.display = "none"; 
+      function closeAuthModal() {
+        overlay.style.display = "none";
         // Restaurar scroll do body
         if (isMobile) {
           document.body.style.overflow = "";
@@ -389,7 +389,7 @@
       overlay.addEventListener("click", (e) => { if (e.target === overlay) closeAuthModal(); });
       tabSignupBtn.addEventListener("click", () => setTab('signup'));
       tabSigninBtn.addEventListener("click", () => setTab('signin'));
-      
+
       // Fechar modal com tecla Escape
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && overlay.style.display === "flex") {
@@ -414,12 +414,12 @@
       btnGoogle.addEventListener("click", async () => {
         const originalText = btnGoogle.textContent;
         const originalDisabled = btnGoogle.disabled;
-        
-        try { 
+
+        try {
           // Mostrar estado de loading
           btnGoogle.textContent = isMobile ? 'Redirecionando...' : 'Abrindo Google...';
           btnGoogle.disabled = true;
-          
+
           if (isMobile) {
             // No mobile, usar redirect
             await signInWithRedirect(auth, provider);
@@ -441,25 +441,25 @@
             }
           }
         }
-        catch (err) { 
+        catch (err) {
           console.error('Erro no login com Google:', err);
           alert('Erro ao fazer login com Google: ' + (err.message || 'Erro desconhecido'));
-          
+
           // Restaurar estado do botão em caso de erro
           btnGoogle.textContent = originalText;
           btnGoogle.disabled = originalDisabled;
         }
       });
-      btnAdmin.addEventListener("click", () => {window.location.href = 'adm.html';});
+      btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
       logoutBtn.addEventListener("click", () => signOut(auth));
-      
+
       // Tratar o resultado do redirect do Google no mobile
       getRedirectResult(auth).then((result) => {
         if (result) {
           // Login bem-sucedido via redirect
           console.log('Login com Google bem-sucedido:', result.user);
           closeAuthModal();
-          
+
           // Mostrar mensagem de sucesso
           if (result.user) {
             console.log('Usuário logado:', result.user.displayName || result.user.email);
@@ -509,7 +509,7 @@
             <img src="${doc.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;">
           </div>
           <div>
-            <h3 class="nome-usuario">${doc.nome || "Anônimo"}</h3>
+            <h3 class="nome-usuario" data-uid="${doc.uid}">${doc.nome || "Anônimo"}</h3>
             <span class="data">${doc.data ? new Date(doc.data.seconds * 1000).toLocaleString("pt-BR") : ""}</span>
             <p class="texto-comentario">${doc.texto}</p>
           </div>`;
@@ -530,15 +530,15 @@
       const notificationsList = document.getElementById("notificationsList");
       const noNotifications = document.getElementById("noNotifications");
       const markAllReadBtn = document.getElementById("markAllReadBtn");
-      
+
       // Referências do Firestore
       const signalDocRef = doc(collection(db, "notificacoes"), "global");
       const notificationsCollection = collection(db, "notificacoes_historico");
-      
+
       // Armazenamento local para notificações lidas
       const READ_NOTIFICATIONS_KEY = 'brasastudio_read_notifications';
       let readNotifications = JSON.parse(localStorage.getItem(READ_NOTIFICATIONS_KEY) || '[]');
-      
+
       // Função para solicitar permissão de notificação
       async function requestNotificationPermission() {
         if ('Notification' in window) {
@@ -547,7 +547,7 @@
         }
         return false;
       }
-      
+
       // Função para enviar notificação push
       function sendPushNotification(notification) {
         if ('Notification' in window && Notification.permission === 'granted') {
@@ -559,65 +559,65 @@
             requireInteraction: false,
             silent: false
           });
-          
+
           notificationObj.onclick = () => {
             window.focus();
             openNotificationsModal();
             notificationObj.close();
           };
-          
+
           // Fechar automaticamente após 5 segundos
           setTimeout(() => notificationObj.close(), 5000);
         }
       }
-      
+
       // Função para abrir modal de notificações
       function openNotificationsModal() {
         notificationsOverlay.style.display = "flex";
         loadNotifications();
       }
-      
+
       // Função para fechar modal de notificações
       function closeNotificationsModal() {
         notificationsOverlay.style.display = "none";
       }
-      
+
       // Função para carregar notificações
       async function loadNotifications() {
         try {
           const q = query(notificationsCollection, orderBy("timestamp", "desc"), limit(20));
           const snapshot = await getDocs(q);
-          
+
           if (snapshot.empty) {
             notificationsList.style.display = "none";
             noNotifications.style.display = "block";
             updateNotificationBadge();
             return;
           }
-          
+
           notificationsList.style.display = "block";
           noNotifications.style.display = "none";
           notificationsList.innerHTML = "";
-          
+
           snapshot.forEach((doc) => {
             const data = doc.data();
             const isRead = readNotifications.includes(doc.id);
             const notificationElement = createNotificationElement(doc.id, data, isRead);
             notificationsList.appendChild(notificationElement);
           });
-          
+
           updateNotificationBadge();
         } catch (error) {
           console.error("Erro ao carregar notificações:", error);
         }
       }
-      
+
       // Função para criar elemento de notificação
       function createNotificationElement(id, data, isRead) {
         const div = document.createElement('div');
         div.className = `notification-item ${!isRead ? 'unread' : ''}`;
         div.dataset.notificationId = id;
-        
+
         const time = data.timestamp ? new Date(data.timestamp.seconds * 1000) : new Date();
         const timeStr = time.toLocaleString('pt-BR', {
           day: '2-digit',
@@ -626,7 +626,7 @@
           hour: '2-digit',
           minute: '2-digit'
         });
-        
+
         div.innerHTML = `
           <div class="notification-unread-dot"></div>
           <div class="notification-header">
@@ -637,7 +637,7 @@
             </div>
           </div>
         `;
-        
+
         // Marcar como lida ao clicar
         div.addEventListener('click', () => {
           if (!isRead) {
@@ -647,10 +647,10 @@
             updateNotificationBadge();
           }
         });
-        
+
         return div;
       }
-      
+
       // Função para marcar notificação como lida
       function markAsRead(notificationId) {
         if (!readNotifications.includes(notificationId)) {
@@ -658,12 +658,12 @@
           localStorage.setItem(READ_NOTIFICATIONS_KEY, JSON.stringify(readNotifications));
         }
       }
-      
+
       // Função para atualizar badge de notificações
       function updateNotificationBadge() {
         const unreadCount = document.querySelectorAll('.notification-item.unread').length;
         console.log('Atualizando badge - notificações não lidas:', unreadCount);
-        
+
         if (unreadCount > 0) {
           notifDot.textContent = unreadCount > 99 ? '99+' : unreadCount.toString();
           notifDot.style.display = "flex";
@@ -674,14 +674,14 @@
           console.log('Badge escondido');
         }
       }
-      
+
       // Event listeners
       notificationsIcon.addEventListener("click", openNotificationsModal);
       notificationsCloseBtn.addEventListener("click", closeNotificationsModal);
       notificationsOverlay.addEventListener("click", (e) => {
         if (e.target === notificationsOverlay) closeNotificationsModal();
       });
-      
+
       markAllReadBtn.addEventListener("click", () => {
         const unreadItems = document.querySelectorAll('.notification-item.unread');
         unreadItems.forEach(item => {
@@ -692,10 +692,10 @@
         });
         updateNotificationBadge();
       });
-      
+
       // Solicitar permissão de notificação ao carregar
       requestNotificationPermission();
-      
+
       // Ouvinte para novas notificações
       onSnapshot(signalDocRef, (snap) => {
         if (snap.exists()) {
@@ -707,10 +707,10 @@
               sender: data.sender || 'Administrador',
               timestamp: serverTimestamp()
             });
-            
+
             // Enviar notificação push
             sendPushNotification(data);
-            
+
             // Recarregar notificações se o modal estiver aberto
             if (notificationsOverlay.style.display === "flex") {
               loadNotifications();
@@ -718,26 +718,26 @@
           }
         }
       });
-      
+
       // Função para carregar contador inicial de notificações
       async function loadInitialNotificationCount() {
         try {
           console.log('Carregando contador inicial de notificações...');
           const q = query(notificationsCollection, orderBy("timestamp", "desc"), limit(20));
           const snapshot = await getDocs(q);
-          
+
           console.log('Notificações encontradas:', snapshot.size);
           console.log('Notificações lidas:', readNotifications);
-          
+
           let unreadCount = 0;
           snapshot.forEach((doc) => {
             if (!readNotifications.includes(doc.id)) {
               unreadCount++;
             }
           });
-          
+
           console.log('Notificações não lidas:', unreadCount);
-          
+
           if (unreadCount > 0) {
             notifDot.textContent = unreadCount > 99 ? '99+' : unreadCount.toString();
             notifDot.style.display = "flex";
@@ -751,8 +751,8 @@
           console.error("Erro ao carregar contador de notificações:", error);
         }
       }
-      
-      
+
+
       // ---- Sistema de Perfil do Usuário ----
       const profileOverlay = document.getElementById("profileOverlay");
       const profileCloseBtn = document.getElementById("profileCloseBtn");
@@ -766,7 +766,7 @@
       const confirmPassword = document.getElementById("confirmPassword");
       const saveProfileBtn = document.getElementById("saveProfileBtn");
       const cancelProfileBtn = document.getElementById("cancelProfileBtn");
-      
+
       // Função para abrir modal de perfil
       function openProfileModal() {
         if (auth.currentUser) {
@@ -774,21 +774,21 @@
           profileEmail.value = auth.currentUser.email || '';
           profileName.value = auth.currentUser.displayName || '';
           currentAvatarImg.src = auth.currentUser.photoURL || "img/Generic_avatar.png";
-          
+
           // Limpar campos de senha
           currentPassword.value = '';
           newPassword.value = '';
           confirmPassword.value = '';
-          
+
           profileOverlay.style.display = "flex";
         }
       }
-      
+
       // Função para fechar modal de perfil
       function closeProfileModal() {
         profileOverlay.style.display = "none";
       }
-      
+
       // Função para alterar avatar
       function handleAvatarChange(event) {
         const file = event.target.files[0];
@@ -798,39 +798,49 @@
             alert('Por favor, selecione apenas arquivos de imagem.');
             return;
           }
-          
+
           // Validar tamanho (máximo 5MB)
           if (file.size > 5 * 1024 * 1024) {
             alert('A imagem deve ter no máximo 5MB.');
             return;
           }
-          
+
           // Criar URL temporária para preview
           const reader = new FileReader();
-          reader.onload = function(e) {
+          reader.onload = function (e) {
             currentAvatarImg.src = e.target.result;
           };
           reader.readAsDataURL(file);
         }
       }
-      
+
       // Função para salvar alterações do perfil
       async function saveProfileChanges() {
         if (!auth.currentUser) return;
-        
+
         try {
           // Atualizar nome se foi alterado
           if (profileName.value.trim() !== auth.currentUser.displayName) {
-            await updateProfile(auth.currentUser, {
-              displayName: profileName.value.trim()
+            const novoNome = profileName.value.trim();
+            await updateProfile(auth.currentUser, { displayName: novoNome });
+
+            // Atualizar avatar/nome no header
+            const avatarHeader = document.querySelector(".generic-avatar img");
+            if (avatarHeader) avatarHeader.alt = novoNome;
+
+            // Atualizar nome em comentários renderizados
+            document.querySelectorAll(".nome-usuario").forEach(el => {
+              if (el.dataset.uid === auth.currentUser.uid) {
+                el.textContent = novoNome;
+              }
             });
           }
-          
+
           // Atualizar avatar se foi alterado
           if (avatarFileInput.files[0]) {
             const file = avatarFileInput.files[0];
             const reader = new FileReader();
-            reader.onload = async function(e) {
+            reader.onload = async function (e) {
               try {
                 await updateProfile(auth.currentUser, {
                   photoURL: e.target.result
@@ -847,19 +857,19 @@
             };
             reader.readAsDataURL(file);
           }
-          
+
           // Atualizar senha se foi fornecida
           if (newPassword.value.trim()) {
             if (newPassword.value !== confirmPassword.value) {
               alert('As senhas não coincidem.');
               return;
             }
-            
+
             if (newPassword.value.length < 6) {
               alert('A nova senha deve ter pelo menos 6 caracteres.');
               return;
             }
-            
+
             // Reautenticar usuário se necessário
             if (currentPassword.value.trim()) {
               const credential = EmailAuthProvider.credential(
@@ -868,13 +878,13 @@
               );
               await reauthenticateWithCredential(auth.currentUser, credential);
             }
-            
+
             await updatePassword(auth.currentUser, newPassword.value);
           }
-          
+
           alert('Perfil atualizado com sucesso!');
           closeProfileModal();
-          
+
         } catch (error) {
           console.error('Erro ao atualizar perfil:', error);
           if (error.code === 'auth/wrong-password') {
@@ -886,7 +896,7 @@
           }
         }
       }
-      
+
       // Event listeners para perfil
       avatarFileInput.addEventListener('change', handleAvatarChange);
       changeAvatarBtn.addEventListener('click', () => avatarFileInput.click());
@@ -896,7 +906,7 @@
       profileOverlay.addEventListener('click', (e) => {
         if (e.target === profileOverlay) closeProfileModal();
       });
-      
+
       // Modificar o event listener do avatar para abrir perfil se logado
       avatarContainer.addEventListener("click", () => {
         if (auth.currentUser) {
@@ -905,7 +915,32 @@
           openAuthModal();
         }
       });
-      
+
+      async function atualizarNome(novoNome) {
+        const user = auth.currentUser;
+        if (!user) return alert("Nenhum usuário logado.");
+
+        try {
+          await updateProfile(user, { displayName: novoNome });
+          alert("Nome atualizado com sucesso!");
+
+          // Atualizar avatar/nome na UI imediatamente
+          const avatar = document.querySelector(".generic-avatar img");
+          if (avatar) avatar.alt = novoNome;
+
+          // Atualizar nome nos comentários já exibidos
+          document.querySelectorAll(".comentario .nome-usuario").forEach(el => {
+            if (el.dataset.uid === user.uid) {
+              el.textContent = novoNome;
+            }
+          });
+        } catch (err) {
+          console.error("Erro ao atualizar nome:", err);
+          alert("Falha ao atualizar nome: " + (err?.message || ""));
+        }
+      }
+
+
       // Carregar contador inicial
       loadInitialNotificationCount();
     </script>
@@ -917,7 +952,9 @@
           <h3 id="profileTitle">Meu Perfil</h3>
           <button id="profileCloseBtn" aria-label="Fechar">✕</button>
         </header>
+
         <div class="profile-content">
+          <!-- Avatar -->
           <div class="profile-avatar-section">
             <div class="current-avatar">
               <img id="currentAvatarImg" src="img/Generic_avatar.png" alt="Avatar atual" />
@@ -930,7 +967,8 @@
             </div>
             <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" />
           </div>
-          
+
+          <!-- Nome e Email -->
           <div class="profile-info">
             <div class="form-row">
               <label for="profileEmail">Email</label>
@@ -941,7 +979,8 @@
               <input id="profileName" type="text" placeholder="Seu nome" />
             </div>
           </div>
-          
+
+          <!-- Alterar senha -->
           <div class="password-section">
             <h4>Alterar Senha</h4>
             <div class="form-row">
@@ -958,6 +997,8 @@
             </div>
           </div>
         </div>
+
+        <!-- Botões -->
         <div class="profile-actions">
           <button id="saveProfileBtn">Salvar Alterações</button>
           <button id="cancelProfileBtn" class="secondary">Cancelar</button>
