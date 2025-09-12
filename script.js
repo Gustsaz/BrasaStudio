@@ -6,9 +6,6 @@ document.body.classList.add("dark-mode");
 if (darkModeBtn) {
     darkModeBtn.addEventListener("click", () => {
         // Animar a troca de tema
-        document.body.style.transition = "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)";
-        document.body.style.opacity = "0.8";
-        
         const isDark = document.body.classList.contains("dark-mode");
         
         if (isDark) {
@@ -44,16 +41,12 @@ if (darkModeBtn) {
                 if (element.selector.includes("generic-avatar") && el.dataset.loggedin === "true") {
                     return;
                 }
-
-                el.style.transition = "opacity 0.3s ease";
-                el.style.opacity = "0.5";
-                
-                setTimeout(() => {
-                    el.src = isDarkAfterToggle ? element.dark : element.light;
-                    el.style.opacity = "1";
-                }, 150);
+        
+                // Em vez de animar opacity e trocar src, só troca direto
+                el.src = isDarkAfterToggle ? element.dark : element.light;
             }
         });
+        
 
         setTimeout(() => {
             document.body.style.opacity = "1";
