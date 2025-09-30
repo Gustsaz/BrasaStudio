@@ -410,6 +410,7 @@
           btnGoogle.disabled = true;
 
           if (isMobile) {
+            // Mobile não suporta popup, usa redirect
             await signInWithRedirect(auth, provider);
           } else {
             try {
@@ -429,11 +430,23 @@
         catch (err) {
           console.error('Erro no login com Google:', err);
           alert('Erro ao fazer login com Google: ' + (err.message || 'Erro desconhecido'));
-
           btnGoogle.textContent = originalText;
           btnGoogle.disabled = originalDisabled;
         }
       });
+
+      // 🔎 Captura o resultado do redirect no mobile
+      getRedirectResult(auth)
+        .then((result) => {
+          if (result?.user) {
+            console.log('Login com Google bem-sucedido:', result.user);
+            closeAuthModal();
+          }
+        })
+        .catch((error) => {
+          console.error('Erro no resultado do redirect:', error);
+        });
+
       btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
       logoutBtn.addEventListener("click", () => signOut(auth));
 
