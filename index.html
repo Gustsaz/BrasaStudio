@@ -356,6 +356,22 @@
       const btnGoogle = document.getElementById("btnGoogle");
       const btnAdmin = document.getElementById("btnAdmin");
 
+      // Função para verificar se o usuário é admin
+      function isAdminUser(user) {
+        return user && user.email === "Brasastudio2025@gmail.com";
+      }
+
+      // Função para atualizar visibilidade do botão admin
+      function updateAdminButtonVisibility(user) {
+        if (btnAdmin) {
+          if (isAdminUser(user)) {
+            btnAdmin.style.display = "block";
+          } else {
+            btnAdmin.style.display = "none";
+          }
+        }
+      }
+
       function openAuthModal() {
         overlay.style.display = "flex";
         if (isMobile) {
@@ -435,6 +451,39 @@
         }
       });
 
+      // Melhorar experiência no mobile com indicador de carregamento
+      if (isMobile) {
+        // Adicionar indicador visual para mobile
+        const style = document.createElement('style');
+        style.textContent = `
+          @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+          }
+          .mobile-loading {
+            animation: pulse 1.5s ease-in-out infinite;
+          }
+          .mobile-loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #ff6b35;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+          }
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
       // 🔎 Captura o resultado do redirect no mobile
       getRedirectResult(auth)
         .then((result) => {
@@ -473,12 +522,18 @@
           avatar.dataset.loggedin = "true";
           logoutBtn.style.display = "inline-flex";
           logoutBtn.className = "logout-btn";
+
+          // Atualizar visibilidade do botão admin baseado no usuário logado
+          updateAdminButtonVisibility(user);
         } else {
           const isDark = document.body.classList.contains("dark-mode");
           avatar.src = isDark ? "img/Generic_avatar_dark.png" : "img/Generic_avatar.png";
           avatar.dataset.loggedin = "false";
           logoutBtn.style.display = "none";
           closeAuthModal();
+
+          // Esconder botão admin quando usuário não estiver logado
+          updateAdminButtonVisibility(null);
         }
       });
 
@@ -1009,7 +1064,7 @@
         </section>
         <div class="actions">
           <button id="btnGoogle">Entrar com Google</button>
-          <button id="btnAdmin" class="secondary">Entrar como Administrador</button>
+          <button id="btnAdmin" class="secondary admin-button">Entrar como Administrador</button>
           <div class="hint">Ao entrar, você concorda com os termos de uso.</div>
         </div>
       </div>
