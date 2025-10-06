@@ -431,24 +431,19 @@
         const originalDisabled = btnGoogle.disabled;
 
         try {
-          btnGoogle.textContent = isMobile ? 'Redirecionando...' : 'Abrindo Google...';
+          btnGoogle.textContent = 'Abrindo Google...';
           btnGoogle.disabled = true;
 
-          if (isMobile) {
-            // Mobile não suporta popup, usa redirect
-            await signInWithRedirect(auth, provider);
-          } else {
-            try {
-              await signInWithPopup(auth, provider);
-              closeAuthModal();
-            } catch (popupError) {
-              if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
-                console.log('Popup bloqueado, usando redirect...');
-                btnGoogle.textContent = 'Redirecionando...';
-                await signInWithRedirect(auth, provider);
-              } else {
-                throw popupError;
-              }
+          try {
+            await signInWithPopup(auth, provider);
+            closeAuthModal();
+          } catch (popupError) {
+            if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
+              console.log('Popup bloqueado, usando redirect...');
+              btnGoogle.textContent = 'Redirecionando...';
+              await signInWithRedirect(auth, provider);
+            } else {
+              throw popupError;
             }
           }
         }
@@ -1146,9 +1141,6 @@
           <button id="btnGoogle">Entrar com Google</button>
           <button id="btnAdmin" class="secondary admin-button">Entrar como Administrador</button>
           <div class="hint">Ao entrar, você concorda com os termos de uso.</div>
-          <div class="mobile-hint" id="mobileHint" style="display: none;">
-            📱 <strong>No mobile:</strong> Será redirecionado para o Google. Após escolher sua conta, volte automaticamente para o site.
-          </div>
         </div>
       </div>
     </div>
