@@ -61,6 +61,19 @@
       <div id="commentsList" class="list"></div>
     </section>
 
+    <section class="admin-card" id="adminsAdmin">
+      <h2>Gerenciar Administradores</h2>
+      <p>Adicione ou remova emails com acesso ao painel administrativo.</p>
+      <div class="form-row">
+        <label for="newAdminEmail">Novo email de administrador</label>
+        <input id="newAdminEmail" type="email" placeholder="email@exemplo.com" />
+      </div>
+      <div class="form-actions">
+        <button id="addAdminBtn">Adicionar Administrador</button>
+      </div>
+      <div id="adminsList" class="list"></div>
+    </section>
+
     <section class="admin-card" id="notificationsAdmin">
       <h2>Notificações</h2>
       <p>Enviar notificações para todos os usuários. As notificações aparecerão no modal de notificações e como push notifications.</p>
@@ -150,6 +163,7 @@
       // Inicialização do painel
       loadVideosForAdmin();
       subscribeComments();
+      loadAdmins();
     });
 
     // ---- Util YouTube ----
@@ -318,6 +332,72 @@
       } catch (err) {
         console.error("Erro ao limpar notificação:", err);
         alert("Falha ao limpar notificação. Verifique as permissões do Firestore.");
+      }
+    });
+
+    // ---- Administradores ----
+    const adminsList = document.getElementById("adminsList");
+    const newAdminEmail = document.getElementById("newAdminEmail");
+    const addAdminBtn = document.getElementById("addAdminBtn");
+
+    async function loadAdmins() {
+      if (!adminsList) return;
+      adminsList.innerHTML = "Carregando administradores…";
+      try {
+        const snap = await getDocs(collection(db, "admins"));
+        if (snap.empty) {
+          adminsList.innerHTML = "Nenhum administrador cadastrado.";
+          return;
+        }
+        adminsList.innerHTML = "";
+        snap.forEach((d) => {
+          const email = d.id; // Usando o ID do documento como email
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `
+            <div class="grow">${email}</div>
+            <button data-remove="${email}" class="danger">Remover</button>
+          `;
+          adminsList.appendChild(row);
+        });
+
+        adminsList.querySelectorAll("[data-remove]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const email = btn.getAttribute("data-remove");
+            if (!confirm(`Tem certeza que deseja remover ${email} dos administradores?`)) return;
+            try {
+              await deleteDoc(doc(db, "admins", email));
+              alert("Administrador removido!");
+            } catch (err) {
+              console.error("Erro ao remover administrador:", err);
+              alert("Falha ao remover. Verifique as permissões do Firestore.");
+            }
+          });
+        });
+      } catch (err) {
+        console.error("Erro ao carregar administradores:", err);
+        adminsList.innerHTML = "Erro ao carregar administradores.";
+      }
+    }
+
+    if (addAdminBtn) addAdminBtn.addEventListener("click", async () => {
+      const email = newAdminEmail.value.trim().toLowerCase();
+      if (!email) {
+        alert("Por favor, digite um email.");
+        return;
+      }
+      if (!email.includes("@")) {
+        alert("Email inválido.");
+        return;
+      }
+      try {
+        await setDoc(doc(db, "admins", email), { addedAt: serverTimestamp() });
+        newAdminEmail.value = "";
+        alert("Administrador adicionado!");
+        loadAdmins(); // Recarregar lista
+      } catch (err) {
+        console.error("Erro ao adicionar administrador:", err);
+        alert("Falha ao adicionar. Verifique as permissões do Firestore.");
       }
     });
   </script>
