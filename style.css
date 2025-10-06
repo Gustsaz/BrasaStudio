@@ -274,12 +274,60 @@ body:not(.light-mode) .jogo-conteudo .nome-jogo {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.actions button.admin-button {
+    background: linear-gradient(135deg, #ff6b35, #ff8c42);
+    color: #ffffff;
+    border-color: #ff6b35;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.actions button.admin-button::before {
+    content: '👑';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+}
+
+.actions button.admin-button:hover {
+    background: linear-gradient(135deg, #ff8c42, #ffab42);
+    border-color: #ff8c42;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+}
+
+.actions button.admin-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .hint {
     text-align: center;
     color: #666666;
     font-size: 12px;
     margin-top: 8px;
     font-family: "Inter", sans-serif;
+}
+
+.mobile-hint {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #ff6b35;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.mobile-hint strong {
+    font-weight: 600;
 }
 
 /* Modo claro para o modal */
@@ -369,6 +417,12 @@ body.light-mode .actions button:disabled:hover {
 
 body.light-mode .hint {
     color: #999999;
+}
+
+body.light-mode .mobile-hint {
+    background: rgba(255, 107, 53, 0.1);
+    border: 1px solid rgba(255, 107, 53, 0.3);
+    color: #ff6b35;
 }
 
 /* Modal de notificações */
