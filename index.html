@@ -367,17 +367,18 @@
 
       // Função para verificar se o usuário é admin
       function isAdminUser(user) {
-        return user && user.email === "Brasastudio2025@gmail.com";
+        const adminEmails = ["Brasastudio2025@gmail.com", "messytails4@gmail.com", "knapicko@gmail.com"];
+        return user && adminEmails.includes(user.email);
       }
 
       // Função para atualizar visibilidade do botão admin
       function updateAdminButtonVisibility(user) {
+        const isAdmin = isAdminUser(user);
         if (btnAdmin) {
-          if (isAdminUser(user)) {
-            btnAdmin.style.display = "block";
-          } else {
-            btnAdmin.style.display = "none";
-          }
+          btnAdmin.style.display = isAdmin ? "block" : "none";
+        }
+        if (profileAdminBtn) {
+          profileAdminBtn.style.display = isAdmin ? "block" : "none";
         }
       }
 
@@ -865,6 +866,7 @@
       const confirmPassword = document.getElementById("confirmPassword");
       const saveProfileBtn = document.getElementById("saveProfileBtn");
       const cancelProfileBtn = document.getElementById("cancelProfileBtn");
+      const profileAdminBtn = document.getElementById("profileAdminBtn");
 
       function openProfileModal() {
         if (auth.currentUser) {
@@ -875,6 +877,9 @@
           currentPassword.value = '';
           newPassword.value = '';
           confirmPassword.value = '';
+
+          // Atualizar visibilidade do botão admin no perfil
+          updateAdminButtonVisibility(auth.currentUser);
 
           profileOverlay.style.display = "flex";
         }
@@ -985,6 +990,7 @@
       profileCloseBtn.addEventListener('click', closeProfileModal);
       cancelProfileBtn.addEventListener('click', closeProfileModal);
       saveProfileBtn.addEventListener('click', saveProfileChanges);
+      profileAdminBtn.addEventListener('click', () => { window.location.href = 'adm.html'; });
       profileOverlay.addEventListener('click', (e) => {
         if (e.target === profileOverlay) closeProfileModal();
       });
@@ -1074,6 +1080,7 @@
         <div class="profile-actions">
           <button id="saveProfileBtn">Salvar Alterações</button>
           <button id="cancelProfileBtn" class="secondary">Cancelar</button>
+          <button id="profileAdminBtn" class="secondary admin-button" style="display: none;">Entrar como Administrador</button>
         </div>
       </div>
     </div>
