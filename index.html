@@ -263,7 +263,16 @@
       const auth = getAuth(app);
       const provider = new GoogleAuthProvider();
       const db = getFirestore(app);
-      setPersistence(auth, browserLocalPersistence).catch(console.error);
+
+      // Configurações específicas para melhorar o login mobile
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+
+      // Configurar persistência com tratamento de erro melhorado
+      setPersistence(auth, browserLocalPersistence).catch(error => {
+        console.warn('Erro ao configurar persistência, usando padrão:', error);
+      });
 
       function getYouTubeId(url) {
         try {
@@ -484,36 +493,107 @@
         document.head.appendChild(style);
       }
 
-      // 🔎 Captura o resultado do redirect no mobile
-      getRedirectResult(auth)
-        .then((result) => {
+      // Função para processar resultado do login
+      async function processAuthResult() {
+        try {
+          console.log('🔍 Verificando resultado do redirect...');
+          const result = await getRedirectResult(auth);
+
           if (result?.user) {
-            console.log('Login com Google bem-sucedido:', result.user);
+            console.log('✅ Login com Google bem-sucedido:', result.user);
+            console.log('📧 Email do usuário:', result.user.email);
+            console.log('👤 Nome do usuário:', result.user.displayName);
+
+            // Forçar atualização do estado de autenticação
+            await new Promise(resolve => {
+              const unsubscribe = onAuthStateChanged(auth, (user) => {
+                if (user) {
+                  console.log('🔄 Estado de autenticação confirmado:', user.email);
+                  unsubscribe();
+                  resolve();
+                }
+              });
+            });
+
             closeAuthModal();
+          } else {
+            console.log('⏳ Nenhum resultado de redirect encontrado, aguardando...');
           }
-        })
-        .catch((error) => {
-          console.error('Erro no resultado do redirect:', error);
-        });
+        } catch (error) {
+          console.error('❌ Erro no resultado do redirect:', error);
+          console.error('Código do erro:', error.code);
+          console.error('Mensagem do erro:', error.message);
+
+          // Se houver erro específico, mostrar mensagem mais clara
+          if (error.code === 'auth/popup-closed-by-user') {
+            console.log('🔄 Usuário fechou o popup, tentando novamente...');
+          } else if (error.code === 'auth/popup-blocked') {
+            console.log('🔄 Popup bloqueado, usando redirect...');
+          } else {
+            alert('Erro no login: ' + (error.message || 'Erro desconhecido'));
+          }
+        }
+      }
+
+      // Monitor de visibilidade para detectar quando usuário volta do Google
+      let hidden, visibilityChange;
+      if (typeof document.hidden !== "undefined") {
+        hidden = "hidden";
+        visibilityChange = "visibilitychange";
+      } else if (typeof document.msHidden !== "undefined") {
+        hidden = "msHidden";
+        visibilityChange = "msvisibilitychange";
+      } else if (typeof document.webkitHidden !== "undefined") {
+        hidden = "webkitHidden";
+        visibilityChange = "webkitvisibilitychange";
+      }
+
+      function handleVisibilityChange() {
+        if (!document[hidden]) {
+          console.log('📱 Usuário voltou para a página, verificando autenticação...');
+          // Pequeno delay para garantir que o Firebase processe o resultado
+          setTimeout(() => {
+            processAuthResult();
+          }, 1000);
+        }
+      }
+
+      if (typeof visibilityChange !== "undefined") {
+        document.addEventListener(visibilityChange, handleVisibilityChange);
+      }
+
+      // Processar resultado do redirect quando a página carrega
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('🔍 Página carregada, verificando autenticação...');
+        processAuthResult();
+      });
+
+      // Também tentar processar imediatamente
+      processAuthResult();
+
+      // Verificar autenticação periodicamente no mobile
+      if (isMobile) {
+        let authCheckInterval;
+        setTimeout(() => {
+          authCheckInterval = setInterval(() => {
+            if (auth.currentUser) {
+              console.log('✅ Usuário autenticado detectado no mobile');
+              clearInterval(authCheckInterval);
+            } else {
+              processAuthResult();
+            }
+          }, 2000);
+        }, 3000); // Começar a verificar após 3 segundos
+
+        // Mostrar instrução específica para mobile
+        const mobileHint = document.getElementById('mobileHint');
+        if (mobileHint) {
+          mobileHint.style.display = 'block';
+        }
+      }
 
       btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
       logoutBtn.addEventListener("click", () => signOut(auth));
-
-      getRedirectResult(auth).then((result) => {
-        if (result) {
-          console.log('Login com Google bem-sucedido:', result.user);
-          closeAuthModal();
-
-          if (result.user) {
-            console.log('Usuário logado:', result.user.displayName || result.user.email);
-          }
-        }
-      }).catch((error) => {
-        console.error('Erro no resultado do redirect:', error);
-        if (error.code === 'auth/popup-blocked') {
-          console.log('Popup bloqueado, tentando redirect...');
-        }
-      });
 
       onAuthStateChanged(auth, (user) => {
         const avatar = document.querySelector(".generic-avatar img");
@@ -1066,6 +1146,9 @@
           <button id="btnGoogle">Entrar com Google</button>
           <button id="btnAdmin" class="secondary admin-button">Entrar como Administrador</button>
           <div class="hint">Ao entrar, você concorda com os termos de uso.</div>
+          <div class="mobile-hint" id="mobileHint" style="display: none;">
+            📱 <strong>No mobile:</strong> Será redirecionado para o Google. Após escolher sua conta, volte automaticamente para o site.
+          </div>
         </div>
       </div>
     </div>
