@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <link rel="icon" type="image/png" href="img/logo.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo - Brasa Studio</title>
+  <link rel="stylesheet" href="maredeesperanca.css">
+  <link rel="stylesheet" href="globals.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <a href="index.html">
+        <img class="logo" src="img/logo.png" alt="Logo" />
+      </a>
+      <img class="brasa" src="img/brasa.png" alt="Brasa Studio" />
+    </div>
+
+    <div class="header-right">
+      <button class="dark-mode-btn" aria-label="Alternar modo escuro">
+        <img src="img/dark-mode.png" alt="Ícone modo escuro">
+      </button>
+
+      <div class="notifications" id="notificationsIcon">
+        <img src="img/notifications.png" alt="Notificações" />
+        <span class="notif-dot" id="notifDot" style="display:none"></span>
+      </div>
+      <div class="settings">
+        <img src="img/settings.png" alt="Configurações" />
+      </div>
+      <div class="generic-avatar">
+        <img class="avatar-placeholder" src="img/Generic_avatar.png" alt="Avatar" />
+      </div>
+
+      <button id="logoutBtn" style="display:none;">
+        <img src="img/logout.png" alt="Sair da conta">
+      </button>
+
+    </div>
+  </header>
+
+  <main class="mare-wrapper">
+    <section class="banner">
+      <div class="botao-container">
+        <a id="downloadLink" href="#" target="_blank">
+          <img src="img/Botao.png" alt="Download" class="botao">
+        </a>
+        <img src="img/Botao.png" alt="Botão" class="botao">
+      </div>
+    </section>
+
+    <div id="comment-box" style="margin-top:20px;">
+      <textarea id="commentInput" placeholder="Escreva seu comentário..." rows="3"
+        style="width:100%;resize: none;"></textarea>
+      <button id="sendComment">Enviar</button>
+    </div>
+    <br>
+
+    <section class="comentarios">
+      <article class="comentario"></article>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+
+  <script>
+    document.body.classList.add("dark-mode");
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword }
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, doc, getDoc, serverTimestamp }
+      from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_uh9zefLH1yPuHqemHbM9-9R_F0rMF-s",
+      authDomain: "brasastudio-bd.firebaseapp.com",
+      projectId: "brasastudio-bd",
+      storageBucket: "brasastudio-bd.firebasestorage.app",
+      messagingSenderId: "622309371157",
+      appId: "1:622309371157:web:449025a3906b2674208d1c",
+      measurementId: "G-SY8N6JTN63"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
+    const db = getFirestore(app);
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const avatarContainer = document.querySelector(".generic-avatar");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const overlay = document.getElementById("authOverlay");
+    const closeModalBtn = document.getElementById("authCloseBtn");
+    const tabSignupBtn = document.getElementById("tabSignup");
+    const tabSigninBtn = document.getElementById("tabSignin");
+    const signupArea = document.getElementById("signupArea");
+    const signinArea = document.getElementById("signinArea");
+    const signupEmail = document.getElementById("signupEmail");
+    const signupPass = document.getElementById("signupPass");
+    const signupPass2 = document.getElementById("signupPass2");
+    const btnDoSignup = document.getElementById("btnDoSignup");
+    const signinEmail = document.getElementById("signinEmail");
+    const signinPass = document.getElementById("signinPass");
+    const btnDoSignin = document.getElementById("btnDoSignin");
+    const btnGoogle = document.getElementById("btnGoogle");
+    const btnAdmin = document.getElementById("btnAdmin");
+
+    function openAuthModal() { overlay.style.display = "flex"; }
+    function closeAuthModal() { overlay.style.display = "none"; }
+    function setTab(which) {
+      const signup = which === 'signup';
+      tabSignupBtn.classList.toggle('active', signup);
+      tabSigninBtn.classList.toggle('active', !signup);
+      signupArea.style.display = signup ? 'block' : 'none';
+      signinArea.style.display = signup ? 'none' : 'block';
+    }
+
+    avatarContainer.addEventListener("click", () => { if (!auth.currentUser) openAuthModal(); });
+    closeModalBtn.addEventListener("click", closeAuthModal);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) closeAuthModal(); });
+    tabSignupBtn.addEventListener("click", () => setTab('signup'));
+    tabSigninBtn.addEventListener("click", () => setTab('signin'));
+
+    btnDoSignup.addEventListener("click", async () => {
+      const email = signupEmail.value.trim();
+      const p1 = signupPass.value; const p2 = signupPass2.value;
+      if (!email || !p1 || !p2) return alert('Preencha todos os campos.');
+      if (p1 !== p2) return alert('As senhas não coincidem.');
+      try { await createUserWithEmailAndPassword(auth, email, p1); closeAuthModal(); }
+      catch (err) { console.error(err); alert('Falha ao criar conta: ' + (err?.message || '')); }
+    });
+    btnDoSignin.addEventListener("click", async () => {
+      const email = signinEmail.value.trim(); const pass = signinPass.value;
+      if (!email || !pass) return alert('Informe email e senha.');
+      try { await signInWithEmailAndPassword(auth, email, pass); closeAuthModal(); }
+      catch (err) { console.error(err); alert('Falha ao entrar: ' + (err?.message || '')); }
+    });
+    btnGoogle.addEventListener("click", async () => {
+      try {
+        if (isMobile) {
+          // ✅ Mobile precisa usar redirect
+          await signInWithRedirect(auth, provider);
+        } else {
+          try {
+            await signInWithPopup(auth, provider);
+            closeAuthModal();
+          } catch (popupError) {
+            // fallback se o popup for bloqueado
+            if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
+              console.log('Popup bloqueado, usando redirect...');
+              await signInWithRedirect(auth, provider);
+            } else {
+              throw popupError;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Erro no login com Google:", err);
+        alert("Falha ao entrar com Google: " + (err.message || ""));
+      }
+    });
+
+    // ✅ Captura o retorno do redirect (mobile ou fallback)
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          console.log("Login Google bem-sucedido:", result.user);
+          closeAuthModal();
+        }
+      })
+      .catch((err) => {
+        console.error("Erro no getRedirectResult:", err);
+      });
+
+    btnAdmin.addEventListener("click", () => { window.location.href = 'adm.html'; });
+    logoutBtn.addEventListener("click", () => signOut(auth));
+    getRedirectResult(auth).catch((error) => console.error(error));
+
+    // Inicializar quando Firebase estiver pronto
+    let initialized = false;
+    function initializePage() {
+      if (initialized) return;
+      initialized = true;
+
+      console.log('Inicializando página do jogo');
+
+      // Obter ID do jogo da URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const jogoId = urlParams.get('id');
+
+      console.log('URL atual:', window.location.href);
+      console.log('jogoId da URL:', jogoId);
+
+      if (!jogoId) {
+        console.log('jogoId não encontrado na URL');
+        document.querySelector('.mare-wrapper').innerHTML = '<div style="text-align:center; padding:50px;">Jogo não encontrado na URL.</div>';
+      } else {
+        console.log('jogoId encontrado, carregando jogo e comentários');
+        // Carregar dados do jogo
+        carregarJogo(jogoId);
+
+        // Configurar comentários para este jogo
+        configurarComentarios(jogoId);
+      }
+    }
+
+    // Aguardar Firebase inicializar e DOM carregar
+    Promise.all([
+      new Promise(resolve => {
+        onAuthStateChanged(auth, (user) => {
+          console.log('Firebase auth inicializado');
+          resolve();
+        });
+      }),
+      new Promise(resolve => {
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', resolve);
+        } else {
+          resolve();
+        }
+      })
+    ]).then(() => {
+      console.log('Firebase e DOM prontos, inicializando página');
+      initializePage();
+    });
+
+    async function carregarJogo(jogoId) {
+      console.log('Tentando carregar jogo com ID:', jogoId);
+      try {
+        const jogoDoc = await getDoc(doc(db, "jogos", jogoId));
+        console.log('Documento existe?', jogoDoc.exists());
+        console.log('Dados do documento:', jogoDoc.data());
+
+        if (!jogoDoc.exists()) {
+          console.log('Documento não encontrado no Firestore');
+          document.querySelector('.mare-wrapper').innerHTML = '<div style="text-align:center; padding:50px;">Jogo não encontrado no banco de dados.</div>';
+          return;
+        }
+
+        const jogo = jogoDoc.data();
+        console.log('Dados do jogo carregados:', jogo);
+
+        // Atualizar título da página
+        document.title = jogo.titulo + " - Brasa Studio";
+
+        // Configurar vídeo na banner
+        if (jogo.video) {
+          const videoId = getYouTubeId(jogo.video);
+          console.log('URL do vídeo:', jogo.video);
+          console.log('ID do vídeo extraído:', videoId);
+          if (videoId) {
+            const banner = document.querySelector('.banner');
+            banner.innerHTML = `
+              <iframe
+                src="https://www.youtube.com/embed/${videoId}"
+                title="${jogo.titulo}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                style="width:100%; height:100%; border:0; border-radius:12px;"
+              ></iframe>
+            `;
+          }
+        }
+
+        // Configurar link de download
+        if (jogo.linkjogo) {
+          console.log('Configurando link de download:', jogo.linkjogo);
+          const downloadLink = document.getElementById('downloadLink');
+          if (downloadLink) {
+            downloadLink.href = jogo.linkjogo;
+            console.log('Link configurado com sucesso');
+          } else {
+            console.error('Elemento downloadLink não encontrado');
+          }
+        }
+
+        console.log('Jogo carregado com sucesso!');
+
+      } catch (error) {
+        console.error("Erro ao carregar jogo:", error);
+        console.error("Detalhes do erro:", error.code, error.message);
+        document.querySelector('.mare-wrapper').innerHTML = '<div style="text-align:center; padding:50px;">Erro ao carregar jogo: ' + error.message + '</div>';
+      }
+    }
+
+    function getYouTubeId(url) {
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes("youtu.be")) return u.pathname.slice(1);
+        if (u.pathname.startsWith("/shorts/")) return u.pathname.split("/")[2];
+        if (u.pathname.startsWith("/embed/")) return u.pathname.split("/")[2];
+        const v = u.searchParams.get("v");
+        if (v) return v;
+      } catch (_) { }
+      const m = String(url).match(/(?:(?:v=)|\/)([0-9A-Za-z_-]{11})(?:[?&/]|\b)/);
+      return m ? m[1] : null;
+    }
+
+    function configurarComentarios(jogoId) {
+      console.log('=== INICIANDO CONFIGURAÇÃO DE COMENTÁRIOS ===');
+      console.log('jogoId recebido:', jogoId);
+
+      const comentariosSection = document.querySelector(".comentarios");
+      const commentInput = document.getElementById("commentInput");
+      const sendCommentBtn = document.getElementById("sendComment");
+
+      console.log('Elementos encontrados:');
+      console.log('- comentariosSection:', comentariosSection);
+      console.log('- commentInput:', commentInput);
+      console.log('- sendCommentBtn:', sendCommentBtn);
+
+      console.log('Configurando comentários para jogo:', jogoId);
+
+      // Configurar estado de autenticação para comentários
+      onAuthStateChanged(auth, (user) => {
+        const avatar = document.querySelector(".generic-avatar img");
+        if (user) {
+          avatar.src = user.photoURL || "img/Generic_avatar.png";
+          logoutBtn.style.display = "inline-flex";
+          logoutBtn.className = "logout-btn";
+          if (commentInput) {
+            commentInput.disabled = false;
+            commentInput.placeholder = "Escreva seu comentário...";
+          }
+          if (sendCommentBtn) {
+            sendCommentBtn.disabled = false;
+          }
+        } else {
+          avatar.src = "img/Generic_avatar.png";
+          logoutBtn.style.display = "none";
+          if (commentInput) {
+            commentInput.disabled = true;
+            commentInput.placeholder = "Faça login para comentar...";
+          }
+          if (sendCommentBtn) {
+            sendCommentBtn.disabled = true;
+          }
+          closeAuthModal();
+        }
+      });
+
+      // Configurar botão de enviar comentário
+      if (sendCommentBtn) {
+        sendCommentBtn.addEventListener("click", async () => {
+          console.log('Botão enviar comentário clicado, jogoId:', jogoId);
+          const user = auth.currentUser;
+          console.log('Usuário atual:', user);
+          console.log('Texto do comentário:', commentInput ? commentInput.value.trim() : 'input não encontrado');
+
+          if (!user) {
+            console.log('Usuário não autenticado');
+            alert('Você precisa estar logado para comentar.');
+            return;
+          }
+
+          if (!commentInput || !commentInput.value.trim()) {
+            console.log('Comentário vazio');
+            alert('Digite um comentário.');
+            return;
+          }
+
+          if (!jogoId) {
+            console.log('jogoId não definido');
+            alert('Erro: ID do jogo não encontrado.');
+            return;
+          }
+
+          try {
+            console.log('Salvando comentário...');
+            await addDoc(collection(db, "comentarios"), {
+              uid: user.uid,
+              nome: user.displayName || "Anônimo",
+              foto: user.photoURL || "img/Generic_avatar.png",
+              texto: commentInput.value.trim(),
+              jogo: jogoId,
+              data: serverTimestamp()
+            });
+
+            console.log('Comentário salvo com sucesso');
+            commentInput.value = "";
+            alert('Comentário enviado com sucesso!');
+
+          } catch (e) {
+            console.error("Erro ao salvar comentário:", e);
+            alert("Erro ao salvar comentário: " + (e.message || ""));
+          }
+        });
+      }
+
+      // Carregar comentários do jogo específico
+      if (comentariosSection && jogoId) {
+        console.log('Carregando comentários para jogo:', jogoId);
+        console.log('Tipo do jogoId:', typeof jogoId);
+
+        // Primeiro, vamos verificar se existem comentários para este jogo
+        const q = query(collection(db, "comentarios"), where("jogo", "==", jogoId), orderBy("data", "desc"));
+        console.log('Query criada:', q);
+
+        onSnapshot(q, (snapshot) => {
+          console.log('Snapshot recebido para comentários');
+          console.log('Número de comentários:', snapshot.size);
+          console.log('Comentários vazios?', snapshot.empty);
+
+          if (snapshot.empty) {
+            console.log('Nenhum comentário encontrado para este jogo');
+            comentariosSection.innerHTML = "<p style='text-align:center; padding:20px;'>Nenhum comentário ainda. Seja o primeiro a comentar!</p>";
+            return;
+          }
+
+          comentariosSection.innerHTML = "";
+          snapshot.forEach((doc) => {
+            const c = doc.data();
+            console.log('Comentário encontrado:', c);
+            const artigo = document.createElement("article");
+            artigo.classList.add("comentario");
+            artigo.innerHTML = `
+          <div class="avatar">
+            <img src="${c.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;" />
+          </div>
+          <div class="conteudo">
+            <header>
+              <h3 class="nome-usuario" data-uid="${c.uid}">${c.nome || "Anônimo"}</h3>
+              <span class="data">
+                ${c.data && c.data.seconds
+                ? new Date(c.data.seconds * 1000).toLocaleString("pt-BR")
+                : ""}
+              </span>
+            </header>
+            <p>${c.texto}</p>
+          </div>
+        `;
+            comentariosSection.appendChild(artigo);
+          });
+
+          console.log('Comentários renderizados na página');
+        }, (error) => {
+          console.error('Erro no onSnapshot dos comentários:', error);
+        });
+      } else {
+        console.log('Comentários não carregados - comentariosSection:', !!comentariosSection, 'jogoId:', jogoId);
+      }
+    }
+
+    const notifDot = document.getElementById("notifDot");
+    const signalDocRef = doc(collection(db, "notificacoes"), "global");
+    onSnapshot(signalDocRef, (snap) => {
+      const active = snap.exists() && Boolean(snap.data().active);
+      notifDot.style.display = active ? "inline-block" : "none";
+    });
+  </script>
+
+  <div class="modal-overlay" id="authOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <header>
+        <h3 id="authTitle">Entrar ou Criar conta</h3>
+        <button id="authCloseBtn" aria-label="Fechar">✕</button>
+      </header>
+      <div class="tabs">
+        <button id="tabSignup" class="active">Criar conta</button>
+        <button id="tabSignin">Entrar</button>
+      </div>
+      <section id="signupArea">
+        <div class="form-row">
+          <label for="signupEmail">Email</label>
+          <input id="signupEmail" type="email" placeholder="voce@exemplo.com" />
+        </div>
+        <div class="form-row">
+          <label for="signupPass">Senha</label>
+          <input id="signupPass" type="password" placeholder="Sua senha" />
+        </div>
+        <div class="form-row">
+          <label for="signupPass2">Repetir senha</label>
+          <input id="signupPass2" type="password" placeholder="Repita a senha" />
+        </div>
+        <div class="actions">
+          <button id="btnDoSignup">Criar conta</button>
+        </div>
+      </section>
+      <section id="signinArea" style="display:none">
+        <div class="form-row">
+          <label for="signinEmail">Email</label>
+          <input id="signinEmail" type="email" placeholder="voce@exemplo.com" />
+        </div>
+        <div class="form-row">
+          <label for="signinPass">Senha</label>
+          <input id="signinPass" type="password" placeholder="Sua senha" />
+        </div>
+        <div class="actions">
+          <button id="btnDoSignin">Entrar</button>
+        </div>
+      </section>
+      <div class="actions">
+        <button id="btnGoogle">Entrar com Google</button>
+        <button id="btnAdmin" class="secondary">Entrar como Administrador</button>
+        <div class="hint">Ao entrar, você concorda com os termos de uso.</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -125,4 +125,3 @@ function initScrollAnimations() {
 
 // Inicializar animações quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', initScrollAnimations);
-

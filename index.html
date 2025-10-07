@@ -97,40 +97,9 @@
     </section>
 
     <section class="jogos">
-
       <br>
-
-      <div class="jogos-container">
-        <div class="imagem-wrapper">
-          <div class="imagem-fundo"></div>
-          <div class="imagem-frente"></div>
-        </div>
-
-        <div class="info-jogo">
-          <h2 class="titulo-jogo">Maré de Esperanca</h2>
-          <p class="descricao-jogo">
-            Acompanhe Luan e Nalu durante as suas férias na praia, explorando a cidade, limpando-a, salvando seus
-            moradores da poluição e conhecendo suas histórias, além de entender como a poluição os afeta.
-          </p>
-          <a href="maredeesperanca.html">
-            <button class="botao-jogo" type="button">
-              Saiba Mais
-            </button>
-
-          </a>
-
-          <div class="ultimo-comentario">
-            <div class="avatar"></div>
-            <div>
-              <h3 class="nome-usuario">Knapicko</h3>
-              <p class="texto-comentario">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et dolor at lacus rhoncus hendrerit.
-                Etiam eget mauris tincidunt, ultrices odio a, commodo tellus.
-              </p>
-            </div>
-          </div>
-
-        </div>
+      <div id="jogosContainer">
+        <!-- Jogos serão carregados dinamicamente aqui -->
       </div>
     </section>
 
@@ -341,6 +310,60 @@
       }
 
       carregarVideos();
+
+      async function carregarJogos() {
+        const jogosContainer = document.getElementById("jogosContainer");
+        if (!jogosContainer) return;
+
+        jogosContainer.innerHTML = '<div style="text-align:center; padding:20px;">Carregando jogos...</div>';
+
+        try {
+          const snap = await getDocs(collection(db, "jogos"));
+          if (snap.empty) {
+            jogosContainer.innerHTML = '<div style="text-align:center; padding:20px;">Nenhum jogo disponível no momento.</div>';
+            return;
+          }
+
+          jogosContainer.innerHTML = "";
+          snap.forEach((doc) => {
+            const jogo = doc.data();
+            const jogoElement = document.createElement("div");
+            jogoElement.className = "jogos-container";
+            jogoElement.innerHTML = `
+              <div class="imagem-wrapper">
+                <div class="imagem-fundo"></div>
+                <img class="imagem-frente" src="${jogo.thumbnail || 'img/placeholder.png'}" alt="${jogo.titulo || 'Jogo'}" loading="lazy" />
+              </div>
+              <div class="info-jogo">
+                <h2 class="titulo-jogo">${jogo.titulo || 'Sem título'}</h2>
+                <p class="descricao-jogo">${jogo.descricao || 'Sem descrição'}</p>
+                <a href="jogo.html?id=${doc.id}">
+                  <button class="botao-jogo" type="button">
+                    Saiba Mais
+                  </button>
+                </a>
+                <div class="ultimo-comentario" data-jogo-id="${doc.id}">
+                  <!-- Último comentário será carregado aqui -->
+                </div>
+              </div>
+            `;
+            jogosContainer.appendChild(jogoElement);
+          });
+
+          // Carregar último comentário para cada jogo
+          snap.forEach(async (doc) => {
+            const jogoId = doc.id;
+            const jogo = doc.data();
+            await mostrarUltimoComentario(jogoId, jogo.titulo);
+          });
+
+        } catch (error) {
+          console.error("Erro ao carregar jogos:", error);
+          jogosContainer.innerHTML = '<div style="text-align:center; padding:20px;">Erro ao carregar jogos.</div>';
+        }
+      }
+
+      carregarJogos();
 
       const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
         (window.innerWidth <= 768) ||
@@ -613,19 +636,21 @@
         }
       });
 
-      async function mostrarUltimoComentario() {
+      async function mostrarUltimoComentario(jogoId, tituloJogo) {
         try {
           const comentariosRef = collection(db, "comentarios");
           const q = query(
             comentariosRef,
-            where("jogo", "==", "Maré de Esperança"),
+            where("jogo", "==", jogoId),
             orderBy("data", "desc"),
             limit(1)
           );
           const snapshot = await getDocs(q);
+          const divUltimo = document.querySelector(`.ultimo-comentario[data-jogo-id="${jogoId}"]`);
+          if (!divUltimo) return;
+
           if (!snapshot.empty) {
             const doc = snapshot.docs[0].data();
-            const divUltimo = document.querySelector(".ultimo-comentario");
             divUltimo.innerHTML = `
           <div class="avatar">
             <img src="${doc.foto || "img/Generic_avatar.png"}" alt="Avatar" style="width:40px; border-radius:50%;">
@@ -636,13 +661,12 @@
             <p class="texto-comentario">${doc.texto}</p>
           </div>`;
           } else {
-            document.querySelector(".ultimo-comentario").innerHTML = "<p>Nenhum comentário ainda.</p>";
+            divUltimo.innerHTML = "<p>Nenhum comentário ainda.</p>";
           }
         } catch (error) {
           console.error("Erro ao carregar último comentário:", error);
         }
       }
-      mostrarUltimoComentario();
 
       const notifDot = document.getElementById("notifDot");
       const notificationsIcon = document.getElementById("notificationsIcon");
@@ -1080,8 +1104,7 @@
         <div class="profile-actions">
           <button id="saveProfileBtn">Salvar Alterações</button>
           <button id="cancelProfileBtn" class="secondary">Cancelar</button>
-          <button id="profileAdminBtn" class="secondary admin-button" style="display: none;">Entrar como
-            Administrador</button>
+          <button id="profileAdminBtn" class="secondary admin-button" style="display: none;">Entrar como Administrador</button>
         </div>
       </div>
     </div>
