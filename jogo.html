@@ -267,7 +267,7 @@
                 title="${jogo.titulo}"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen
-                style="width:100%; height:100%; border:0; border-radius:12px;"
+                style="width:100%; aspect-ratio:16/9; border:0; border-radius:12px;"
               ></iframe>
             `;
           }
@@ -549,26 +549,24 @@
       if (!notificationsList) return;
 
       try {
-        const snap = await getDocs(query(collection(db, "notificacoes_historico"), orderBy("ts", "desc")));
-        if (snap.empty) {
+        const snap = await getDoc(doc(db, "notificacoes", "global"));
+        if (!snap.exists() || !snap.data().active) {
           notificationsList.innerHTML = "";
           if (noNotifications) noNotifications.style.display = "block";
           return;
         }
         if (noNotifications) noNotifications.style.display = "none";
         notificationsList.innerHTML = "";
-        snap.forEach((doc) => {
-          const n = doc.data();
-          const item = document.createElement("div");
-          item.className = "notification-item";
-          item.innerHTML = `
-            <div class="notification-content">
-              <p>${n.message || ""}</p>
-              <small>${n.sender || ""} - ${n.ts?.seconds ? new Date(n.ts.seconds * 1000).toLocaleString("pt-BR") : ""}</small>
-            </div>
-          `;
-          notificationsList.appendChild(item);
-        });
+        const n = snap.data();
+        const item = document.createElement("div");
+        item.className = "notification-item";
+        item.innerHTML = `
+          <div class="notification-content">
+            <p>${n.message || ""}</p>
+            <small>${n.sender || ""} - ${n.ts?.seconds ? new Date(n.ts.seconds * 1000).toLocaleString("pt-BR") : ""}</small>
+          </div>
+        `;
+        notificationsList.appendChild(item);
       } catch (err) {
         console.error("Erro ao carregar notificações:", err);
       }

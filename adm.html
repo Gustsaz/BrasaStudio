@@ -51,7 +51,7 @@
 
     <section class="admin-card" id="jogosAdmin">
       <h2>Gerenciar Jogos</h2>
-      <p>Adicione novos jogos ao catálogo. Todos os campos são obrigatórios.</p>
+      <p>Adicione novos jogos ao catálogo. Título e descrição são obrigatórios.</p>
       <div class="form-row">
         <label for="jogoTitulo">Título do Jogo</label>
         <input id="jogoTitulo" type="text" placeholder="Ex: Maré de Esperança" required />
@@ -62,18 +62,19 @@
       </div>
       <div class="form-row">
         <label for="jogoThumbnail">URL da Thumbnail</label>
-        <input id="jogoThumbnail" type="url" placeholder="https://exemplo.com/imagem.jpg" required />
+        <input id="jogoThumbnail" type="url" placeholder="https://exemplo.com/imagem.jpg" />
       </div>
       <div class="form-row">
         <label for="jogoVideo">URL do Vídeo (YouTube)</label>
-        <input id="jogoVideo" type="url" placeholder="https://www.youtube.com/watch?v=XXXX" required />
+        <input id="jogoVideo" type="url" placeholder="https://www.youtube.com/watch?v=XXXX" />
       </div>
       <div class="form-row">
         <label for="jogoLink">Link para Download/Jogo</label>
-        <input id="jogoLink" type="url" placeholder="https://exemplo.com/download" required />
+        <input id="jogoLink" type="url" placeholder="https://exemplo.com/download" />
       </div>
       <div class="form-actions">
         <button id="addJogoBtn">Adicionar Jogo</button>
+        <button id="newJogoBtn" class="outline">Novo Jogo</button>
       </div>
       <div id="jogosList" class="list"></div>
     </section>
@@ -120,6 +121,7 @@
         <button id="clearNotif" class="outline">Limpar notificação</button>
       </div>
       <div id="notifStatus" class="status"></div>
+      <div id="notifHistoryList" class="list"></div>
     </section>
   </main>
 
@@ -134,8 +136,8 @@
       createUserWithEmailAndPassword, signInWithEmailAndPassword
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
     import {
-      getFirestore, collection, doc, setDoc, getDocs, onSnapshot,
-      query, where, orderBy, deleteDoc, serverTimestamp
+      getFirestore, collection, doc, setDoc, getDoc, getDocs, onSnapshot,
+      query, where, orderBy, deleteDoc, updateDoc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     // ---- Firebase ----
@@ -220,6 +222,7 @@
       loadGameFilter();
       subscribeComments();
       loadAdmins();
+      loadNotifHistory();
     });
 
     // ---- Util YouTube ----
@@ -336,24 +339,28 @@
     const notifMessageInput = document.getElementById("notifMessage");
     const notifSenderInput = document.getElementById("notifSender");
     const notifStatus = document.getElementById("notifStatus");
+    let sendingNotification = false;
 
     sendNotifBtn.addEventListener("click", async () => {
+      if (sendingNotification || sendNotifBtn.disabled) return;
+
+      sendingNotification = true;
+      sendNotifBtn.disabled = true;
+
       const message = notifMessageInput.value.trim();
       const sender = notifSenderInput.value.trim() || "Administrador";
-      if (!message) return alert("Digite uma mensagem.");
+
+      if (!message) {
+        sendingNotification = false;
+        sendNotifBtn.disabled = false;
+        return alert("Digite uma mensagem.");
+      }
+
+      notifStatus.textContent = "Enviando...";
 
       try {
         const notifRef = doc(db, "notificacoes", "global");
         const historyRef = collection(db, "notificacoes_historico");
-
-        // Evita duplicação: verifica se a última notificação tem o mesmo conteúdo
-        const lastSnap = await getDocs(query(historyRef, orderBy("ts", "desc")));
-        const last = lastSnap.docs[0]?.data();
-
-        if (last && last.message === message && last.sender === sender) {
-          alert("Essa notificação já foi enviada recentemente.");
-          return;
-        }
 
         await setDoc(notifRef, {
           active: true,
@@ -370,9 +377,13 @@
 
         notifStatus.textContent = "✅ Notificação enviada com sucesso!";
         notifMessageInput.value = "";
+        loadNotifHistory();
       } catch (err) {
         console.error(err);
         notifStatus.textContent = "❌ Erro ao enviar notificação.";
+      } finally {
+        sendingNotification = false;
+        sendNotifBtn.disabled = false;
       }
     });
 
@@ -391,11 +402,44 @@
           ts: serverTimestamp()
         });
         notifStatus.textContent = "🗑️ Todas as notificações foram apagadas.";
+        loadNotifHistory();
       } catch (err) {
         console.error(err);
         notifStatus.textContent = "❌ Erro ao limpar notificações.";
       }
     });
+
+    // Load notification history
+    async function loadNotifHistory() {
+      const notifHistoryList = document.getElementById("notifHistoryList");
+      if (!notifHistoryList) return;
+
+      notifHistoryList.innerHTML = "Carregando...";
+
+      try {
+        const snap = await getDocs(query(collection(db, "notificacoes_historico"), orderBy("ts", "desc")));
+        if (snap.empty) {
+          notifHistoryList.innerHTML = "Nenhuma notificação enviada.";
+          return;
+        }
+        notifHistoryList.innerHTML = "";
+        snap.forEach((doc) => {
+          const n = doc.data();
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `
+            <div class="grow">
+              <div><strong>${n.message || ""}</strong></div>
+              <div class="text">${n.sender || ""} - ${n.ts?.seconds ? new Date(n.ts.seconds * 1000).toLocaleString("pt-BR") : ""}</div>
+            </div>
+          `;
+          notifHistoryList.appendChild(row);
+        });
+      } catch (err) {
+        console.error("Erro ao carregar histórico de notificações:", err);
+        notifHistoryList.innerHTML = "Erro ao carregar.";
+      }
+    }
 
     // ---- Jogos ----
     async function loadGameFilter() {
@@ -424,6 +468,10 @@
     const jogoVideo = document.getElementById("jogoVideo");
     const jogoLink = document.getElementById("jogoLink");
     const addJogoBtn = document.getElementById("addJogoBtn");
+    const newJogoBtn = document.getElementById("newJogoBtn");
+
+    let editing = false;
+    let editingId = null;
 
     async function loadJogos() {
       if (!jogosList) return;
@@ -444,9 +492,32 @@
               <div><strong>${jogo.titulo || 'Sem título'}</strong></div>
               <div class="text">${jogo.descricao ? jogo.descricao.substring(0, 100) + '...' : 'Sem descrição'}</div>
             </div>
+            <button data-edit="${d.id}">Editar</button>
             <button data-remove="${d.id}" class="danger">Remover</button>
           `;
           jogosList.appendChild(row);
+        });
+
+        jogosList.querySelectorAll("[data-edit]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const jogoId = btn.getAttribute("data-edit");
+            try {
+              const jogoDoc = await getDoc(doc(db, "jogos", jogoId));
+              if (!jogoDoc.exists()) return alert("Jogo não encontrado.");
+              const jogo = jogoDoc.data();
+              jogoTitulo.value = jogo.titulo || "";
+              jogoDescricao.value = jogo.descricao || "";
+              jogoThumbnail.value = jogo.thumbnail || "";
+              jogoVideo.value = jogo.video || "";
+              jogoLink.value = jogo.linkjogo || "";
+              editing = true;
+              editingId = jogoId;
+              addJogoBtn.textContent = "Atualizar Jogo";
+            } catch (err) {
+              console.error("Erro ao carregar jogo para edição:", err);
+              alert("Erro ao carregar jogo: " + err.message);
+            }
+          });
         });
 
         jogosList.querySelectorAll("[data-remove]").forEach(btn => {
@@ -475,12 +546,12 @@
       const video = jogoVideo.value.trim();
       const link = jogoLink.value.trim();
 
-      if (!titulo || !descricao || !thumbnail || !video || !link) {
-        alert("Por favor, preencha todos os campos.");
+      if (!titulo || !descricao) {
+        alert("Por favor, preencha o título e a descrição.");
         return;
       }
 
-      if (!getYouTubeId(video)) {
+      if (video && !getYouTubeId(video)) {
         alert("URL do vídeo deve ser um link válido do YouTube.");
         return;
       }
@@ -495,7 +566,13 @@
           createdAt: serverTimestamp()
         };
 
-        await setDoc(doc(collection(db, "jogos")), jogoData);
+        if (editing) {
+          await updateDoc(doc(db, "jogos", editingId), jogoData);
+          alert("Jogo atualizado com sucesso!");
+        } else {
+          await setDoc(doc(collection(db, "jogos")), jogoData);
+          alert("Jogo adicionado com sucesso!");
+        }
 
         // Limpar campos
         jogoTitulo.value = "";
@@ -504,12 +581,26 @@
         jogoVideo.value = "";
         jogoLink.value = "";
 
-        alert("Jogo adicionado com sucesso!");
+        editing = false;
+        editingId = null;
+        addJogoBtn.textContent = "Adicionar Jogo";
+
         loadJogos(); // Recarregar lista
       } catch (err) {
-        console.error("Erro ao adicionar jogo:", err);
-        alert("Falha ao adicionar jogo. Verifique as permissões do Firestore.");
+        console.error("Erro ao salvar jogo:", err);
+        alert("Falha ao salvar jogo. Verifique as permissões do Firestore.");
       }
+    });
+
+    if (newJogoBtn) newJogoBtn.addEventListener("click", () => {
+      jogoTitulo.value = "";
+      jogoDescricao.value = "";
+      jogoThumbnail.value = "";
+      jogoVideo.value = "";
+      jogoLink.value = "";
+      editing = false;
+      editingId = null;
+      addJogoBtn.textContent = "Adicionar Jogo";
     });
 
     // ---- Administradores ----
@@ -585,26 +676,24 @@
       if (!notificationsList) return;
 
       try {
-        const snap = await getDocs(query(collection(db, "notificacoes_historico"), orderBy("ts", "desc")));
-        if (snap.empty) {
+        const snap = await getDoc(doc(db, "notificacoes", "global"));
+        if (!snap.exists() || !snap.data().active) {
           notificationsList.innerHTML = "";
           if (noNotifications) noNotifications.style.display = "block";
           return;
         }
         if (noNotifications) noNotifications.style.display = "none";
         notificationsList.innerHTML = "";
-        snap.forEach((doc) => {
-          const n = doc.data();
-          const item = document.createElement("div");
-          item.className = "notification-item";
-          item.innerHTML = `
-            <div class="notification-content">
-              <p>${n.message || ""}</p>
-              <small>${n.sender || ""} - ${n.ts?.seconds ? new Date(n.ts.seconds * 1000).toLocaleString("pt-BR") : ""}</small>
-            </div>
-          `;
-          notificationsList.appendChild(item);
-        });
+        const n = snap.data();
+        const item = document.createElement("div");
+        item.className = "notification-item";
+        item.innerHTML = `
+          <div class="notification-content">
+            <p>${n.message || ""}</p>
+            <small>${n.sender || ""} - ${n.ts?.seconds ? new Date(n.ts.seconds * 1000).toLocaleString("pt-BR") : ""}</small>
+          </div>
+        `;
+        notificationsList.appendChild(item);
       } catch (err) {
         console.error("Erro ao carregar notificações:", err);
       }
