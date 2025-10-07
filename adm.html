@@ -76,7 +76,8 @@
 
     <section class="admin-card" id="notificationsAdmin">
       <h2>Notificações</h2>
-      <p>Enviar notificações para todos os usuários. As notificações aparecerão no modal de notificações e como push notifications.</p>
+      <p>Enviar notificações para todos os usuários. As notificações aparecerão no modal de notificações e como push
+        notifications.</p>
       <div class="form-row">
         <label for="notifMessage">Mensagem</label>
         <input id="notifMessage" type="text" maxlength="200" placeholder="Digite sua mensagem aqui..." required />
@@ -94,6 +95,7 @@
   </main>
 
   <script src="script.js"></script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import {
@@ -275,63 +277,69 @@
     if (gameFilter) gameFilter.addEventListener("change", subscribeComments);
 
     // ---- Notificações ----
-    const notifDot = document.getElementById("notifDot");
+    const sendNotifBtn = document.getElementById("sendNotif");
+    const clearNotifBtn = document.getElementById("clearNotif");
+    const notifMessageInput = document.getElementById("notifMessage");
+    const notifSenderInput = document.getElementById("notifSender");
     const notifStatus = document.getElementById("notifStatus");
-    const sendNotif = document.getElementById("sendNotif");
-    const clearNotif = document.getElementById("clearNotif");
-    const notifMessage = document.getElementById("notifMessage");
-    const notifSender = document.getElementById("notifSender");
 
-    function setNotifUI(active, message) {
-      if (notifDot) notifDot.style.display = active ? "inline-block" : "none";
-      if (notifStatus) notifStatus.textContent = active ? (message ? `Ativo: ${message}` : "Notificação ativa") : "Sem notificação";
-    }
+    sendNotifBtn.addEventListener("click", async () => {
+      const message = notifMessageInput.value.trim();
+      const sender = notifSenderInput.value.trim() || "Administrador";
+      if (!message) return alert("Digite uma mensagem.");
 
-    const signalDocRef = doc(collection(db, "notificacoes"), "global");
-    onSnapshot(signalDocRef, (snap) => {
-      if (snap.exists()) {
-        const data = snap.data();
-        setNotifUI(Boolean(data.active), data.message);
-      } else {
-        setNotifUI(false, "");
+      try {
+        const notifRef = doc(db, "notificacoes", "global");
+        const historyRef = collection(db, "notificacoes_historico");
+
+        // Evita duplicação: verifica se a última notificação tem o mesmo conteúdo
+        const lastSnap = await getDocs(query(historyRef, orderBy("ts", "desc")));
+        const last = lastSnap.docs[0]?.data();
+
+        if (last && last.message === message && last.sender === sender) {
+          alert("Essa notificação já foi enviada recentemente.");
+          return;
+        }
+
+        await setDoc(notifRef, {
+          active: true,
+          message,
+          sender,
+          ts: serverTimestamp()
+        });
+
+        await setDoc(doc(historyRef), {
+          message,
+          sender,
+          ts: serverTimestamp()
+        });
+
+        notifStatus.textContent = "✅ Notificação enviada com sucesso!";
+        notifMessageInput.value = "";
+      } catch (err) {
+        console.error(err);
+        notifStatus.textContent = "❌ Erro ao enviar notificação.";
       }
     });
 
-    if (sendNotif) sendNotif.addEventListener("click", async () => {
-      const message = notifMessage.value.trim();
-      const sender = notifSender.value.trim() || "Administrador";
-      
-      if (!message) {
-        alert("Por favor, digite uma mensagem.");
-        return;
-      }
-      
+    clearNotifBtn.addEventListener("click", async () => {
+      if (!confirm("Deseja realmente APAGAR todas as notificações?")) return;
       try {
-        await setDoc(signalDocRef, { 
-          active: true, 
-          message: message, 
-          sender: sender,
-          ts: serverTimestamp() 
-        }, { merge: true });
-        
-        if (notifMessage) notifMessage.value = "";
-        if (notifStatus) notifStatus.textContent = "Notificação enviada com sucesso!";
-        
-        // Limpar status após 3 segundos
-        setTimeout(() => {
-          if (notifStatus) notifStatus.textContent = "";
-        }, 3000);
+        const historyRef = collection(db, "notificacoes_historico");
+        const snapshot = await getDocs(historyRef);
+        for (const docu of snapshot.docs) {
+          await deleteDoc(docu.ref);
+        }
+        await setDoc(doc(db, "notificacoes", "global"), {
+          active: false,
+          message: "",
+          sender: "",
+          ts: serverTimestamp()
+        });
+        notifStatus.textContent = "🗑️ Todas as notificações foram apagadas.";
       } catch (err) {
-        console.error("Erro ao enviar notificação:", err);
-        alert("Falha ao enviar notificação. Verifique as permissões do Firestore.");
-      }
-    });
-    if (clearNotif) clearNotif.addEventListener("click", async () => {
-      try {
-        await setDoc(signalDocRef, { active: false, message: "", ts: serverTimestamp() }, { merge: true });
-      } catch (err) {
-        console.error("Erro ao limpar notificação:", err);
-        alert("Falha ao limpar notificação. Verifique as permissões do Firestore.");
+        console.error(err);
+        notifStatus.textContent = "❌ Erro ao limpar notificações.";
       }
     });
 
@@ -400,9 +408,259 @@
         alert("Falha ao adicionar. Verifique as permissões do Firestore.");
       }
     });
+
+    // ---- Funções de Perfil e Admin (iguais ao index.html) ----
+    const profileOverlay = document.getElementById("profileOverlay");
+    const profileCloseBtn = document.getElementById("profileCloseBtn");
+    const changeAvatarBtn = document.getElementById("changeAvatarBtn");
+    const avatarFileInput = document.getElementById("avatarFileInput");
+    const currentAvatarImg = document.getElementById("currentAvatarImg");
+    const profileEmail = document.getElementById("profileEmail");
+    const profileName = document.getElementById("profileName");
+    const currentPassword = document.getElementById("currentPassword");
+    const newPassword = document.getElementById("newPassword");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const saveProfileBtn = document.getElementById("saveProfileBtn");
+    const cancelProfileBtn = document.getElementById("cancelProfileBtn");
+    const profileAdminBtn = document.getElementById("profileAdminBtn");
+
+    function openProfileModal() {
+      if (auth.currentUser) {
+        profileEmail.value = auth.currentUser.email || '';
+        profileName.value = auth.currentUser.displayName || '';
+        currentAvatarImg.src = auth.currentUser.photoURL || "img/Generic_avatar.png";
+        currentPassword.value = '';
+        newPassword.value = '';
+        confirmPassword.value = '';
+        profileOverlay.style.display = "flex";
+      }
+    }
+
+    function closeProfileModal() {
+      profileOverlay.style.display = "none";
+    }
+
+    function handleAvatarChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        if (!file.type.startsWith('image/')) return alert('Selecione uma imagem válida.');
+        if (file.size > 5 * 1024 * 1024) return alert('Imagem deve ter até 5MB.');
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          currentAvatarImg.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    async function saveProfileChanges() {
+      if (!auth.currentUser) return;
+      try {
+        if (profileName.value.trim() !== auth.currentUser.displayName) {
+          await updateProfile(auth.currentUser, { displayName: profileName.value.trim() });
+        }
+
+        if (avatarFileInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = async (e) => {
+            await updateProfile(auth.currentUser, { photoURL: e.target.result });
+            const headerAvatar = document.querySelector(".generic-avatar img");
+            if (headerAvatar) headerAvatar.src = e.target.result;
+          };
+          reader.readAsDataURL(avatarFileInput.files[0]);
+        }
+
+        if (newPassword.value.trim()) {
+          if (newPassword.value !== confirmPassword.value) return alert('As senhas não coincidem.');
+          if (newPassword.value.length < 6) return alert('Senha deve ter pelo menos 6 caracteres.');
+          await updatePassword(auth.currentUser, newPassword.value);
+        }
+
+        alert('Perfil atualizado com sucesso!');
+        closeProfileModal();
+      } catch (error) {
+        console.error('Erro ao atualizar perfil:', error);
+        alert('Falha ao atualizar perfil: ' + (error.message || 'Erro desconhecido.'));
+      }
+    }
+
+    changeAvatarBtn?.addEventListener('click', () => avatarFileInput.click());
+    avatarFileInput?.addEventListener('change', handleAvatarChange);
+    saveProfileBtn?.addEventListener('click', saveProfileChanges);
+    cancelProfileBtn?.addEventListener('click', closeProfileModal);
+    profileCloseBtn?.addEventListener('click', closeProfileModal);
+    profileAdminBtn?.addEventListener('click', () => { window.location.href = 'adm.html'; });
+    profileOverlay?.addE
+
+    // === CONTROLE DE MODAIS: Perfil, Notificações e Login ===
+    document.addEventListener("DOMContentLoaded", () => {
+      const avatarBtn = document.querySelector(".generic-avatar");
+      const notificationsBtn = document.getElementById("notificationsIcon");
+
+      const profileOverlay = document.getElementById("profileOverlay");
+      const notificationsOverlay = document.getElementById("notificationsOverlay");
+      const authOverlay = document.getElementById("authOverlay");
+
+      const closeProfile = document.getElementById("profileCloseBtn");
+      const cancelProfile = document.getElementById("cancelProfileBtn");
+      const closeNotifications = document.getElementById("notificationsCloseBtn");
+      const closeAuth = document.getElementById("authCloseBtn");
+
+      function openModal(modal) {
+        if (!modal) return;
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal(modal) {
+        if (!modal) return;
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+      }
+
+      // 🧍 Abrir Perfil (ou Login se não estiver logado)
+      if (avatarBtn) {
+        avatarBtn.addEventListener("click", () => {
+          if (!auth.currentUser) openModal(authOverlay);
+          else openModal(profileOverlay);
+        });
+      }
+
+      // 🔔 Abrir Notificações
+      if (notificationsBtn) {
+        notificationsBtn.addEventListener("click", () => openModal(notificationsOverlay));
+      }
+
+      // ❌ Fechar modais
+      closeProfile?.addEventListener("click", () => closeModal(profileOverlay));
+      cancelProfile?.addEventListener("click", () => closeModal(profileOverlay));
+      closeNotifications?.addEventListener("click", () => closeModal(notificationsOverlay));
+      closeAuth?.addEventListener("click", () => closeModal(authOverlay));
+
+      // 🖱️ Fechar clicando fora
+      [profileOverlay, notificationsOverlay, authOverlay].forEach(modal => {
+        if (modal) {
+          modal.addEventListener("click", (e) => {
+            if (e.target === modal) closeModal(modal);
+          });
+        }
+      });
+    });
+
+    // === SINCRONIZAR PERFIL COM USUÁRIO ATUAL ===
+    import { updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    function atualizarPerfilUI(user) {
+      const avatarHeader = document.querySelector(".generic-avatar img");
+      const profileEmail = document.getElementById("profileEmail");
+      const profileName = document.getElementById("profileName");
+      const currentAvatarImg = document.getElementById("currentAvatarImg");
+      const logoutBtn = document.getElementById("logoutBtn");
+
+      if (!user) {
+        // Usuário não logado → limpa tudo
+        if (avatarHeader) avatarHeader.src = "img/Generic_avatar.png";
+        if (profileEmail) profileEmail.value = "";
+        if (profileName) profileName.value = "";
+        if (currentAvatarImg) currentAvatarImg.src = "img/Generic_avatar.png";
+        if (logoutBtn) logoutBtn.style.display = "none";
+        return;
+      }
+
+      // Usuário logado → exibe dados reais
+      if (avatarHeader) avatarHeader.src = user.photoURL || "img/Generic_avatar.png";
+      if (profileEmail) profileEmail.value = user.email || "";
+      if (profileName) profileName.value = user.displayName || "";
+      if (currentAvatarImg) currentAvatarImg.src = user.photoURL || "img/Generic_avatar.png";
+      if (logoutBtn) logoutBtn.style.display = "inline-flex";
+      logoutBtn.className = "logout-btn";
+    }
+
+    // Ouve mudanças de login e atualiza interface
+    onAuthStateChanged(auth, (user) => {
+      atualizarPerfilUI(user);
+    });
+
   </script>
 
-  <!-- Modal de autenticação -->
+  <div class="modal-overlay" id="profileOverlay">
+    <div class="modal profile-modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+      <header>
+        <h3 id="profileTitle">Meu Perfil</h3>
+        <button id="profileCloseBtn" aria-label="Fechar">✕</button>
+      </header>
+
+      <div class="profile-content">
+        <div class="profile-avatar-section">
+          <div class="current-avatar">
+            <img id="currentAvatarImg" src="img/Generic_avatar.png" alt="Avatar atual" />
+            <div class="avatar-overlay">
+              <button id="changeAvatarBtn" class="avatar-change-btn">
+                <i class="fas fa-camera"></i>
+                <span>Alterar Foto</span>
+              </button>
+            </div>
+          </div>
+          <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" />
+        </div>
+
+        <div class="profile-info">
+          <div class="form-row">
+            <label for="profileEmail">Email</label>
+            <input id="profileEmail" type="email" readonly />
+          </div>
+          <div class="form-row">
+            <label for="profileName">Nome</label>
+            <input id="profileName" type="text" placeholder="Seu nome" />
+          </div>
+        </div>
+
+        <div class="password-section">
+          <h4>Alterar Senha</h4>
+          <div class="form-row">
+            <label for="currentPassword">Senha Atual</label>
+            <input id="currentPassword" type="password" placeholder="Digite sua senha atual" />
+          </div>
+          <div class="form-row">
+            <label for="newPassword">Nova Senha</label>
+            <input id="newPassword" type="password" placeholder="Digite sua nova senha" />
+          </div>
+          <div class="form-row">
+            <label for="confirmPassword">Confirmar Nova Senha</label>
+            <input id="confirmPassword" type="password" placeholder="Confirme sua nova senha" />
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button id="saveProfileBtn">Salvar Alterações</button>
+        <button id="cancelProfileBtn" class="secondary">Cancelar</button>
+        <button id="profileAdminBtn" class="secondary admin-button" style="display: none;">Entrar como
+          Administrador</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="notificationsOverlay">
+    <div class="modal notifications-modal" role="dialog" aria-modal="true" aria-labelledby="notificationsTitle">
+      <header>
+        <h3 id="notificationsTitle">Notificações</h3>
+        <button id="notificationsCloseBtn" aria-label="Fechar">✕</button>
+      </header>
+      <div class="notifications-content">
+        <div id="notificationsList" class="notifications-list">
+        </div>
+        <div id="noNotifications" class="no-notifications" style="display: none;">
+          <p>Nenhuma notificação ainda.</p>
+        </div>
+      </div>
+      <div class="notifications-actions">
+        <button id="markAllReadBtn" class="secondary">Marcar todas como lidas</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="authOverlay">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <header>
@@ -445,11 +703,12 @@
       </section>
       <div class="actions">
         <button id="btnGoogle">Entrar com Google</button>
-        <button id="btnAdmin" class="secondary">Entrar como Administrador</button>
+        <button id="btnAdmin" class="secondary admin-button">Entrar como Administrador</button>
         <div class="hint">Ao entrar, você concorda com os termos de uso.</div>
       </div>
     </div>
   </div>
+
 </body>
 
 </html>
