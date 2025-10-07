@@ -135,6 +135,20 @@
   box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.25);
 }
 
+#jogoDescricao{
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.15);
+  color: inherit;
+}
+
+option {
+  background: rgba(66, 65, 65, 0.15);
+  color: black;
+}
+
 .comment-row .text {
   white-space: pre-wrap;
 }
