@@ -169,7 +169,6 @@
       } catch (error) { console.error("Erro no login:", error); }
     };
 
-    avatarContainer.addEventListener("click", () => { if (!auth.currentUser) login(); });
     logoutBtn.addEventListener("click", () => signOut(auth));
     getRedirectResult(auth).catch((error) => console.error(error));
 
@@ -177,11 +176,19 @@
     onAuthStateChanged(auth, async (user) => {
       const avatar = document.querySelector(".generic-avatar img");
       const root = document.querySelector("main.admin-wrapper");
+      const profileAdminBtn = document.getElementById("profileAdminBtn");
+      const profileEmail = document.getElementById("profileEmail");
+      const profileName = document.getElementById("profileName");
+      const currentAvatarImg = document.getElementById("currentAvatarImg");
       if (!root) return;
 
       if (!user) {
         if (avatar) avatar.src = "img/Generic_avatar.png";
         logoutBtn.style.display = "none";
+        if (profileAdminBtn) profileAdminBtn.style.display = "none";
+        if (profileEmail) profileEmail.value = "";
+        if (profileName) profileName.value = "";
+        if (currentAvatarImg) currentAvatarImg.src = "img/Generic_avatar.png";
         root.innerHTML = '<section class="admin-card"><h2>Acesso restrito</h2><p>Faça login para acessar o painel.</p></section>';
         return;
       }
@@ -190,6 +197,22 @@
       if (avatar) avatar.src = user.photoURL || "img/Generic_avatar.png";
       logoutBtn.style.display = "inline-flex";
       logoutBtn.className = "logout-btn";
+
+      // Update profile modal
+      if (profileEmail) profileEmail.value = user.email || "";
+      if (profileName) profileName.value = user.displayName || "";
+      if (currentAvatarImg) currentAvatarImg.src = user.photoURL || "img/Generic_avatar.png";
+
+      // Check if user is admin
+      if (profileAdminBtn) {
+        try {
+          const adminDoc = await getDoc(doc(db, "admins", user.email.toLowerCase()));
+          profileAdminBtn.style.display = adminDoc.exists() ? "inline-flex" : "none";
+        } catch (err) {
+          console.error("Erro ao verificar admin:", err);
+          profileAdminBtn.style.display = "none";
+        }
+      }
 
       // Inicialização do painel
       loadVideosForAdmin();
@@ -554,6 +577,105 @@
         alert("Falha ao adicionar. Verifique as permissões do Firestore.");
       }
     });
+
+    // Load notifications
+    async function loadNotifications() {
+      const notificationsList = document.getElementById("notificationsList");
+      const noNotifications = document.getElementById("noNotifications");
+      if (!notificationsList) return;
+
+      try {
+        const snap = await getDocs(query(collection(db, "notificacoes_historico"), orderBy("ts", "desc")));
+        if (snap.empty) {
+          notificationsList.innerHTML = "";
+          if (noNotifications) noNotifications.style.display = "block";
+          return;
+        }
+        if (noNotifications) noNotifications.style.display = "none";
+        notificationsList.innerHTML = "";
+        snap.forEach((doc) => {
+          const n = doc.data();
+          const item = document.createElement("div");
+          item.className = "notification-item";
+          item.innerHTML = `
+            <div class="notification-content">
+              <p>${n.message || ""}</p>
+              <small>${n.sender || ""} - ${n.ts?.seconds ? new Date(n.ts.seconds * 1000).toLocaleString("pt-BR") : ""}</small>
+            </div>
+          `;
+          notificationsList.appendChild(item);
+        });
+      } catch (err) {
+        console.error("Erro ao carregar notificações:", err);
+      }
+    }
+
+    // Load notifications when modal opens
+    const notificationsIcon = document.getElementById("notificationsIcon");
+    if (notificationsIcon) {
+      notificationsIcon.addEventListener("click", () => {
+        loadNotifications();
+      });
+    }
+
+    // Ensure modals are set up (in case global.js didn't)
+    function setupModals() {
+      const avatarBtn = document.querySelector(".generic-avatar");
+      const notificationsBtn = document.getElementById("notificationsIcon");
+
+      const profileOverlay = document.getElementById("profileOverlay");
+      const notificationsOverlay = document.getElementById("notificationsOverlay");
+      const authOverlay = document.getElementById("authOverlay");
+
+      const closeProfile = document.getElementById("profileCloseBtn");
+      const cancelProfile = document.getElementById("cancelProfileBtn");
+      const closeNotifications = document.getElementById("notificationsCloseBtn");
+      const closeAuth = document.getElementById("authCloseBtn");
+
+      function openModal(modal) {
+        if (!modal) return;
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeModal(modal) {
+        if (!modal) return;
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+      }
+
+      if (avatarBtn) {
+        avatarBtn.addEventListener("click", () => {
+          if (!auth.currentUser) openModal(authOverlay);
+          else openModal(profileOverlay);
+        });
+      }
+
+      if (notificationsBtn) notificationsBtn.addEventListener("click", () => openModal(notificationsOverlay));
+
+      closeProfile?.addEventListener("click", () => closeModal(profileOverlay));
+      cancelProfile?.addEventListener("click", () => closeModal(profileOverlay));
+      closeNotifications?.addEventListener("click", () => closeModal(notificationsOverlay));
+      closeAuth?.addEventListener("click", () => closeModal(authOverlay));
+
+      [profileOverlay, notificationsOverlay, authOverlay].forEach(modal => {
+        if (modal) {
+          modal.addEventListener("click", e => {
+            if (e.target === modal) closeModal(modal);
+          });
+        }
+      });
+    }
+
+    setupModals();
+
+    // Admin button click (redirect to index or something)
+    const profileAdminBtn = document.getElementById("profileAdminBtn");
+    if (profileAdminBtn) {
+      profileAdminBtn.addEventListener("click", () => {
+        window.location.href = 'index.html';
+      });
+    }
   </script>
 
   <div class="modal-overlay" id="profileOverlay">
