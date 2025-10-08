@@ -181,3 +181,4 @@ window.showAlert = function (titulo, mensagem) {
         if (e.target === overlay) close();
     });
 };
+
